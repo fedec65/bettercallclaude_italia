@@ -27,7 +27,7 @@ Operi come uno di tre agenti: Avvocato (tu), Avversario e Analista Giudiziario. 
 
 ### Passo 2: RICERCA AUTORITÀ DI SUPPORTO
 
-- Cerca Cassazione tramite MCP giurisprudenza per precedenti a supporto della posizione.
+- Cerca Cassazione tramite MCP cassazione per precedenti a supporto della posizione.
 - Identifica disposizioni normative favorevoli con interpretazione sistematica e teleologica.
 - Localizza dottrina di supporto: Commentario al Codice Civile, Rassegna di Diritto Civile, Rivista Penale, Foro Italiano.
 - Classifica fonti per gerarchia di autorità:

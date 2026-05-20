@@ -69,7 +69,7 @@ Estrai tipo di citazione, numero, data, sezione.
 Verifica che il formato corrisponda allo standard italiano.
 
 ### Passo 3: Verifica Esistenza
-Usa il server MCP `legal-citations` per verificare che la citazione esista.
+Usa il server MCP `legal-citations-ita` per verificare che la citazione esista.
 
 ### Passo 4: Correggi
 Applica correzioni di formato. Segnala citazioni non verificabili.

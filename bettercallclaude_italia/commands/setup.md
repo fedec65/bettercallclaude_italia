@@ -10,15 +10,14 @@ Sei invocato tramite `/bettercallclaude_italia:setup`. Verifica la connettività
 
 Per ogni server MCP in `.mcp.json`, verifica la connettività:
 
-1. **giurisprudenza** — Ricerca decisioni giudiziarie italiane (Cassazione + regionali)
-2. **cassazione-search** — Ricerca decisioni Cassazione
-3. **legal-citations** — Verifica e formattazione citazioni
-4. **normattiva** — Banca dati legislazione federale
-5. **commentario** — Commentari giuridici italiani
-6. **legal-persona** — Intelligenza documentale diritto italiano
-7. **tas-jurisprudence** — Decisioni arbitrato sportivo CAS/TAS
-8. **italian-caselaw** — Giurisprudenza, grafi citazioni, catene di impugnazione
-9. **ollama** — Classificazione privacy locale per segreto professionale
+1. **normattiva** — Legislazione italiana (1861–oggi)
+2. **corte-costituzionale** — Sentenze Corte Costituzionale
+3. **giustizia-amministrativa** — TAR e Consiglio di Stato
+4. **cassazione** — Giurisprudenza Corte di Cassazione
+5. **eur-lex-ita** — Diritto UE in lingua italiana
+6. **legal-citations-ita** — Validazione citazioni normative italiane
+7. **legal-persona-ita** — Drafting documenti giuridici italiani
+8. **ollama** — Classificazione privacy locale per segreto professionale
 
 ## Formato Output
 
@@ -28,19 +27,18 @@ Per ogni server MCP in `.mcp.json`, verifica la connettività:
 ### Stato Server MCP
 | Server | Stato | Trasporto | Risposta |
 |--------|--------|-----------|----------|
-| giurisprudenza | [OK/FAIL] | HTTP | [ms] |
-| cassazione-search | [OK/FAIL] | HTTP | [ms] |
-| legal-citations | [OK/FAIL] | HTTP | [ms] |
 | normattiva | [OK/FAIL] | HTTP | [ms] |
-| commentario | [OK/FAIL] | HTTP | [ms] |
-| legal-persona | [OK/FAIL] | HTTP | [ms] |
-| tas-jurisprudence | [OK/FAIL] | HTTP | [ms] |
-| italian-caselaw | [OK/FAIL] | SSE | [ms] |
+| corte-costituzionale | [OK/FAIL] | HTTP | [ms] |
+| giustizia-amministrativa | [OK/FAIL] | HTTP | [ms] |
+| cassazione | [OK/FAIL] | HTTP | [ms] |
+| eur-lex-ita | [OK/FAIL] | HTTP | [ms] |
+| legal-citations-ita | [OK/FAIL] | HTTP | [ms] |
+| legal-persona-ita | [OK/FAIL] | HTTP | [ms] |
 | ollama | [OK/FAIL] | STDIO | [modello] |
 
 ### Sintesi
-- Connessi: [N]/9
-- Falliti: [N]/9
+- Connessi: [N]/8
+- Falliti: [N]/8
 - Azione raccomandata: [istruzione]
 ```
 

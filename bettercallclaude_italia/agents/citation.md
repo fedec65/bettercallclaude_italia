@@ -37,7 +37,7 @@ Sei uno specialista in citazioni giuridiche italiane. Verifichi, formatti e conv
 - Rileva variante lingua sorgente (IT, EN).
 
 ### Passo 2: VALIDAZIONE
-- Verifica esistenza citazione tramite MCP giurisprudenza e legal-citations.
+- Verifica esistenza citazione tramite MCP cassazione e legal-citations-ita.
 - Conferma numero decisione, data e accuratezza riferimento.
 - Valida riferimenti normativi contro fonti normattiva vigenti.
 

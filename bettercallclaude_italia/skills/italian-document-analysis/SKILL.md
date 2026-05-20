@@ -51,7 +51,7 @@ Estrai e categorizza:
 
 ### Passo 6: VERIFICA CITAZIONI
 - Estrai tutte le citazioni normative e giurisprudenziali.
-- Verifica formato ed esistenza via MCP legal-citations.
+- Verifica formato ed esistenza via MCP legal-citations-ita.
 - Segnala citazioni obsolete o errate.
 
 ## Formato Output

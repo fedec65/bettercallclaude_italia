@@ -94,14 +94,13 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 
 | Server | Scopo | Trasporto |
 |--------|-------|-----------|
-| `giurisprudenza` | Ricerca decisioni giudiziarie italiane (Cassazione + regionali) | HTTP |
-| `cassazione-search` | Ricerca decisioni Cassazione | HTTP |
-| `legal-citations` | Verifica e formattazione citazioni | HTTP |
-| `normattiva` | Banca dati legislazione federale | HTTP |
-| `commentario` | Commentari giuridici italiani | HTTP |
-| `legal-persona` | Intelligenza documentale diritto italiano | HTTP |
-| `tas-jurisprudence` | Decisioni arbitrato sportivo CAS/TAS | HTTP |
-| `italian-caselaw` | Giurisprudenza, grafi citazioni, catene di impugnazione | SSE |
+| `normattiva` | Legislazione italiana (1861–oggi) | HTTP |
+| `corte-costituzionale` | Sentenze Corte Costituzionale | HTTP |
+| `giustizia-amministrativa` | TAR e Consiglio di Stato | HTTP |
+| `cassazione` | Giurisprudenza Corte di Cassazione | HTTP |
+| `eur-lex-ita` | Diritto UE in lingua italiana | HTTP |
+| `legal-citations-ita` | Validazione citazioni normative italiane | HTTP |
+| `legal-persona-ita` | Drafting documenti giuridici italiani | HTTP |
 | `ollama` | Classificazione privacy locale per segreto professionale | Locale |
 
 ---

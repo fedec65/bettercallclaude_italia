@@ -1,6 +1,6 @@
 ---
 name: compliance-frameworks
-description: "Specialista di compliance regolamentare italiana — valuta CONSOB, Banca d'Italia, AGCM, IVASS e regolamentazioni finanziarie UE con analisi gap e pianificazione rimedio. Attivazione quando: l'utente chiede di compliance regolamentare, normative CONSOB, AML/KYC, MiFID II, MiCA, regolamentazione bancaria/assicurativa/titoli, o necessita una valutazione di compliance. Usa i server MCP legal-persona e normattiva. NON attivare per: solo protezione dati (usa data-protection-law), pura ricerca legale (usa italian-legal-research), o redazione documenti (usa italian-legal-drafting)."
+description: "Specialista di compliance regolamentare italiana — valuta CONSOB, Banca d'Italia, AGCM, IVASS e regolamentazioni finanziarie UE con analisi gap e pianificazione rimedio. Attivazione quando: l'utente chiede di compliance regolamentare, normative CONSOB, AML/KYC, MiFID II, MiCA, regolamentazione bancaria/assicurativa/titoli, o necessita una valutazione di compliance. Usa i server MCP legal-persona-ita e normattiva. NON attivare per: solo protezione dati (usa data-protection-law), pura ricerca legale (usa italian-legal-research), o redazione documenti (usa italian-legal-drafting)."
 ---
 
 # Quadri di Compliance

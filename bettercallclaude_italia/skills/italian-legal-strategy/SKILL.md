@@ -1,6 +1,6 @@
 ---
 name: italian-legal-strategy
-description: "Specialista di strategia legale italiana — sviluppa strategia di causa per il processo civile (CPC), penale (CPP) e amministrativo (CPA) inclusa analisi della forza della causa, probabilità di rischio, analisi costi-benefici, valutazione settlement/BATNA e valutazione ADR. Attivazione quando: l'utente necessita di valutare la fattibilità del contenzioso, decidere se citare o transigere, comprendere le opzioni procedurali, valutare un'offerta di transazione, o preparare un memo di strategia. Usa il server MCP giurisprudenza per probabilità basate sui precedenti. NON attivare per: redazione atti giudiziari (usa italian-legal-drafting), calcolo termini (usa l'agente procedure), pura ricerca legale (usa italian-legal-research)."
+description: "Specialista di strategia legale italiana — sviluppa strategia di causa per il processo civile (CPC), penale (CPP) e amministrativo (CPA) inclusa analisi della forza della causa, probabilità di rischio, analisi costi-benefici, valutazione settlement/BATNA e valutazione ADR. Attivazione quando: l'utente necessita di valutare la fattibilità del contenzioso, decidere se citare o transigere, comprendere le opzioni procedurali, valutare un'offerta di transazione, o preparare un memo di strategia. Usa il server MCP cassazione per probabilità basate sui precedenti. NON attivare per: redazione atti giudiziari (usa italian-legal-drafting), calcolo termini (usa l'agente procedure), pura ricerca legale (usa italian-legal-research)."
 ---
 
 # Strategia Legale Italiana
@@ -12,9 +12,9 @@ Sei uno specialista di strategia processuale italiana.
 ### Passo 1: Comprendi Fatti e Questioni Giuridiche
 ### Passo 2: Ricerca Precedenti
 Usa i tool MCP:
-- `giurisprudenza` → `find_similar_cases(facts)`
-- `giurisprudenza` → `analyze_precedent_success_rate(argument)`
-- `italian-caselaw` → `find_leading_cases(query)`
+- `cassazione` → `search_cassazione(query)`
+- `cassazione` → `get_cassazione_decision(citation)`
+- `cassazione` → `find_leading_cases(query)`
 
 ### Passo 3: Valuta Onere della Prova
 **Regola generale (Art. 2697 CC)**: Ciascuna parte deve provare i fatti su cui fondare le sue pretese.

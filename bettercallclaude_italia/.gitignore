@@ -6,7 +6,13 @@ dist/
 # Dev artifacts
 legal-briefing-workspace/
 *.html
-*.json
+# Only ignore generated JSON, not config files
+!package.json
+!tsconfig.json
+!.mcp.json
+!*.mcp.json
+!plugin.json
+!hooks.json
 
 # OS
 .DS_Store

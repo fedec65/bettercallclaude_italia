@@ -1,0 +1,17 @@
+{
+  "description": "Rilevamento segreto professionale per la pratica legale italiana. Scansiona Write/Edit/MultiEdit/WebFetch e tutti gli input tool MCP (mcp__.*) prima che il contenuto lasci la macchina.",
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit|WebFetch|mcp__.*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/privacy-check.js",
+            "timeout": 15
+          }
+        ]
+      }
+    ]
+  }
+}

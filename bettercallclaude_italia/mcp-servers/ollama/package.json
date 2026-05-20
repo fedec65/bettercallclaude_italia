@@ -1,0 +1,19 @@
+{
+  "name": "bettercallclaude-italia-ollama-mcp",
+  "version": "1.0.0",
+  "description": "Local Ollama MCP server for BetterCallClaude Italia privacy classification",
+  "main": "dist/index.js",
+  "scripts": {
+    "build": "tsc",
+    "build:bundle": "tsc && esbuild dist/index.js --bundle --platform=node --outfile=dist/index.js --allow-overwrite",
+    "dev": "tsc --watch"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.0.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "esbuild": "^0.20.0",
+    "typescript": "^5.0.0"
+  }
+}
