@@ -4,7 +4,7 @@
   "private": true,
   "description": "Plugin di Intelligenza Legale Italiana per Claude",
   "scripts": {
-    "build:ollama": "cd bettercallclaude_italia/mcp-servers/ollama && npm install && npm run build:bundle",
+    "build:ollama": "cd mcp-servers/ollama && npm install && npm run build:bundle",
     "package": "bash scripts/package-plugin.sh"
   },
   "repository": {
