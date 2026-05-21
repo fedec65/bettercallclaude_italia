@@ -172,9 +172,9 @@ const DISCRIMINATOR_PATH = new RegExp(
 const DISCRIMINATOR_CONTENT = new RegExp(
   '\\b(' +
   'cliente|clienti|client|mandante|mandanti' +
-  '|dossier|numero\s+di\s+pratica|riferimento\s+atto' +
+  '|dossier|numero\\s+di\\s+pratica|riferimento\\s+atto' +
   '|procedimento|processo|giudizio|ricorso|opposizione' +
-  '|avvocato|avvocati|avvocatessa|studio\s+legale' +
+  '|avvocato|avvocati|avvocatessa|studio\\s+legale' +
   ')\\b',
   'i'
 );
