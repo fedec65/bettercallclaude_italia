@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude_italia",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con protezione privacy GDPR e segreto professionale.",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
