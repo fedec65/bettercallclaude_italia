@@ -1,0 +1,22 @@
+{
+  "name": "bettercallclaude-italia-marketplace",
+  "owner": {
+    "name": "Federico Cesconi",
+    "email": "info@bettercallclaude.ch"
+  },
+  "plugins": [
+    {
+      "name": "bettercallclaude_italia",
+      "description": "Italian Legal Intelligence — Cassazione precedent research, case strategy, legal drafting, and citation verification across all 20 Italian regions with attorney-client privilege (segreto professionale) privacy protection.",
+      "version": "1.0.0",
+      "source": "./bettercallclaude_italia",
+      "author": {
+        "name": "Federico Cesconi"
+      },
+      "homepage": "https://github.com/fedec65/bettercallclaude_italia",
+      "repository": "https://github.com/fedec65/bettercallclaude_italia",
+      "license": "AGPL-3.0",
+      "category": "legal"
+    }
+  ]
+}
