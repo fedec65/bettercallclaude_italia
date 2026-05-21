@@ -16,6 +16,10 @@ BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la 
 
 BetterCallClaude Italia fornisce una metodologia strutturata per gestire il lavoro legale con assistenza AI. Il framework è costituito da cinque fasi interconnesse.
 
+<p align="center">
+  <img src="docs/images/framework.png" alt="Framework BetterCallClaude Italia" width="600">
+</p>
+
 ---
 
 ## Installazione
