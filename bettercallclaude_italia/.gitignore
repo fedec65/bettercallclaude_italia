@@ -1,6 +1,7 @@
 # Build outputs
 node_modules/
 dist/
+!mcp-servers/ollama/dist/
 *.zip
 
 # Dev artifacts

@@ -1,3 +1,8 @@
 node_modules/
-dist/
+dist/*.map
+dist/*.d.ts
+dist/*.d.ts.map
+dist/client.js
+dist/privacy.js
+dist/types.js
 *.log
