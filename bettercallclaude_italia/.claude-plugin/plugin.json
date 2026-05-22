@@ -1,16 +1,9 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con protezione privacy GDPR e segreto professionale.",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
-    "ollama_host": {
-      "type": "string",
-      "title": "URL host Ollama",
-      "description": "URL dell'host Ollama usato dal server MCP Ollama incluso per traduzione e sintesi solo in locale.",
-      "default": "http://localhost:11434",
-      "sensitive": false
-    },
     "default_jurisdiction": {
       "type": "string",
       "title": "Regione italiana predefinita",

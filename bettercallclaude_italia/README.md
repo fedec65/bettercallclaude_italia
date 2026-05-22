@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.0.2-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -8,7 +8,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e protezione integrata del segreto professionale — 20 agenti, 19 comandi, 14 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e protezione integrata del segreto professionale — 20 agenti, 19 comandi, 14 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
 
 ---
 
@@ -28,7 +28,7 @@ BetterCallClaude Italia fornisce una metodologia strutturata per gestire il lavo
 2. Inserisci `fedec65/bettercallclaude_italia` e clicca **Sincronizza**
 3. Clicca **Installa** sulla scheda BetterCallClaude Italia
 
-I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna configurazione locale, nessuna chiave API richiesta per i server HTTP. Il server Ollama locale richiede Node.js >= 18.
+I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna configurazione locale, nessuna chiave API richiesta.
 
 ---
 
@@ -36,48 +36,48 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 
 | Comando | Descrizione |
 |---------|-------------|
-| `/bettercallclaude_italia:legal` | Gateway intelligente — analizza intento, indirizza a specialisti |
-| `/bettercallclaude_italia:refine` | Trasforma query legali vaghe in prompt strutturati |
-| `/bettercallclaude_italia:research` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
-| `/bettercallclaude_italia:strategy` | Sviluppa strategia processuale con valutazione del rischio |
-| `/bettercallclaude_italia:draft` | Redige documenti legali italiani con corretta formattazione delle citazioni |
-| `/bettercallclaude_italia:cite` | Verifica e formatta citazioni giuridiche italiane |
-| `/bettercallclaude_italia:validate` | Valida citazioni giuridiche italiane in bulk |
-| `/bettercallclaude_italia:precedent` | Cerca e analizza precedenti della Cassazione |
-| `/bettercallclaude_italia:federal` | Analizza secondo il diritto federale italiano |
-| `/bettercallclaude_italia:regional` | Analizza secondo il diritto regionale per una regione specifica |
-| `/bettercallclaude_italia:adversarial` | Esegue analisi avversariale a tre agenti |
-| `/bettercallclaude_italia:briefing` | Briefing strutturato pre-esecuzione |
-| `/bettercallclaude_italia:workflow` | Definisce ed esegue workflow legali multi-agente |
-| `/bettercallclaude_italia:translate` | Traduce documenti legali IT/EN |
-| `/bettercallclaude_italia:doc-analyze` | Analizza documenti legali |
-| `/bettercallclaude_italia:summarize` | Consolida output delle pipeline multi-agente |
-| `/bettercallclaude_italia:setup` | Verifica connettività server MCP |
-| `/bettercallclaude_italia:version` | Visualizza versione plugin e stato sistema |
-| `/bettercallclaude_italia:help` | Mostra il riferimento completo dei comandi |
+| `/bettercallclaude-italia:legale` | Gateway intelligente — analizza intento, indirizza a specialisti |
+| `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
+| `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
+| `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
+| `/bettercallclaude-italia:redazione` | Redige documenti legali italiani con corretta formattazione delle citazioni |
+| `/bettercallclaude-italia:citazione` | Verifica e formatta citazioni giuridiche italiane |
+| `/bettercallclaude-italia:verifica` | Valida citazioni giuridiche italiane in bulk |
+| `/bettercallclaude-italia:precedente` | Cerca e analizza precedenti della Cassazione |
+| `/bettercallclaude-italia:federale` | Analizza secondo il diritto federale italiano |
+| `/bettercallclaude-italia:regionale` | Analizza secondo il diritto regionale per una regione specifica |
+| `/bettercallclaude-italia:contraddittorio` | Esegue analisi avversariale a tre agenti |
+| `/bettercallclaude-italia:briefing` | Briefing strutturato pre-esecuzione |
+| `/bettercallclaude-italia:flusso` | Definisce ed esegue workflow legali multi-agente |
+| `/bettercallclaude-italia:traduci` | Traduce documenti legali IT/EN |
+| `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
+| `/bettercallclaude-italia:riassumi` | Consolida output delle pipeline multi-agente |
+| `/bettercallclaude-italia:configurazione` | Verifica connettività server MCP |
+| `/bettercallclaude-italia:versione` | Visualizza versione plugin e stato sistema |
+| `/bettercallclaude-italia:aiuto` | Mostra il riferimento completo dei comandi |
 
 ### Esempi d'Uso
 
 ```
-/bettercallclaude_italia:legal Voglio valutare la mia esposizione ai sensi dell'art. 1218 CC
+/bettercallclaude-italia:legale Voglio valutare la mia esposizione ai sensi dell'art. 1218 CC
 
-/bettercallclaude_italia:refine Ho problemi con il mio locatore
+/bettercallclaude-italia:raffina Ho problemi con il mio locatore
 
-/bettercallclaude_italia:research Art. 1218 CC responsabilità contrattuale
+/bettercallclaude-italia:ricerca Art. 1218 CC responsabilità contrattuale
 
-/bettercallclaude_italia:strategy Contenzioso locativo a Milano, locatore chiede EUR 200k danni
+/bettercallclaude-italia:strategia Contenzioso locativo a Milano, locatore chiede EUR 200k danni
 
-/bettercallclaude_italia:draft Contratto di lavoro per ingegnere software a Roma
+/bettercallclaude-italia:redazione Contratto di lavoro per ingegnere software a Roma
 
-/bettercallclaude_italia:adversarial La clausola di non concorrenza è valida?
+/bettercallclaude-italia:contraddittorio La clausola di non concorrenza è valida?
 
-/bettercallclaude_italia:workflow litigation-prep Risarcimento danni contro produttore
+/bettercallclaude-italia:flusso litigation-prep Risarcimento danni contro produttore
 
-/bettercallclaude_italia:briefing Prepara lite completa per inadempimento art. 1218 CC, EUR 500K
+/bettercallclaude-italia:briefing Prepara lite completa per inadempimento art. 1218 CC, EUR 500K
 
-/bettercallclaude_italia:regional LOM Giurisdizione Tribunale delle Imprese
+/bettercallclaude-italia:regionale LOM Giurisdizione Tribunale delle Imprese
 
-/bettercallclaude_italia:doc-analyze @contratto.pdf Analizza questo contratto di locazione
+/bettercallclaude-italia:analisi-doc @contratto.pdf Analizza questo contratto di locazione
 ```
 
 ---
@@ -105,7 +105,20 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | `eur-lex-ita` | Diritto UE in lingua italiana | HTTP |
 | `legal-citations-ita` | Validazione citazioni normative italiane | HTTP |
 | `legal-persona-ita` | Drafting documenti giuridici italiani | HTTP |
-| `ollama` | Classificazione privacy locale per segreto professionale | Locale |
+
+### Affidabilita Server
+
+| Server | Affidabilita | Note |
+|--------|-------------|------|
+| normattiva | Alta | API Open Data ufficiale |
+| eur-lex-ita | Alta | SPARQL su EUR-Lex |
+| legal-citations-ita | Alta | Funziona localmente |
+| legal-persona-ita | Alta | Funziona localmente |
+| corte-costituzionale | Bassa | Protezione anti-bot (DataDome) |
+| giustizia-amministrativa | Bassa | Portale instabile, timeout frequenti |
+| cassazione | Molto bassa | HTTP 403 sistematico |
+
+Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazione) restituiscono URL fallback anziche dati strutturati, il plugin fornisce automaticamente link per consultazione diretta tramite ECLI, Google o portale istituzionale.
 
 ---
 
@@ -115,7 +128,7 @@ BetterCallClaude Italia include conformità integrata al segreto professionale (
 
 | Modalità | Comportamento |
 |----------|---------------|
-| `strict` | Tutte le chiamate esterne richiedono conferma. Elaborazione locale preferita via Ollama. |
+| `strict` | Tutte le chiamate esterne richiedono conferma. |
 | `balanced` | Contenuto privilegiato attiva conferma. Contenuto non privilegiato elaborato normalmente. |
 | `cloud` | Elaborazione cloud standard con hook privacy attivo solo per marcatori espliciti di privilegio. |
 
@@ -133,7 +146,6 @@ BetterCallClaude Italia include conformità integrata al segreto professionale (
 ## Requisiti
 
 - Claude Cowork Desktop (ultima versione)
-- Node.js >= 18 (solo per il classificatore privacy Ollama — tutti gli altri server si connettono via HTTP)
 
 ---
 

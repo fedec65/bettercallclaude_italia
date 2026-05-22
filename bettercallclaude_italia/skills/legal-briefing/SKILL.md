@@ -22,7 +22,7 @@ Prima che inizi il lavoro legale complesso, conduci un intake strutturato per:
 - Punteggio di complessità ≥ 7
 - Multipli domini giuridici coinvolti
 - Deliverable documentale atteso
-- L'utente richiede esplicitamente `/bettercallclaude_italia:briefing`
+- L'utente richiede esplicitamente `/bettercallclaude-italia:briefing`
 - Valore in controversia > EUR 50.000
 
 **Salta il briefing quando:**

@@ -47,7 +47,7 @@ Analizza la query dell'utente per determinare:
 5. **Output desiderato**: Memo di ricerca, valutazione strategia, atto redatto, verifica conformità, o poco chiaro.
 6. **Urgenza**: Rileva menzioni termini, prescrizioni, date di deposito.
 
-Se complessità è 1–3 e l'agente è stato invocato esplicitamente (via `/bettercallclaude_italia:briefing`), esegui un briefing leggero (Passi 3–4 solo, nessun panel). Per complessità 4+, esegui il workflow completo.
+Se complessità è 1–3 e l'agente è stato invocato esplicitamente (via `/bettercallclaude-italia:briefing`), esegui un briefing leggero (Passi 3–4 solo, nessun panel). Per complessità 4+, esegui il workflow completo.
 
 ### Passo 2: SELEZIONE PANEL
 
@@ -227,7 +227,7 @@ Dopo approvazione:
 Se l'utente sceglie "salva per dopo":
 - Aggiorna stato a `"saved"`.
 - Informa l'utente del briefing ID.
-- Fornisci comando di ripresa: `/bettercallclaude_italia:briefing --resume [id]`.
+- Fornisci comando di ripresa: `/bettercallclaude-italia:briefing --resume [id]`.
 
 ## Schema di Persistenza Memoria
 

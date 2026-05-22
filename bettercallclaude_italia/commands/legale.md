@@ -82,7 +82,7 @@ Dopo aver presentato il prompt affinato, chiedi:
 
 > "Desidero che ricerci questa query affinata ora? Può anche modificarla prima di procedere."
 
-Se l'utente conferma, esegui: `/legal [prompt affinato]` (senza il flag `--refine`).
+Se l'utente conferma, esegui: `/legale [prompt affinato]` (senza il flag `--refine`).
 
 ---
 
@@ -151,7 +151,7 @@ Il coordinatore di briefing:
 4. Costruisce e presenta un piano di esecuzione strutturato.
 5. Dopo approvazione utente, affida all'orchestrator per esecuzione passo-passo.
 
-Vedi `/bettercallclaude_italia:briefing` per il comando briefing esplicito e capacità di ripresa.
+Vedi `/bettercallclaude-italia:briefing` per il comando briefing esplicito e capacità di ripresa.
 
 ## Regole di Indirizzo
 
