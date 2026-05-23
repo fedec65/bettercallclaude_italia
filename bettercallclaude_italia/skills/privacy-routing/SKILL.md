@@ -65,7 +65,7 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 - Preferisci elaborazione locale quando disponibile
 
 ### PRIVILEGIATO
-- **Solo elaborazione locale** (Ollama o equivalente)
+- **Solo elaborazione locale**
 - Nessuna API cloud. Fallire piuttosto che inviare esternamente.
 
 ## Regole di Routing

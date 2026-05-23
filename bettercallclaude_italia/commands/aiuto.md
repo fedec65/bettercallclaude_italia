@@ -111,7 +111,7 @@ BetterCallClaude Italia include conformità integrata al segreto professionale (
 
 | Modalità | Comportamento |
 |------|----------|
-| `strict` | Tutte le chiamate esterne richiedono conferma. Preferisci elaborazione locale via Ollama. |
+| `strict` | Tutte le chiamate esterne richiedono conferma. Preferisci elaborazione locale. |
 | `balanced` | Contenuto privilegiato attiva conferma. Contenuto non privilegiato elaborato normalmente. |
 | `cloud` | Elaborazione cloud standard con hook privacy attivo solo per marcatori espliciti di privilegio. |
 

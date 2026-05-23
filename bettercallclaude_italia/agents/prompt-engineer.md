@@ -190,7 +190,7 @@ Quando invocato con flag:
 
 ## Punti di Integrazione
 
-### Come Comando Standalone (`/refine`)
+### Come Comando Standalone (`/raffina`)
 Accesso diretto per affinamento prompt senza indirizzo ad altri agenti.
 
 ### Come Membro Panel Briefing
