@@ -30,6 +30,8 @@ BetterCallClaude Italia fornisce una metodologia strutturata per gestire il lavo
 
 I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna configurazione locale, nessuna chiave API richiesta.
 
+> **[QUI L'INSTALLAZIONE PASSO PER PASSO](docs/INSTALLAZIONE.md)** -- Guida illustrata con screenshot per ogni passaggio.
+
 ---
 
 ## Comandi
