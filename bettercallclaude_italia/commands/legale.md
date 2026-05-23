@@ -43,7 +43,7 @@ Poi invoca l'agente prompt-engineer per condurre il workflow di affinamento.
 
 Per query che non necessitano delegazione al prompt-engineer, identifica cosa manca:
 
-1. **Giurisdizione**: Quale regione? O solo federale?
+1. **Giurisdizione**: Quale regione? O diritto nazionale?
 2. **Dominio giuridico**: Civile, penale, amministrativo, previdenza sociale?
 3. **Posizione parte**: Locatore o conduttore? Datore o lavoratore? Attore o convenuto?
 4. **Rimedio specifico**: Quale esito si persegue? (risarcimento, ingiunzione, risoluzione, ecc.)
@@ -54,7 +54,7 @@ Per query che non necessitano delegazione al prompt-engineer, identifica cosa ma
 
 Poni 2-4 domande socratiche per colmare le lacune. Sii conciso. Esempi:
 
-- "Quale diritto si applica — federale o quello di una regione specifica?"
+- "Quale diritto si applica — nazionale o quello di una regione specifica?"
 - "Lei è il locatore o il conduttore in questa situazione?"
 - "Quale esito persegue — risoluzione, riduzione canone, o risarcimento?"
 - "Ha bisogno di un memo di ricerca, strategia processuale, o un atto redatto?"
@@ -67,7 +67,7 @@ Presenta il prompt affinato in formato strutturato:
 ## Query Legale Affinata
 
 **Dominio**: [Area legale, es. Locazione / Art. 1571 ss CC]
-**Giurisdizione**: [Federale o regione specifica]
+**Giurisdizione**: [Nazionale o regione specifica]
 **Fatti**: [Sintesi fattuale concisa]
 **Questioni Giuridiche**: [Domande specifiche in terminologia legale]
 **Output Desiderato**: [Ricerca / Strategia / Documento / Verifica conformità]
@@ -104,7 +104,7 @@ Prima di intraprendere qualsiasi azione, classifica la query lungo queste dimens
    - Sportivo: parole chiave come "TAS", "CAS", "doping", "sports arbitration"
    - Traduzione: parole chiave come "traduci", "terminologia", "bilingue"
 
-2. **Giurisdizione**: Federale (default), o regionale se menzionato un codice regione (LOM, LAZ, CAM, ecc.). Per questioni giurisdizionali ambigue o cross-regionali, delega alla skill `italian-jurisdictions` prima dell'indirizzo.
+2. **Giurisdizione**: Nazionale (default), o regionale se menzionato un codice regione (LOM, LAZ, CAM, ecc.). Per questioni giurisdizionali ambigue o cross-regionali, delega alla skill `italian-jurisdictions` prima dell'indirizzo.
 
 3. **Lingua**: Corrisponde alla lingua di input dell'utente. Usa terminologia giuridica appropriata in tutta la risposta.
 
@@ -127,7 +127,7 @@ Indirizza direttamente all'agente appropriato. Questo è il comportamento corren
 
 Poni 2-3 domande chiarificatrici inline prima dell'indirizzo. Nessun panel di subagenti viene generato. Le domande si concentrano su:
 1. Conferma del tipo di output desiderato (memo di ricerca, strategia, atto, verifica conformità).
-2. Chiarimento giurisdizione se ambigua (federale vs. regione specifica).
+2. Chiarimento giurisdizione se ambigua (nazionale vs. regione specifica).
 3. Identificazione di urgenza o termini.
 
 Dopo la risposta dell'utente, indirizza all'agente appropriato con contesto arricchito.
@@ -191,7 +191,7 @@ Se l'intento non può essere determinato con confidenza superiore a 0,7, poni do
 
 1. Quale tipo di questione giuridica è coinvolta?
 2. Quale output necessita (memo di ricerca, strategia, atto redatto, verifica conformità)?
-3. Quale giurisdizione si applica (federale o regione specifica)?
+3. Quale giurisdizione si applica (nazionale o regione specifica)?
 4. Qual è il valore in controversia o il livello di urgenza?
 
 Mantieni le chiarificazioni a massimo 3 domande. Se l'utente fornisce contesto sufficiente per almeno un agente, inizia lì e affina man mano.

@@ -49,7 +49,7 @@ Sei uno specialista in diritto regionale italiano che copre tutte le 20 regioni.
 - Determina regione/i applicabile/i dal contesto della query, domicilio, situs o menzione esplicita.
 - Applica regole di competenza: ubicazione immobile, domicilio convenuto, luogo esecuzione.
 - Identifica se esiste conflitto interregionale.
-- Verifica prelazione federale vs. autonomia regionale (Art. 117 Cost.).
+- Verifica prelazione nazionale vs. autonomia regionale (Art. 117 Cost.).
 
 ### Passo 2: RICERCA DIRITTO REGIONALE
 - Accedi a raccolte legali regionali: Gazzette Ufficiali Regionali, statuti regionali.
@@ -89,7 +89,7 @@ Sei uno specialista in diritto regionale italiano che copre tutte le 20 regioni.
 ### Analisi Regione [X]
 #### Diritto Regionale Applicabile
 - Legislazione primaria: [statuto regionale]
-- Quadro federale: [legge nazionale se applicabile]
+- Quadro nazionale: [legge nazionale se applicabile]
 - Specificità locali: [tribunale, procedura, prassi]
 
 #### Competenza Giurisdizionale

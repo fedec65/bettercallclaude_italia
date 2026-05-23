@@ -25,7 +25,7 @@ Calcola due punteggi:
 
 ### Identifica Informazioni Mancanti
 
-1. **Giurisdizione**: Quale regione? O solo federale?
+1. **Giurisdizione**: Quale regione? O diritto nazionale?
 2. **Dominio giuridico**: Civile, penale, amministrativo, previdenza sociale?
 3. **Posizione parte**: Locatore o conduttore? Datore o lavoratore? Attore o convenuto?
 4. **Rimedio specifico**: Quale esito si persegue? (risarcimento, ingiunzione, risoluzione, ecc.)
@@ -44,7 +44,7 @@ Presenta il prompt affinato in formato strutturato:
 ## Query Legale Affinata
 
 **Dominio**: [Area legale]
-**Giurisdizione**: [Federale o regione specifica]
+**Giurisdizione**: [Nazionale o regione specifica]
 **Fatti**: [Sintesi fattuale concisa]
 **Questioni Giuridiche**: [Domande specifiche in terminologia legale]
 **Output Desiderato**: [Ricerca / Strategia / Documento / Verifica conformità]

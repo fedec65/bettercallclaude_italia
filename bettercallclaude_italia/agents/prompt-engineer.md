@@ -57,7 +57,7 @@ Analizza la query in arrivo e assegna punteggi:
 Conduci dialogo adattivo per colmare lacune informative. Massimo 3 round, 2-4 domande per round.
 
 **Ordine di priorità delle domande**:
-1. **Giurisdizione** (federale vs. regione) — Essenziale per indirizzo
+1. **Giurisdizione** (nazionale vs. regione) — Essenziale per indirizzo
 2. **Dominio giuridico** (civile/penale/amministrativo/sociale) — Essenziale per selezione agente
 3. **Posizione parte** (locatore/conduttore, datore/lavoratore, attore/convenuto) — Essenziale per analisi
 4. **Rimedio specifico** (risarcimento, risoluzione, ingiunzione, dichiaratoria) — Dà forma all'output
@@ -94,12 +94,12 @@ Durante il dialogo, introduci naturalmente terminologia giuridica italiana nella
 
 Determina giurisdizione attraverso domande mirate:
 
-1. **Questioni federali**: Diritto costituzionale (Cost.), statuti federali (CC, CP, CPC), previdenza sociale, diritto amministrativo federale
+1. **Questioni nazionali**: Diritto costituzionale (Cost.), leggi nazionali (CC, CP, CPC), previdenza sociale, diritto amministrativo nazionale
 2. **Questioni regionali**: Varianti procedurali regionali, prassi del tribunale locale, fisco regionale, diritto amministrativo regionale
 
 **Domande di rilevamento**:
-- "La questione riguarda il diritto federale o il diritto di una regione specifica?"
-- "Quale delle 20 regioni è coinvolta, o si tratta di una questione puramente federale?"
+- "La questione riguarda il diritto nazionale o il diritto di una regione specifica?"
+- "Quale delle 20 regioni è coinvolta, o si tratta di una questione puramente nazionale?"
 
 **Codici regione**: LOM (Lombardia), LAZ (Lazio), CAM (Campania), VEN (Veneto), PIE (Piemonte), EMR (Emilia-Romagna), TOS (Toscana), SIC (Sicilia), PUG (Puglia), SAR (Sardegna), LIG (Liguria), MAR (Marche), UMB (Umbria), ABR (Abruzzo), FVG (Friuli-Venezia Giulia), TAA (Trentino-Alto Adige), VAO (Valle d'Aosta), CAL (Calabria), BAS (Basilicata), MOL (Molise)
 
@@ -128,7 +128,7 @@ Genera il prompt affinato nella lingua dell'utente:
 ## Query Legale Affinata
 
 **Dominio**: [Area legale con statuto, es. Locazione / Art. 1571 ss CC]
-**Giurisdizione**: [Federale o codice regione, es. Federale / LOM]
+**Giurisdizione**: [Nazionale o codice regione, es. Nazionale / LOM]
 **Lingua**: [IT/EN]
 **Fatti**: [Sintesi concisa della situazione]
 **Questioni Giuridiche**: [Domande specifiche in terminologia legale]
@@ -175,7 +175,7 @@ prompt_refinements_[timestamp]:
   terminology_introduced:
     IT: [lista termini]
     EN: [lista termini]
-  jurisdiction: "[federale/codice regione]"
+  jurisdiction: "[nazionale/codice regione]"
   workflow_recommended: [sequenza agenti]
   user_expertise: "[nuovo/intermedio/esperto]"
   successful: [true/false]
@@ -190,7 +190,7 @@ Quando invocato con flag:
 
 ## Punti di Integrazione
 
-### Come Comando Standalone (`/refine`)
+### Come Comando Standalone (`/raffina`)
 Accesso diretto per affinamento prompt senza indirizzo ad altri agenti.
 
 ### Come Membro Panel Briefing

@@ -18,7 +18,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:citazione` | Verifica e formatta citazioni giuridiche italiane |
 | `/bettercallclaude-italia:verifica` | Valida citazioni giuridiche italiane in bulk |
 | `/bettercallclaude-italia:precedente` | Cerca e analizza precedenti della Cassazione |
-| `/bettercallclaude-italia:federale` | Analizza secondo il diritto federale italiano |
+| `/bettercallclaude-italia:nazionale` | Analizza secondo il diritto nazionale italiano |
 | `/bettercallclaude-italia:regionale` | Analizza secondo il diritto regionale per una regione specifica |
 | `/bettercallclaude-italia:contraddittorio` | Esegue analisi avversariale a tre agenti |
 | `/bettercallclaude-italia:briefing` | Briefing strutturato pre-esecuzione |
@@ -111,7 +111,7 @@ BetterCallClaude Italia include conformità integrata al segreto professionale (
 
 | Modalità | Comportamento |
 |------|----------|
-| `strict` | Tutte le chiamate esterne richiedono conferma. Preferisci elaborazione locale via Ollama. |
+| `strict` | Tutte le chiamate esterne richiedono conferma. Preferisci elaborazione locale. |
 | `balanced` | Contenuto privilegiato attiva conferma. Contenuto non privilegiato elaborato normalmente. |
 | `cloud` | Elaborazione cloud standard con hook privacy attivo solo per marcatori espliciti di privilegio. |
 

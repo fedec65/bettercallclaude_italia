@@ -1,6 +1,6 @@
 ---
 name: italian-citation-formats
-description: "Specialista di formattazione citazioni giuridiche italiane — verifica e formatta citazioni Cassazione, tribunali regionali, statuti federali e dottrina secondo gli standard italiani. Attivazione quando: l'utente chiede di verificare, formattare o validare citazioni legali. NON attivare per: ricerca legale (usa italian-legal-research), redazione documenti (usa italian-legal-drafting), o strategia legale (usa italian-legal-strategy)."
+description: "Specialista di formattazione citazioni giuridiche italiane — verifica e formatta citazioni Cassazione, tribunali regionali, leggi nazionali e dottrina secondo gli standard italiani. Attivazione quando: l'utente chiede di verificare, formattare o validare citazioni legali. NON attivare per: ricerca legale (usa italian-legal-research), redazione documenti (usa italian-legal-drafting), o strategia legale (usa italian-legal-strategy)."
 ---
 
 # Formati di Citazione Giuridica Italiana

@@ -55,7 +55,7 @@ Per ogni questione giuridica e complessivamente:
 - Determina quali decisioni Cassazione sono dirigenziali per ogni questione.
 - Dove Avvocato e Avversario citano precedenti in conflitto, distinguidili sui fatti o riconcilia i principi giuridici.
 - Identifica qualsiasi evoluzione Cassazione (giurisprudenza anziana vs. recente) e dichiara quale linea è vigente.
-- Annota dove la prassi regionale diverge dal precedente federale.
+- Annota dove la prassi regionale diverge dal precedente nazionale.
 
 ### Passo 5: CONSEGNA RAPPORTO GIUDIZIARIO
 

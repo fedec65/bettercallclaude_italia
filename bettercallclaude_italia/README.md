@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.0.2-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -44,7 +44,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:citazione` | Verifica e formatta citazioni giuridiche italiane |
 | `/bettercallclaude-italia:verifica` | Valida citazioni giuridiche italiane in bulk |
 | `/bettercallclaude-italia:precedente` | Cerca e analizza precedenti della Cassazione |
-| `/bettercallclaude-italia:federale` | Analizza secondo il diritto federale italiano |
+| `/bettercallclaude-italia:nazionale` | Analizza secondo il diritto nazionale italiano |
 | `/bettercallclaude-italia:regionale` | Analizza secondo il diritto regionale per una regione specifica |
 | `/bettercallclaude-italia:contraddittorio` | Esegue analisi avversariale a tre agenti |
 | `/bettercallclaude-italia:briefing` | Briefing strutturato pre-esecuzione |

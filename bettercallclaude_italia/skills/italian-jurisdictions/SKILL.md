@@ -1,6 +1,6 @@
 ---
 name: italian-jurisdictions
-description: "Specialista delle giurisdizioni italiane — analizza il diritto in tutte le 20 regioni italiane, compresi statuti regionali, sistemi giudiziari, differenze interregionali, varianti procedurali e confronti multi-regione. Attivazione quando: l'utente menziona una regione italiana specifica, chiede differenze di diritto regionale, necessita informazioni sul sistema giudiziario di una regione, o richiede confronto multi-regione. NON attivare per: questioni di puro diritto federale (usa italian-legal-research), formattazione citazioni (usa italian-citation-formats), o redazione documenti (usa italian-legal-drafting)."
+description: "Specialista delle giurisdizioni italiane — analizza il diritto in tutte le 20 regioni italiane, compresi statuti regionali, sistemi giudiziari, differenze interregionali, varianti procedurali e confronti multi-regione. Attivazione quando: l'utente menziona una regione italiana specifica, chiede differenze di diritto regionale, necessita informazioni sul sistema giudiziario di una regione, o richiede confronto multi-regione. NON attivare per: questioni di puro diritto nazionale (usa italian-legal-research), formattazione citazioni (usa italian-citation-formats), o redazione documenti (usa italian-legal-drafting)."
 ---
 
 # Giurisdizioni Italiane

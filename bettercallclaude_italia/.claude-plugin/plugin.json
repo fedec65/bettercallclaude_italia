@@ -1,13 +1,13 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con protezione privacy GDPR e segreto professionale.",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
     "default_jurisdiction": {
       "type": "string",
       "title": "Regione italiana predefinita",
-      "description": "Codice regione italiana predefinito per la ricerca regionale (es. LOM, LAZ, CAM). Lasciare vuoto per query solo federali.",
+      "description": "Codice regione italiana predefinito per la ricerca regionale (es. LOM, LAZ, CAM). Lasciare vuoto per query di diritto nazionale.",
       "default": "",
       "sensitive": false
     },

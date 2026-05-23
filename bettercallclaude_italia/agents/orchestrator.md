@@ -129,7 +129,7 @@ Impostazioni Default:
 - Gestione errori: fail-fast (arresto al primo errore agente)
 - Checkpoint: a transizioni principali (configurabile)
 - Lingua: rilevata dall'input (default IT)
-- Giurisdizione: federale (sovrascrivibile con codice regione)
+- Giurisdizione: nazionale (sovrascrivibile con codice regione)
 - Sintetizzazione: --medium (default) | --short | --long | --no-summary
 ```
 

@@ -47,7 +47,7 @@ Prima che inizi il lavoro legale complesso, conduci un intake strutturato per:
 briefing_id: "brief_[timestamp]_[topic_hash]"
 matter_title: "[titolo descrittivo]"
 complexity: [N]
-jurisdiction: "[federale/regionale/multi]"
+jurisdiction: "[nazionale/regionale/multi]"
 region: "[codice se applicabile]"
 language: "[it/en]"
 status: "draft"
