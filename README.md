@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.0.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.0.3-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -21,6 +21,8 @@ Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Ca
 3. Clicca **Installa** sulla scheda BetterCallClaude Italia
 
 I server MCP si connettono automaticamente via HTTP. Nessuna configurazione manuale richiesta per i server remoti.
+
+> **[QUI L'INSTALLAZIONE PASSO PER PASSO](bettercallclaude_italia/docs/INSTALLAZIONE.md)** -- Guida illustrata con screenshot per ogni passaggio.
 
 ---
 
