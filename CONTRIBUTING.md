@@ -31,9 +31,11 @@ When making changes that affect functionality, update the version in **all three
 - `bettercallclaude_italia/.claude-plugin/plugin.json` → `version`
 
 Follow [Semantic Versioning](https://semver.org/):
-- `MAJOR` — breaking changes (command renames, removed MCP servers)
+- `MAJOR` — breaking changes to an established API (removing commands or MCP servers that users depend on)
 - `MINOR` — new features (new agents, commands, skills)
-- `PATCH` — bug fixes, documentation updates
+- `PATCH` — bug fixes, documentation updates, localization corrections
+
+**Note:** Initial localization changes (e.g. translating command names from the Swiss version, correcting inherited terminology like "federale" → "nazionale") are classified as `PATCH` since they are part of the initial adaptation and not breaking changes to an established user base.
 
 ### Content Language
 
