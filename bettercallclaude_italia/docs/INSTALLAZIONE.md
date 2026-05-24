@@ -91,6 +91,14 @@ Claude Cowork ti mostrera' la versione installata di BetterCallClaude Italia con
 
 ---
 
+## Passo 10: Attiva la Sincronizzazione Automatica
+
+Per ricevere gli aggiornamenti del plugin in modo automatico, vai in **Customize** > **Browse plugins** > **Personal** > clicca sui tre puntini (**...**) accanto a **bettercallclaude_italia** e assicurati che il toggle **Sync automatically** sia attivato (blu). In questo modo, ogni volta che viene pubblicata una nuova versione del plugin, Cowork la scarichera' automaticamente senza intervento manuale.
+
+![Passo 10 - Sync Automatica](images/installazione/10-autosync.png)
+
+---
+
 ## Problemi Comuni
 
 | Problema | Soluzione |
