@@ -55,6 +55,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
 | `/bettercallclaude-italia:riassumi` | Consolida output delle pipeline multi-agente |
 | `/bettercallclaude-italia:configurazione` | Verifica connettività server MCP |
+| `/bettercallclaude-italia:privacy` | Visualizza e cambia la modalità privacy del segreto professionale |
 | `/bettercallclaude-italia:versione` | Visualizza versione plugin e stato sistema |
 | `/bettercallclaude-italia:aiuto` | Mostra il riferimento completo dei comandi |
 
@@ -134,7 +135,7 @@ BetterCallClaude Italia include un hook `PreToolUse` di assistenza al rilevament
 | `balanced` | **Conferma richiesta** (ask) | **Conferma richiesta** (ask) | Sempre permesso |
 | `cloud` | **Conferma richiesta** (ask) | Permesso senza prompt | Sempre permesso |
 
-La modalità si configura in **Personalizza > Plugin > BetterCallClaude Italia > Impostazioni > Modalità privacy** (default: `balanced`). In modalità `strict`, usare Ollama per elaborare contenuto privilegiato in sicurezza.
+La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` oppure in **Personalizza > Plugin > BetterCallClaude Italia > Impostazioni > Modalità privacy** (default: `balanced`). In modalità `strict`, usare Ollama per elaborare contenuto privilegiato in sicurezza.
 
 > **Nota**: L'hook privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o all'Art. 9 D.Lgs. 96/2001. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente. Il rilevamento è basato su pattern e può essere eluso da formulazioni non standard.
 

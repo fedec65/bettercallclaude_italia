@@ -179,6 +179,42 @@ t('invalid mode defaults to balanced', () => {
   assert.strictEqual(resolveMode({ userConfig: { privacy_mode: 'invalid' } }), 'balanced');
 });
 
+t('reads .privacy-mode file as fallback', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const filePath = path.join(process.cwd(), '.privacy-mode');
+  try {
+    fs.writeFileSync(filePath, 'strict');
+    assert.strictEqual(resolveMode({}), 'strict');
+  } finally {
+    try { fs.unlinkSync(filePath); } catch (_) {}
+  }
+});
+
+t('userConfig takes priority over .privacy-mode file', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const filePath = path.join(process.cwd(), '.privacy-mode');
+  try {
+    fs.writeFileSync(filePath, 'strict');
+    assert.strictEqual(resolveMode({ userConfig: { privacy_mode: 'cloud' } }), 'cloud');
+  } finally {
+    try { fs.unlinkSync(filePath); } catch (_) {}
+  }
+});
+
+t('ignores invalid .privacy-mode file content', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const filePath = path.join(process.cwd(), '.privacy-mode');
+  try {
+    fs.writeFileSync(filePath, 'invalid-mode');
+    assert.strictEqual(resolveMode({}), 'balanced');
+  } finally {
+    try { fs.unlinkSync(filePath); } catch (_) {}
+  }
+});
+
 // ---------------------------------------------------------------------------
 // decide -- balanced mode (default)
 // ---------------------------------------------------------------------------

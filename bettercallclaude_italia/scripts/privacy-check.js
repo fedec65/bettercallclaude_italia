@@ -82,8 +82,19 @@ const VALID_MODES = ['strict', 'balanced', 'cloud'];
 
 function resolveMode(data) {
   const cfg = data.userConfig || data.user_config || {};
-  const raw = (typeof cfg.privacy_mode === 'string' ? cfg.privacy_mode : '').toLowerCase().trim();
-  return VALID_MODES.includes(raw) ? raw : 'balanced';
+  const fromConfig = (typeof cfg.privacy_mode === 'string' ? cfg.privacy_mode : '').toLowerCase().trim();
+  if (VALID_MODES.includes(fromConfig)) return fromConfig;
+
+  // Fallback: read .privacy-mode file from CWD (written by /privacy command)
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(process.cwd(), '.privacy-mode');
+    const fromFile = fs.readFileSync(filePath, 'utf8').trim().toLowerCase();
+    if (VALID_MODES.includes(fromFile)) return fromFile;
+  } catch (_) { /* file not found or unreadable — use default */ }
+
+  return 'balanced';
 }
 
 // ---------------------------------------------------------------------------

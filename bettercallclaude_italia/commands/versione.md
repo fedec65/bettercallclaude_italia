@@ -13,7 +13,7 @@ BetterCallClaude Italia v1.0.3
 
 Componenti:
 - Agenti: 20
-- Comandi: 19
+- Comandi: 20
 - Skill: 14
 - Server MCP: 7
 
