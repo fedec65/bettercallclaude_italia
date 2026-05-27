@@ -4,6 +4,30 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.0.4] - 2026-05-21
+
+### Security
+- **Privacy hook: mode-aware decision logic** — `strict` denies all external calls (use Ollama for privileged content), `balanced` asks user confirmation for strong and weak+context patterns, `cloud` asks only for strong patterns.
+- **Ollama exclusion** — `mcp__ollama__*` tools always pass through privacy checks in all modes (local server, no data exfiltration).
+- **Added Bash to hook matcher** — shell commands (`curl`, `cat | nc`, etc.) are now intercepted by the privacy hook, preventing data exfiltration via Bash tool.
+- **Added privacy_mode userConfig** — three modes: `strict` (deny all external), `balanced` (ask for privileged content), `cloud` (ask for strong patterns only). Default: `balanced`.
+
+### Added
+- **`/privacy` command** — visualizza e cambia la modalità privacy direttamente dalla chat (`/bettercallclaude-italia:privacy strict|balanced|cloud`). Scrive la modalità in `.privacy-mode` come fallback quando `userConfig` non è disponibile.
+- **`.privacy-mode` file fallback** — `resolveMode()` ora legge anche il file `.privacy-mode` nella directory di lavoro se `userConfig.privacy_mode` non è impostato.
+- **7 new strong patterns**: vincolo di riservatezza, obbligo di riservatezza, segreto istruttorio, segreto investigativo, riservatezza professionale, tutela del segreto, comunicazione privilegiata.
+- **3 new English strong patterns**: legally privileged, privileged and confidential, protected by privilege.
+- **2 new article references**: Art. 200 CPP (segreto professionale testimonianza), Art. 103 CPP (garanzie del difensore).
+- **2 new weak patterns**: non divulgare, uso interno.
+- **New discriminators**: tribunale, corte, giudice, parte avversa, controparte.
+
+### Changed
+- **Documentation toned down**: "conformità integrata al segreto professionale" replaced with "assistenza al rilevamento del segreto professionale" in README, aiuto.md, plugin.json, and marketplace.json.
+- Added privacy disclaimer to README and aiuto.md: "L'hook privacy è una tecnologia assistiva e non garantisce la conformità."
+- Test suite expanded from 22 to 65 tests covering all three modes, Ollama exclusion, `.privacy-mode` file fallback, new patterns, and decision logic.
+
+---
+
 ## [1.0.3] - 2026-05-23
 
 ### Changed

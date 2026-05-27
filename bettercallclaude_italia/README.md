@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.0.3-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.0.4-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -8,7 +8,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e protezione integrata del segreto professionale — 20 agenti, 19 comandi, 14 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 20 agenti, 19 comandi, 14 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
 
 ---
 
@@ -55,6 +55,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
 | `/bettercallclaude-italia:riassumi` | Consolida output delle pipeline multi-agente |
 | `/bettercallclaude-italia:configurazione` | Verifica connettività server MCP |
+| `/bettercallclaude-italia:privacy` | Visualizza e cambia la modalità privacy del segreto professionale |
 | `/bettercallclaude-italia:versione` | Visualizza versione plugin e stato sistema |
 | `/bettercallclaude-italia:aiuto` | Mostra il riferimento completo dei comandi |
 
@@ -126,13 +127,17 @@ Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazi
 
 ## Privacy
 
-BetterCallClaude Italia include conformità integrata al segreto professionale (privilegio avvocato-cliente, Art. 622 CP). Un hook `PreToolUse` scansiona le chiamate tool in uscita per indicatori di privilegio in italiano (segreto professionale, confidenziale, riservato) e inglese (privileged, confidential).
+BetterCallClaude Italia include un hook `PreToolUse` di assistenza al rilevamento del segreto professionale (Art. 622 CP, Art. 9 D.Lgs. 96/2001). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool **Ollama** (`mcp__ollama__*`) sono esclusi dal controllo perche girano in locale (localhost:11434) e non trasmettono dati all'esterno.
 
-| Modalità | Comportamento |
-|----------|---------------|
-| `strict` | Tutte le chiamate esterne richiedono conferma. |
-| `balanced` | Contenuto privilegiato attiva conferma. Contenuto non privilegiato elaborato normalmente. |
-| `cloud` | Elaborazione cloud standard con hook privacy attivo solo per marcatori espliciti di privilegio. |
+| Modalità | Pattern forti | Pattern deboli+contesto | Ollama |
+|----------|--------------|------------------------|--------|
+| `strict` | **Bloccato** (deny) | **Bloccato** (deny) | Sempre permesso |
+| `balanced` | **Conferma richiesta** (ask) | **Conferma richiesta** (ask) | Sempre permesso |
+| `cloud` | **Conferma richiesta** (ask) | Permesso senza prompt | Sempre permesso |
+
+La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` oppure in **Personalizza > Plugin > BetterCallClaude Italia > Impostazioni > Modalità privacy** (default: `balanced`). In modalità `strict`, usare Ollama per elaborare contenuto privilegiato in sicurezza.
+
+> **Nota**: L'hook privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o all'Art. 9 D.Lgs. 96/2001. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente. Il rilevamento è basato su pattern e può essere eluso da formulazioni non standard.
 
 ---
 

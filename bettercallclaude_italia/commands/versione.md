@@ -9,11 +9,11 @@ Sei invocato tramite `/bettercallclaude-italia:versione`. Visualizza la versione
 ## Output
 
 ```
-BetterCallClaude Italia v1.0.3
+BetterCallClaude Italia v1.0.4
 
 Componenti:
 - Agenti: 20
-- Comandi: 19
+- Comandi: 20
 - Skill: 14
 - Server MCP: 7
 
