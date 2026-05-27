@@ -1,7 +1,7 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "1.0.3",
-  "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con protezione privacy GDPR e segreto professionale.",
+  "version": "1.0.4",
+  "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con assistenza al rilevamento del segreto professionale (Art. 622 CP).",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
     "default_jurisdiction": {
@@ -16,6 +16,13 @@
       "title": "Lingua output",
       "description": "Lingua preferita per gli output degli agenti e del drafter. Valori: IT, EN.",
       "default": "IT",
+      "sensitive": false
+    },
+    "privacy_mode": {
+      "type": "string",
+      "title": "Modalità privacy",
+      "description": "Livello di protezione del segreto professionale. strict = conferma su tutte le chiamate esterne + blocco indicatori forti; balanced = blocco indicatori forti + conferma indicatori deboli con contesto; cloud = solo blocco indicatori forti.",
+      "default": "balanced",
       "sensitive": false
     },
     "api_token": {
