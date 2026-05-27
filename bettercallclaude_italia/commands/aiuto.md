@@ -116,7 +116,7 @@ BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento 
 | `balanced` | **Conferma richiesta** (ask) | **Conferma richiesta** (ask) | Sempre permesso |
 | `cloud` | **Conferma richiesta** (ask) | Permesso senza prompt | Sempre permesso |
 
-La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` oppure in **Personalizza > Plugin > BetterCallClaude Italia > Impostazioni > Modalità privacy** (default: `balanced`). In modalità `strict`, usare Ollama per elaborare contenuto privilegiato.
+La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` (default: `balanced`). In modalità `strict`, usare Ollama per elaborare contenuto privilegiato.
 
 > **Nota**: L'hook privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o all'Art. 9 D.Lgs. 96/2001. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.
 
