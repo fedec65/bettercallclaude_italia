@@ -8,13 +8,17 @@
  * or any MCP tool.
  *
  * Modes (configurable via userConfig.privacy_mode):
- *   - strict:   All outbound tool calls require confirmation.
- *               Strong patterns are DENIED (blocked).
- *   - balanced: Strong patterns are DENIED.
+ *   - strict:   All outbound tool calls are DENIED (blocked),
+ *               EXCEPT mcp__ollama__* which is local and always allowed.
+ *   - balanced: Strong patterns trigger ASK (user confirms).
  *               Weak patterns with discriminator trigger ASK.
  *               No-match content passes through.
- *   - cloud:    Only strong patterns are DENIED.
+ *   - cloud:    Only strong patterns trigger ASK.
  *               Weak patterns are ignored.
+ *
+ * Ollama exclusion: mcp__ollama__* tools are always allowed in all modes
+ * because Ollama runs locally (localhost:11434) and never transmits data
+ * externally.
  *
  * Per Anthropic hooks spec, stdin is:
  *   {
@@ -47,6 +51,8 @@ function main() {
     const toolInput = (data.tool_input && typeof data.tool_input === 'object')
       ? data.tool_input
       : data;
+
+    if (isLocalTool(toolName)) { process.exit(0); }
 
     const mode = resolveMode(data);
     const content = extractTextFromInput(toolName, toolInput);
@@ -81,6 +87,14 @@ function resolveMode(data) {
 }
 
 // ---------------------------------------------------------------------------
+// Local tool detection
+// ---------------------------------------------------------------------------
+
+function isLocalTool(toolName) {
+  return /^mcp__ollama__/i.test(toolName);
+}
+
+// ---------------------------------------------------------------------------
 // Decision logic
 // ---------------------------------------------------------------------------
 
@@ -88,19 +102,15 @@ function decide(content, pathHint, mode) {
   const category = classify(content, pathHint);
 
   if (mode === 'strict') {
-    if (category && isStrongCategory(category)) {
-      return {
-        decision: 'deny',
-        reason: denyReason(category),
-      };
-    }
     return {
-      decision: 'ask',
+      decision: 'deny',
       reason: category
-        ? `Rilevato possibile contenuto privilegiato (categoria: ${category}). ` +
-          'Modalita strict: conferma richiesta per tutte le chiamate esterne.'
-        : 'Modalita strict: conferma richiesta per tutte le chiamate esterne. ' +
-          'Art. 622 CP / Art. 9 D.Lgs. 96/2001.',
+        ? `BLOCCATO: contenuto soggetto a segreto professionale (categoria: ${category}). ` +
+          'Modalita strict: tutte le chiamate esterne sono bloccate. ' +
+          'Usare Ollama (locale) per elaborare contenuto privilegiato.'
+        : 'BLOCCATO: modalita strict attiva. Tutte le chiamate esterne sono bloccate. ' +
+          'Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
+          'Usare Ollama (locale) per elaborare contenuto privilegiato.',
     };
   }
 
@@ -108,8 +118,11 @@ function decide(content, pathHint, mode) {
 
   if (isStrongCategory(category)) {
     return {
-      decision: 'deny',
-      reason: denyReason(category),
+      decision: 'ask',
+      reason:
+        `Rilevato contenuto soggetto a segreto professionale (categoria: ${category}). ` +
+        'Diritto italiano: Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
+        'Confermare che questo contenuto puo lasciare la macchina.',
     };
   }
 
@@ -126,14 +139,6 @@ function decide(content, pathHint, mode) {
 
 function isStrongCategory(category) {
   return !category.endsWith('+context');
-}
-
-function denyReason(category) {
-  return (
-    `BLOCCATO: contenuto soggetto a segreto professionale (categoria: ${category}). ` +
-    'Diritto italiano: Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
-    'Questo contenuto non puo lasciare la macchina.'
-  );
 }
 
 // ---------------------------------------------------------------------------
@@ -282,6 +287,7 @@ module.exports = {
   classify,
   decide,
   resolveMode,
+  isLocalTool,
   extractTextFromInput,
   extractPathHint,
   hasDiscriminator,

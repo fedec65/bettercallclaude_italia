@@ -13,6 +13,7 @@ const {
   classify,
   decide,
   resolveMode,
+  isLocalTool,
   extractTextFromInput,
   extractPathHint,
   hasDiscriminator,
@@ -184,10 +185,10 @@ t('invalid mode defaults to balanced', () => {
 
 console.log('decide: balanced mode');
 
-t('strong pattern -> deny in balanced', () => {
+t('strong pattern -> ask in balanced', () => {
   const r = decide('Questo e segreto professionale', '', 'balanced');
-  assert.strictEqual(r.decision, 'deny');
-  assert.ok(r.reason.includes('BLOCCATO'));
+  assert.strictEqual(r.decision, 'ask');
+  assert.ok(r.reason.includes('Confermare'));
 });
 
 t('weak+context -> ask in balanced', () => {
@@ -216,15 +217,16 @@ t('strong pattern -> deny in strict', () => {
   assert.ok(r.reason.includes('BLOCCATO'));
 });
 
-t('weak+context -> ask in strict', () => {
+t('weak+context -> deny in strict (all external blocked)', () => {
   const r = decide('Documento riservato per il cliente', '', 'strict');
-  assert.strictEqual(r.decision, 'ask');
+  assert.strictEqual(r.decision, 'deny');
+  assert.ok(r.reason.includes('BLOCCATO'));
 });
 
-t('no match -> ask in strict (all calls require confirmation)', () => {
+t('no match -> deny in strict (all external blocked)', () => {
   const r = decide('Hello world', '', 'strict');
-  assert.strictEqual(r.decision, 'ask');
-  assert.ok(r.reason.includes('strict'));
+  assert.strictEqual(r.decision, 'deny');
+  assert.ok(r.reason.includes('BLOCCATO'));
 });
 
 // ---------------------------------------------------------------------------
@@ -233,10 +235,10 @@ t('no match -> ask in strict (all calls require confirmation)', () => {
 
 console.log('decide: cloud mode');
 
-t('strong pattern -> deny in cloud', () => {
+t('strong pattern -> ask in cloud', () => {
   const r = decide('Attorney-client privilege', '', 'cloud');
-  assert.strictEqual(r.decision, 'deny');
-  assert.ok(r.reason.includes('BLOCCATO'));
+  assert.strictEqual(r.decision, 'ask');
+  assert.ok(r.reason.includes('Confermare'));
 });
 
 t('weak+context -> null in cloud (ignored)', () => {
@@ -245,6 +247,36 @@ t('weak+context -> null in cloud (ignored)', () => {
 
 t('no match -> null in cloud', () => {
   assert.strictEqual(decide('Hello world', '', 'cloud'), null);
+});
+
+// ---------------------------------------------------------------------------
+// isLocalTool
+// ---------------------------------------------------------------------------
+
+console.log('isLocalTool');
+
+t('mcp__ollama__classify is local', () => {
+  assert.strictEqual(isLocalTool('mcp__ollama__classify'), true);
+});
+
+t('mcp__ollama__generate is local', () => {
+  assert.strictEqual(isLocalTool('mcp__ollama__generate'), true);
+});
+
+t('mcp__cassazione__search is NOT local', () => {
+  assert.strictEqual(isLocalTool('mcp__cassazione__search'), false);
+});
+
+t('Write is NOT local', () => {
+  assert.strictEqual(isLocalTool('Write'), false);
+});
+
+t('Bash is NOT local', () => {
+  assert.strictEqual(isLocalTool('Bash'), false);
+});
+
+t('empty string is NOT local', () => {
+  assert.strictEqual(isLocalTool(''), false);
 });
 
 // ---------------------------------------------------------------------------
