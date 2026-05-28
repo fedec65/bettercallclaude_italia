@@ -1,6 +1,6 @@
 ---
 name: privacy-routing
-description: "Routing privacy per il segreto professionale italiano (segreto professionale, Art. 622 CP, Art. 9 D.Lgs. 96/2001) con rilevamento pattern in italiano e inglese per proteggere le comunicazioni legali confidenziali."
+description: "Routing privacy per il segreto professionale italiano (segreto professionale, Art. 622 CP, L. 247/2012, CDF Art. 13) con rilevamento pattern in italiano e inglese per proteggere le comunicazioni legali confidenziali."
 ---
 
 # Routing Privacy
@@ -17,8 +17,8 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 - Copre tutte le informazioni apprese in qualità professionale
 - Nessun limite temporale
 
-**Dovere professionale**: Art. 9 D.Lgs. 96/2001 (Codice Deontologico Forense)
-- Gli avvocati devono mantenere il segreto professionale
+**Dovere professionale**: L. 247/2012 + CDF Art. 13 (Dovere di segretezza) + CDF Art. 28 (Riserbo)
+- Il Codice Deontologico Forense (approvato dal CNF il 31/01/2014) obbliga gli avvocati al segreto professionale
 - Copre tutti i prodotti del lavoro e le comunicazioni
 - Le violazioni possono comportare procedimenti disciplinari
 
@@ -53,7 +53,9 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 | Pattern | Significato | Livello Privacy |
 |---------|-------------|-----------------|
 | `Art. 622 CP` | Disposizione penale segreto | PRIVILEGIATO |
-| `Art. 9 D.Lgs. 96/2001` | Dovere professionale avvocato | PRIVILEGIATO |
+| `L. 247/2012` | Ordinamento professione forense | PRIVILEGIATO |
+| `CDF Art. 13` | Dovere di segretezza | PRIVILEGIATO |
+| `CDF Art. 28` | Dovere di riserbo | PRIVILEGIATO |
 
 ## Livelli di Privacy
 
@@ -90,4 +92,4 @@ Prima di inviare qualsiasi contenuto a un servizio cloud, rimuovi o sostituisci:
 
 ## Disclaimer Professionale
 
-> Il routing privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o all'Art. 9 D.Lgs. 96/2001. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.
+> Il routing privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o alla L. 247/2012 / CDF Art. 13. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.

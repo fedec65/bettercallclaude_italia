@@ -3,7 +3,7 @@
  * BetterCallClaude Italia Privacy Check Hook
  *
  * PreToolUse hook that detects potential attorney-client privileged content
- * (segreto professionale / Art. 622 CP, Art. 9 D.Lgs. 96/2001) across IT/EN
+ * (segreto professionale / Art. 622 CP, L. 247/2012, CDF Art. 13) across IT/EN
  * before it leaves the machine via Write, Edit, MultiEdit, WebFetch, Bash,
  * or any MCP tool.
  *
@@ -45,7 +45,18 @@ function main() {
   process.stdin.on('data', (chunk) => { input += chunk; });
   process.stdin.on('end', () => {
     let data;
-    try { data = JSON.parse(input); } catch { process.exit(0); }
+    try {
+      data = JSON.parse(input);
+    } catch {
+      process.stdout.write(JSON.stringify({
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'deny',
+          permissionDecisionReason: 'Privacy hook: input non parsabile, blocco preventivo (fail-closed).',
+        },
+      }));
+      process.exit(0);
+    }
 
     const toolName = typeof data.tool_name === 'string' ? data.tool_name : '';
     const toolInput = (data.tool_input && typeof data.tool_input === 'object')
@@ -120,7 +131,7 @@ function decide(content, pathHint, mode) {
           'Modalita strict: tutte le chiamate esterne sono bloccate. ' +
           'Usare Ollama (locale) per elaborare contenuto privilegiato.'
         : 'BLOCCATO: modalita strict attiva. Tutte le chiamate esterne sono bloccate. ' +
-          'Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
+          'Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
           'Usare Ollama (locale) per elaborare contenuto privilegiato.',
     };
   }
@@ -132,7 +143,7 @@ function decide(content, pathHint, mode) {
       decision: 'ask',
       reason:
         `Rilevato contenuto soggetto a segreto professionale (categoria: ${category}). ` +
-        'Diritto italiano: Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
+        'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
         'Confermare che questo contenuto puo lasciare la macchina.',
     };
   }
@@ -143,7 +154,7 @@ function decide(content, pathHint, mode) {
     decision: 'ask',
     reason:
       `Rilevato possibile contenuto soggetto a segreto professionale (categoria: ${category}). ` +
-      'Diritto italiano: Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
+      'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
       'Confermare che questo contenuto puo lasciare la macchina.',
   };
 }
@@ -239,11 +250,13 @@ const STRONG_PATTERNS = [
   { rx: /\bprotected\s+by\s+(?:legal\s+)?privilege\b/i,  cat: 'protected-by-privilege' },
 
   // Legal article references -- Italian
-  { rx: /\bArt\.?\s*622\s*C\.?P\.?\b/i,                  cat: 'art-622-cp' },
-  { rx: /\bArt\.?\s*9\s*D\.?Lgs\.?\s*96[/]2001\b/i,     cat: 'art-9-dlgs-96-2001' },
-  { rx: /\bArt\.?\s*663\s*C\.?P\.?\b/i,                  cat: 'art-663-cp' },
-  { rx: /\bArt\.?\s*200\s*C\.?P\.?P\.?\b/i,              cat: 'art-200-cpp' },
-  { rx: /\bArt\.?\s*103\s*C\.?P\.?P\.?\b/i,              cat: 'art-103-cpp' },
+  { rx: /\bArt\.?\s*622\s*C\.?\s*P\.?\b/i,                cat: 'art-622-cp' },
+  { rx: /\bL\.?\s*247[/]2012\b/i,                        cat: 'l-247-2012' },
+  { rx: /\bCDF\s+Art\.?\s*13\b/i,                         cat: 'cdf-art-13' },
+  { rx: /\bCDF\s+Art\.?\s*28\b/i,                         cat: 'cdf-art-28' },
+  { rx: /\bArt\.?\s*663\s*C\.?\s*P\.?\b/i,                cat: 'art-663-cp' },
+  { rx: /\bArt\.?\s*200\s*C\.?\s*P\.?\s*P\.?\b/i,        cat: 'art-200-cpp' },
+  { rx: /\bArt\.?\s*103\s*C\.?\s*P\.?\s*P\.?\b/i,        cat: 'art-103-cpp' },
 ];
 
 const WEAK_PATTERNS = [
@@ -258,7 +271,7 @@ const WEAK_PATTERNS = [
 const DISCRIMINATOR_PATH = new RegExp(
   '(^|[\\\\/])' +
   '(cliente|clienti|client|clients|case|cases|dossier|pratica|pratiche' +
-  '|causa|cause|atto|atti|privileged|matter|matters|case[-_]files)' +
+  '|causa|cause|atto|atti|privileged|matter|matters|case[-_]files|fascicoli|fascicolo)' +
   '([\\\\/.]|$)',
   'i'
 );

@@ -27,7 +27,6 @@ Sei uno specialista in diritto fiscale italiano. Analizzi le implicazioni fiscal
 ### Imposte Regionali/Locali
 - **IMU (Imposta Municipale Propria)**: Imposta comunale sugli immobili.
 - **TARI (Tassa sui Rifiuti)**: Tassa rifiuti.
-- **TASI / TARI**: Tasse sui servizi locali.
 
 ### Fiscalità Internazionale
 - **Convenzioni Contro la Doppia Imposizione**: 100+ CDI; principali IT-DE, IT-US, IT-UK, IT-FR, IT-CH.

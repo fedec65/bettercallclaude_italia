@@ -4,6 +4,26 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.0.5] - 2026-05-28
+
+### Security
+- **C1: SSRF prevention** — `OLLAMA_HOST` validated at startup; only `localhost`, `127.0.0.1`, `::1` accepted. Prevents redirecting local inference to remote hosts.
+- **C2/H2: Prompt injection hardening** — Ollama classifier now uses separate `system`/`prompt` parameters with `<document>` delimiters. Fail-closed: unrecognized model output defaults to `PRIVILEGED`.
+- **C3: Fail-closed on malformed input** — Privacy hook now denies tool calls when stdin JSON is unparseable (was silent pass-through).
+- **H7: Supply chain** — GitHub Actions pinned to commit SHAs instead of mutable tags.
+- **H11: Document analysis injection protection** — `analisi-doc` command and skill now explicitly instruct to treat document content as data, not instructions.
+- **H12: Citation verification** — Removed auto-declared `verified: true` from advocate agent; citations now marked `needs_verification: true` with instruction to verify via MCP.
+
+### Fixed
+- **C6: CPC citation** — Corrected `D.Lgs. 1/2018` (Codice del Terzo Settore) → `R.D. 1443/1940, mod. D.Lgs. 149/2022` (actual CPC) in procedure agent.
+- **C7: Professional secrecy citation** — Corrected `Art. 9 D.Lgs. 96/2001` (EU lawyer recognition) → `L. 247/2012, CDF Art. 13` (actual professional secrecy foundation) across ~20 files. Added CDF Art. 28 (riserbo) pattern.
+- **B1/B13: Regex for Italian dotted form** — `art. 622 c.p.` now correctly detected (was only matching `Art. 622 CP`).
+- **B12: Path discriminator** — Added `fascicoli`/`fascicolo` to path discriminators (canonical directory in Italian law firms).
+- **H9: Abolished tax reference** — Removed TASI (abolished by L. 160/2019, absorbed into IMU) from fiscal agent.
+- **M11: Doctrinal sources** — Added `Rivista di Diritto Processuale` to advocate/adversary agents; `Rivista Penale` now correctly scoped to criminal matters only.
+
+---
+
 ## [1.0.4] - 2026-05-21
 
 ### Security
@@ -96,7 +116,7 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
   - 1 local STDIO `ollama` server for on-premise privacy classification
 - **Privacy hook** — `PreToolUse` hook (`scripts/privacy-check.js`) detects
   Italian attorney-client privilege markers (`segreto professionale`, `Art. 622 CP`,
-  `Art. 9 D.Lgs. 96/2001`) before data leaves the machine.
+  `L. 247/2012`, `CDF Art. 13`) before data leaves the machine.
 - **Marketplace structure** — Repo is a Cowork Desktop marketplace with
   `.claude-plugin/marketplace.json` at root and plugin source in
   `bettercallclaude_italia/` subdirectory.

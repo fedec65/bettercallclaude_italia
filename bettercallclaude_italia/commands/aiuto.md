@@ -108,7 +108,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 
 ## Privacy
 
-BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento del segreto professionale (Art. 622 CP, Art. 9 D.Lgs. 96/2001). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool Ollama (mcp__ollama__*) sono esclusi perche locali.
+BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento del segreto professionale (Art. 622 CP, L. 247/2012, CDF Art. 13). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool Ollama (mcp__ollama__*) sono esclusi perche locali.
 
 | Modalità | Pattern forti | Pattern deboli+contesto | Ollama |
 |------|--------------|------------------------|--------|
@@ -118,7 +118,7 @@ BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento 
 
 La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` (default: `balanced`). In modalità `strict`, usare Ollama per elaborare contenuto privilegiato.
 
-> **Nota**: L'hook privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o all'Art. 9 D.Lgs. 96/2001. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.
+> **Nota**: L'hook privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o alla L. 247/2012 / CDF Art. 13. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.
 
 ## Disclaimer Professionale
 

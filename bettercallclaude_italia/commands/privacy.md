@@ -28,7 +28,7 @@ Modalita corrente: **[balanced]**
 | **balanced** | Conferma richiesta (ask) | Conferma richiesta (ask) | Sempre permesso |
 | cloud | Conferma richiesta (ask) | Permesso senza prompt | Sempre permesso |
 
-Pattern forti: segreto professionale, Art. 622 CP, Art. 9 D.Lgs. 96/2001,
+Pattern forti: segreto professionale, Art. 622 CP, L. 247/2012, CDF Art. 13,
 vincolo di riservatezza, attorney-client privilege, ecc.
 
 Pattern deboli: riservato, confidenziale, confidential, privato, non divulgare,
@@ -65,7 +65,9 @@ Quando l'utente chiede quale modalita usare, consiglia:
 ## Base Giuridica
 
 - Art. 622 CP -- Violazione del segreto professionale (sanzione penale)
-- Art. 9 D.Lgs. 96/2001 -- Dovere professionale dell'avvocato
+- L. 247/2012 -- Nuova disciplina dell'ordinamento della professione forense
+- CDF Art. 13 -- Dovere di segretezza
+- CDF Art. 28 -- Dovere di riserbo
 - Art. 200 CPP -- Segreto professionale nella testimonianza
 - Art. 103 CPP -- Garanzie di liberta del difensore
 

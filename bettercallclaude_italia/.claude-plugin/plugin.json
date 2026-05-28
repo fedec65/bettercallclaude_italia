@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con assistenza al rilevamento del segreto professionale (Art. 622 CP).",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {

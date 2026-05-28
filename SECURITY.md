@@ -24,7 +24,7 @@ We will acknowledge receipt within 48 hours and provide a timeline for resolutio
 
 ## Legal Privilege Notice
 
-This plugin handles content that may be protected under **Art. 622 CP** (Italian Criminal Code) and **Art. 9 D.Lgs. 96/2001** (attorney-client privilege / segreto professionale). Any vulnerability that could cause privileged content to leave the local machine without user consent is treated as **critical severity**.
+This plugin handles content that may be protected under **Art. 622 CP** (Italian Criminal Code) and **L. 247/2012 / CDF Art. 13** (attorney-client privilege / segreto professionale). Any vulnerability that could cause privileged content to leave the local machine without user consent is treated as **critical severity**.
 
 ## Disclosure Policy
 

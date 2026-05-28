@@ -53,8 +53,24 @@ t('detects Art. 622 CP', () => {
   assert.strictEqual(classify('Violazione Art. 622 CP', ''), 'art-622-cp');
 });
 
-t('detects Art. 9 D.Lgs. 96/2001', () => {
-  assert.strictEqual(classify('Dovere di riservatezza Art. 9 D.Lgs. 96/2001', ''), 'art-9-dlgs-96-2001');
+t('detects art. 622 c.p. (Italian dotted form)', () => {
+  assert.strictEqual(classify('Violazione art. 622 c.p.', ''), 'art-622-cp');
+});
+
+t('detects Art 622 C.P. (variant)', () => {
+  assert.strictEqual(classify('Violazione Art 622 C.P.', ''), 'art-622-cp');
+});
+
+t('detects L. 247/2012', () => {
+  assert.strictEqual(classify('Dovere di riservatezza L. 247/2012', ''), 'l-247-2012');
+});
+
+t('detects CDF Art. 13', () => {
+  assert.strictEqual(classify('Obbligo di segretezza CDF Art. 13', ''), 'cdf-art-13');
+});
+
+t('detects CDF Art. 28', () => {
+  assert.strictEqual(classify('Dovere di riserbo CDF Art. 28', ''), 'cdf-art-28');
 });
 
 t('detects attorney-client privilege', () => {
@@ -137,6 +153,10 @@ t('new discriminator: tribunale triggers context', () => {
 
 t('new discriminator: controparte triggers context', () => {
   assert.strictEqual(classify('Confidenziale - comunicazione con controparte', ''), 'confidenziale-bare+context');
+});
+
+t('path discriminator: fascicoli directory triggers context', () => {
+  assert.strictEqual(classify('Documento riservato', '/fascicoli/2026/Rossi-vs-Bianchi/memoria.docx'), 'riservato-bare+context');
 });
 
 // ---------------------------------------------------------------------------

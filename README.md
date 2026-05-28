@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.0.4-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.0.5-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -10,7 +10,7 @@
 
 Marketplace per l'installazione del plugin **BetterCallClaude Italia** su Cowork Desktop.
 
-Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane, con protezione integrata del segreto professionale (Art. 622 CP + Art. 9 D.Lgs. 96/2001).
+Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane, con protezione integrata del segreto professionale (Art. 622 CP + L. 247/2012).
 
 ---
 
