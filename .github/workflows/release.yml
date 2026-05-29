@@ -44,11 +44,20 @@ jobs:
       - name: Package plugin
         run: npm run package
 
+      - name: Extract release notes for this version
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          # Extract only the section for this version from CHANGELOG.md
+          awk "/^## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md > /tmp/release-notes.md
+          echo "Generated release notes for v${VERSION}:"
+          cat /tmp/release-notes.md
+
       - name: Create Release
         uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           name: "v${{ steps.get_version.outputs.VERSION }}"
-          body_path: CHANGELOG.md
+          body_path: /tmp/release-notes.md
           files: |
             dist/*.zip
         env:
