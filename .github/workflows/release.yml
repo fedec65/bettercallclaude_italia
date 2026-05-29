@@ -50,17 +50,12 @@ jobs:
           VERSION="${{ steps.get_version.outputs.VERSION }}"
           # Extract only the section for this version from CHANGELOG.md
           awk "/^## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md > /tmp/release-notes.md
-        run: |
-          VERSION="${{ steps.get_version.outputs.VERSION }}"
-          # Extract only the section for this version from CHANGELOG.md
-          awk "/^## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md > /tmp/release-notes.md
           if [ ! -s /tmp/release-notes.md ]; then
             echo "ERROR: No release notes found for version ${VERSION} in CHANGELOG.md"
             exit 1
           fi
           echo "Generated release notes for v${VERSION}:"
           cat /tmp/release-notes.md
-
 
       - name: Create Release
         uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
