@@ -4,6 +4,16 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.0.7] - 2026-05-31
+
+### Added
+- **Plugin scope enforcement** — All 16 legal commands now include an explicit "Ambito plugin" constraint requiring exclusive use of BetterCallClaude Italia agents, skills, and MCP servers for legal work. External delegation is blocked; infrastructure operations (file generation, file reading, computation) remain exempt.
+- Commands with short format enforcement (15): ricerca, strategia, redazione, traduci, contraddittorio, citazione, precedente, verifica, riassumi, raffina, analisi-doc, flusso, briefing, nazionale, regionale.
+- Command with dedicated section enforcement (1): legale (gateway command, "Vincolo di Ambito Plugin" section).
+- Utility commands excluded (4): aiuto, versione, configurazione, privacy.
+
+---
+
 ## [1.0.6] - 2026-05-29
 
 ### Security

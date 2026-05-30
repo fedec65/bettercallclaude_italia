@@ -307,6 +307,14 @@ Scriva la sua domanda per continuare l'interazione, o scegli **4** o **5** per p
 
 ---
 
+## Vincolo di Ambito Plugin
+
+Per tutte le attivita di analisi, ricerca, strategia, redazione, traduzione, citazione e contraddittorio, usa **esclusivamente** agenti, skill e server MCP di BetterCallClaude Italia. Non delegare lavoro legale a skill, agenti o strumenti generici o esterni al plugin.
+
+Eccezioni consentite: operazioni infrastrutturali come generazione file (.docx, .pdf tramite pandoc o strumenti di sistema), lettura file e calcoli generici.
+
+---
+
 ## Query dell'Utente
 
 $ARGUMENTS
