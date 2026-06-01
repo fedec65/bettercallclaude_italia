@@ -4,6 +4,17 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.0.8] - 2026-06-01
+
+### Added
+- **`/bettercallclaude-italia:legale-5step`** — Full 5-phase legal pipeline command: INTAKE → RICERCA → STRATEGIA → CONTRADDITTORIO → REDAZIONE. Sequential execution with quality gates, privilege propagation, and citation integrity checks.
+- **`legal-5step-framework` skill** — Methodology definition with step agents, data flow diagram, quality gates, and Italian citation format table.
+- Parameters: `--breve`, `--medio`, `--lungo`, `--no-sintesi`, `--stop-dopo=N`, `--lang=IT|EN`, `--regione=XX`.
+- MCP server priority chain: cassazione → normattiva → corte-costituzionale → giustizia-amministrativa → eur-lex-ita.
+- Italian document types: Atto di citazione (CPC Art. 163), Comparsa di costituzione (CPC Art. 167), Parere legale, Memoria ex Art. 183 CPC, Ricorso per Cassazione.
+
+---
+
 ## [1.0.7] - 2026-05-31
 
 ### Added
