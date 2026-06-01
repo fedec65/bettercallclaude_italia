@@ -8,7 +8,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 20 agenti, 19 comandi, 14 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 20 agenti, 21 comandi, 15 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
 
 ---
 
@@ -39,6 +39,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | Comando | Descrizione |
 |---------|-------------|
 | `/bettercallclaude-italia:legale` | Gateway intelligente — analizza intento, indirizza a specialisti |
+| `/bettercallclaude-italia:legale-5step` | Pipeline completa a 5 fasi: intake → ricerca → strategia → contraddittorio → redazione |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
@@ -79,6 +80,8 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 /bettercallclaude-italia:briefing Prepara lite completa per inadempimento art. 1218 CC, EUR 500K
 
 /bettercallclaude-italia:regionale LOM Giurisdizione Tribunale delle Imprese
+
+/bettercallclaude-italia:legale-5step Analisi completa responsabilità contrattuale art. 1218 CC, EUR 300k
 
 /bettercallclaude-italia:analisi-doc @contratto.pdf Analizza questo contratto di locazione
 ```

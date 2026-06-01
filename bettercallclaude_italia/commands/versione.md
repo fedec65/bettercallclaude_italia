@@ -13,8 +13,8 @@ BetterCallClaude Italia v1.0.7
 
 Componenti:
 - Agenti: 20
-- Comandi: 20
-- Skill: 14
+- Comandi: 21
+- Skill: 15
 - Server MCP: 7
 
 Intelligenza Legale Italiana per il mercato italiano.

@@ -11,6 +11,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | Comando | Descrizione |
 |---------|-------------|
 | `/bettercallclaude-italia:legale` | Gateway intelligente — analizza intento, indirizza a specialisti |
+| `/bettercallclaude-italia:legale-5step` | Pipeline completa a 5 fasi: intake → ricerca → strategia → contraddittorio → redazione |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
@@ -74,6 +75,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | data-protection-law | Conformità GDPR/Codice Privacy |
 | output-summarization | Consolidamento output pipeline |
 | adversarial-analysis | Stress-test a tre agenti |
+| legal-5step-framework | Pipeline end-to-end a 5 fasi |
 
 ## Esempi d'Uso
 
@@ -95,6 +97,10 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 /bettercallclaude-italia:briefing Prepara lite completa per inadempimento art. 1218 CC, EUR 500K, Milano
 
 /bettercallclaude-italia:regionale LOM Giurisdizione del Tribunale delle Imprese per contratti oltre EUR 30k
+
+/bettercallclaude-italia:legale-5step Analisi completa responsabilità contrattuale art. 1218 CC, EUR 300k
+
+/bettercallclaude-italia:legale-5step --breve --regione=LOM Contenzioso locativo a Milano
 
 /bettercallclaude-italia:analisi-doc @contratto.pdf Analizza questo contratto di locazione commerciale
 ```
