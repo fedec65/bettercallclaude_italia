@@ -24,7 +24,7 @@ Le cinque fasi corrispondono alle cinque mosse cognitive su qualsiasi nuova ques
 ## Definizioni Fasi
 
 ### Fase 1: INTAKE
-**Agente**: analisi-doc | **Skill**: `italian-jurisdictions`, `privacy-routing`
+**Agente**: analisi-doc | **Skill**: `privacy-routing` | **Ref**: `shared/references/italian-jurisdictions.md`
 
 Estrae fatti, identifica questioni giuridiche, determina giurisdizione e lingua, segnala indicatori di segreto professionale prima di qualsiasi chiamata MCP esterna. Il flag di privilegio si propaga attraverso le Fasi 2-5.
 

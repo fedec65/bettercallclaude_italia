@@ -1,6 +1,6 @@
 ---
 name: italian-legal-research
-description: "Specialista di ricerca legale italiana — cerca precedenti della Cassazione, interpreta leggi nazionali e regionali, e produce analisi giuridica multilingue verificata. Attivazione quando: l'utente chiede cosa dice la legge su un argomento, richiede precedenti o decisioni della Cassazione, necessita di sapere come una norma è interpretata, chiede di dottrina o commento scientifico, o necessita un memo di ricerca. Usa i server MCP cassazione, normattiva, corte-costituzionale, giustizia-amministrativa e eur-lex-ita. NON attivare per: solo formattazione citazioni (usa italian-citation-formats), chiarimento query (usa legal-query-refinement), redazione documenti (usa italian-legal-drafting), o traduzione (usa italian-legal-translation)."
+description: "Specialista di ricerca legale italiana — cerca precedenti della Cassazione, interpreta leggi nazionali e regionali, e produce analisi giuridica multilingue verificata. Attivazione quando: l'utente chiede cosa dice la legge su un argomento, richiede precedenti o decisioni della Cassazione, necessita di sapere come una norma è interpretata, chiede di dottrina o commento scientifico, o necessita un memo di ricerca. Usa i server MCP cassazione, normattiva, corte-costituzionale, giustizia-amministrativa e eur-lex-ita. NON attivare per: solo formattazione citazioni (usa italian-citation-formats), chiarimento query (usa legal-intake in modalita Refine), redazione documenti (usa italian-legal-drafting), o traduzione (usa italian-legal-translation)."
 ---
 
 # Ricerca Legale Italiana
@@ -103,6 +103,20 @@ Presenta i risultati con citazioni verificate, principi chiave e terminologia mu
 ### Implicazioni Pratiche
 [Come si applicano i risultati]
 ```
+
+## Reduced Mode
+
+Quando i server MCP non sono disponibili, la skill funziona in modalita ridotta:
+
+| Funzionalita | Con MCP | Senza MCP |
+|-------------|---------|-----------|
+| Ricerca precedenti Cassazione | Automatica via cassazione | Manuale: [ItalGiure SentenzeWeb](https://sentenzeweb.italgiure.giustizia.it) + Google `site:cortedicassazione.it` |
+| Ricerca legislazione | Automatica via normattiva | Manuale: [Normattiva](https://www.normattiva.it) |
+| Sentenze Corte Costituzionale | Automatica via corte-costituzionale | Manuale: [Corte Costituzionale Open Data](https://www.cortecostituzionale.it/actionPronuncia.do) |
+| Giustizia amministrativa | Automatica via giustizia-amministrativa | Manuale: [Giustizia Amministrativa](https://www.giustizia-amministrativa.it) |
+| Diritto UE | Automatico via eur-lex-ita | Manuale: [EUR-Lex](https://eur-lex.europa.eu) |
+
+In modalita ridotta, la ricerca si basa sulle conoscenze del modello e fornisce link ai portali ufficiali. Segnala sempre all'utente che i risultati non sono stati verificati via banca dati.
 
 ## Disclaimer Professionale
 

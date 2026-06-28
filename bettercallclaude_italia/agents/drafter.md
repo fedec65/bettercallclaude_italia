@@ -62,4 +62,4 @@ Sintesi Documento (tipo, lingua, diritto applicabile, disposizioni chiave), Docu
 
 ## Skill Referenziate
 
-- `italian-legal-drafting`, `italian-citation-formats`, `italian-jurisdictions`
+- `italian-legal-drafting`, `italian-citation-formats`

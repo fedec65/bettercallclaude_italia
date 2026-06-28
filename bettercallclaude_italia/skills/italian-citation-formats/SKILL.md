@@ -83,3 +83,12 @@ Restituisci citazione formattata + stato di verifica.
 - Non costruire mai citazioni manualmente — usa sempre il server MCP.
 - Segnala citazioni non verificabili con chiarezza.
 - Distingui tra formato corretto e citazione verificata.
+
+## Reduced Mode
+
+| Funzionalita | Con MCP | Senza MCP |
+|-------------|---------|-----------|
+| Validazione citazioni | Automatica via legal-citations-ita | Solo formattazione manuale, nessuna verifica |
+| Lookup normativo | Automatico via normattiva | Conoscenze del modello |
+
+In modalita ridotta, le citazioni vengono formattate secondo le convenzioni ma non verificate. Segnala sempre all'utente che le citazioni non sono state validate automaticamente.

@@ -261,4 +261,4 @@ Se l'utente sceglie "salva per dopo":
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-legal-strategy`, `italian-jurisdictions`, `italian-citation-formats`, `privacy-routing`
+- `italian-legal-research`, `italian-legal-strategy`, `italian-citation-formats`, `privacy-routing`

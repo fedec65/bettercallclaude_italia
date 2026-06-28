@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.0.8-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.1.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -8,7 +8,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 20 agenti, 21 comandi, 15 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 20 agenti, 26 comandi, 13 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, intelligenza documentale e arbitrato sportivo CAS/TAS in tutte le 20 regioni italiane.
 
 ---
 
@@ -40,6 +40,8 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 |---------|-------------|
 | `/bettercallclaude-italia:legale` | Gateway intelligente — analizza intento, indirizza a specialisti |
 | `/bettercallclaude-italia:legale-5step` | Pipeline completa a 5 fasi: intake → ricerca → strategia → contraddittorio → redazione |
+| `/bettercallclaude-italia:legale-obiettivo` | Definisce condizione di successo legale verificabile (Goal Record) |
+| `/bettercallclaude-italia:legale-loop` | Esegue ciclo worker-valutatore contro un Goal Record |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
@@ -54,9 +56,12 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:flusso` | Definisce ed esegue workflow legali multi-agente |
 | `/bettercallclaude-italia:traduci` | Traduce documenti legali IT/EN |
 | `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
+| `/bettercallclaude-italia:triage-nda` | Triage NDA: classifica GREEN/YELLOW/RED secondo diritto italiano |
 | `/bettercallclaude-italia:riassumi` | Consolida output delle pipeline multi-agente |
-| `/bettercallclaude-italia:configurazione` | Verifica connettività server MCP |
-| `/bettercallclaude-italia:privacy` | Visualizza e cambia la modalità privacy del segreto professionale |
+| `/bettercallclaude-italia:start` | Onboarding — verifica MCP, guida playbook, esempi d'uso |
+| `/bettercallclaude-italia:doctor` | Diagnostica server MCP con guida contestuale |
+| `/bettercallclaude-italia:configurazione` | Alias per /start (deprecato) |
+| `/bettercallclaude-italia:privacy` | Visualizza e cambia la modalita privacy del segreto professionale |
 | `/bettercallclaude-italia:versione` | Visualizza versione plugin e stato sistema |
 | `/bettercallclaude-italia:aiuto` | Mostra il riferimento completo dei comandi |
 
@@ -95,6 +100,11 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 - **Workflow multi-agente** — Pipeline predefinite per due diligence, preparazione contenzioso, ciclo contrattuale, closing immobiliare.
 - **Tutte le 20 regioni** — Copertura regionale completa con sistemi giudiziari, formati di citazione e ricerca MCP.
 - **Bilingue** — Rilevamento automatico della lingua per IT/EN con corretta terminologia legale.
+- **Onboarding guidato** — `/start` verifica la connettivita MCP e guida la creazione del playbook locale.
+- **Triage NDA** — Classificazione automatica GREEN/YELLOW/RED secondo criteri del diritto italiano.
+- **Goal-loop** — Ciclo iterativo worker-valutatore con separazione dei ruoli e quality gates MCP.
+- **Output-as-file** — Risultati lunghi salvati in `bcc-output/`, in chat solo un riassunto.
+- **Playbook locale** — Personalizzazione posizioni contrattuali, soglie di rischio, formato output per studio.
 
 ---
 

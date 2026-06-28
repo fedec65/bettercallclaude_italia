@@ -108,4 +108,4 @@ Fase 1: Pre-contenzioso -> Fase 2: Mediazione/Conciliazione -> Fase 3: Primo Gra
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

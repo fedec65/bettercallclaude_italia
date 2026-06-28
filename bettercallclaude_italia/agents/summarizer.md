@@ -210,4 +210,4 @@ Appendi a ogni output: "Questo output sintetizzato consolida analisi da multipli
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-citation-formats`, `italian-jurisdictions`, `italian-legal-strategy`, `adversarial-analysis`
+- `italian-legal-research`, `italian-citation-formats`, `italian-legal-strategy`, `adversarial-analysis`

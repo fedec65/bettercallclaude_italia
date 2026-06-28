@@ -1,10 +1,12 @@
 ---
-description: "Verifica connettivita dei server MCP e visualizza lo stato di tutti i server."
+description: "Alias per /start — verifica connettivita MCP, onboarding, playbook locale. Deprecato: usa /start."
 ---
 
 # Configurazione BetterCallClaude Italia
 
-Sei invocato tramite `/bettercallclaude-italia:configurazione`. Verifica la connettivita dei server MCP e visualizza lo stato.
+> **Deprecato**: questo comando e un alias per `/bettercallclaude-italia:start`. Usa `/bettercallclaude-italia:start` per l'esperienza completa di onboarding.
+
+Sei invocato tramite `/bettercallclaude-italia:configurazione`. Esegui la stessa logica di `/bettercallclaude-italia:start` (vedi start.md).
 
 ## Checklist
 
