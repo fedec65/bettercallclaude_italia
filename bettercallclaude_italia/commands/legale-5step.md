@@ -16,6 +16,17 @@ Sei invocato tramite `/bettercallclaude-italia:legale-5step`. Coordini una pipel
 - `--lang=IT|EN`: Forza lingua di output. Default: rilevamento automatico dall'input.
 - `--regione=XX`: Imposta giurisdizione regionale (es. `--regione=LOM`). Default: diritto nazionale.
 
+**Equivalenti in linguaggio naturale**: puoi anche dire:
+- "output breve" o "in breve" -> `--breve`
+- "output medio" -> `--medio`
+- "output dettagliato" o "analisi completa" -> `--lungo`
+- "senza sintesi" -> `--no-sintesi`
+- "fermati dopo la fase 3" o "stop dopo ricerca" -> `--stop-dopo=3`
+- "per la Lombardia" o "giurisdizione LOM" -> `--regione=LOM`
+- "in inglese" -> `--lang=EN`
+
+**Convenzione output**: scrivi tutti e 5 i file fase + `fonti.md` in `bcc-output/YYYY-MM-DD-<slug>/`. In chat mostra solo un riassunto di 3-5 righe per fase. Vedi `skills/shared/SKILL.md`.
+
 ## Panoramica Pipeline
 
 ```

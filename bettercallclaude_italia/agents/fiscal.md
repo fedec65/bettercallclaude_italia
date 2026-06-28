@@ -121,4 +121,4 @@ Sei uno specialista in diritto fiscale italiano. Analizzi le implicazioni fiscal
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

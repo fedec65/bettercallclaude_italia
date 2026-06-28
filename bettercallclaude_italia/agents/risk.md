@@ -113,4 +113,4 @@ Range Settlement Ottimale: EUR [X] - EUR [Y]
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-citation-formats`, `italian-jurisdictions`
+- `italian-legal-research`, `italian-citation-formats`

@@ -9,12 +9,12 @@ Sei invocato tramite `/bettercallclaude-italia:versione`. Visualizza la versione
 ## Output
 
 ```
-BetterCallClaude Italia v1.0.8
+BetterCallClaude Italia v1.1.0
 
 Componenti:
 - Agenti: 20
-- Comandi: 21
-- Skill: 15
+- Comandi: 26
+- Skill: 13
 - Server MCP: 7
 
 Intelligenza Legale Italiana per il mercato italiano.

@@ -122,4 +122,4 @@ Appendi a ogni output: "Questa analisi dell'avversario è prodotta per scopi di 
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-citation-formats`, `italian-jurisdictions`
+- `italian-legal-research`, `italian-citation-formats`

@@ -4,6 +4,32 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.1.0] - 2026-05-21
+
+### Added — Swiss Feature Port (v4.8.0–v4.9.0)
+- **Spec E — Output-as-file convention**: Results >500 words saved to `bcc-output/YYYY-MM-DD-<slug>/` folder. Chat shows only 3-5 line summary. New `skills/shared/SKILL.md` defines the convention. Applied to 11 commands.
+- **Spec I — Natural Language Flags**: Users can say "output breve", "analisi completa", "per la Lombardia" etc. instead of flags. Applied to legale, legale-5step, riassumi.
+- **Spec H — Privacy Fallback**: Skill-level privacy defense when PreToolUse hook is absent. Pattern-matching fallback in `privacy-routing/SKILL.md`.
+- **Spec C — `/start` command**: 5-step onboarding: language detect → greet → MCP check → playbook search → examples. Replaces `/configurazione` (now alias).
+- **Spec D — `/doctor` command**: Two-stage MCP diagnostics (tool availability + lightweight call) for 7 Italian servers with plain-language impact explanations.
+- **Spec G — Reduced Mode**: Degradation tables added to 7 MCP-dependent skills showing functionality with/without servers and manual fallback links.
+- **Spec A — Playbook locale**: `docs/PLAYBOOK.md` guide, IT/EN templates in `templates/`, playbook awareness in `italian-document-analysis` and `italian-legal-drafting` skills. Mandatory law override rule.
+- **Spec B — `/triage-nda` command**: GREEN/YELLOW/RED NDA classification per Italian law (Art. 1382 CC, Art. 1229 CC, Art. 2125 CC, Reg. Bruxelles I-bis). Single file and batch mode.
+- **Spec J — `/legale-obiettivo` command**: Defines verifiable legal success conditions as Goal Records. Supports predefined profiles (citazioni-pulite, bozza-pronta, contraddittorio-convergenza, nda-batch-pulito, monitoraggio-normativo) and free-text objectives.
+- **Spec K — `/legale-loop` command**: Worker-evaluator loop against Goal Records. Safety guards: max iterations (cap 20), no-progress detection, mandatory worker-evaluator separation, per-iteration privacy checks, no autonomous transmission.
+- **Spec L — `legal-evaluator` skill**: Verdict engine for goal-loop system. Structured verdicts with score (0-100), PASS/FAIL/WARN findings, anti-hallucination rules (R1/R2), MCP-based verification.
+
+### Changed — Architecture (Spec F — Skill Consolidation 15→13)
+- **Merged** `legal-query-refinement` + `legal-briefing` → `legal-intake` (unified intake with Refine + Briefing modes)
+- **Removed** `output-summarization` — embedded directly into `/riassumi` command
+- **Removed** `italian-jurisdictions` — moved to `shared/references/italian-jurisdictions.md`
+- **Updated** all agent skill references to reflect consolidation
+
+### Stats
+- Commands: 21 → 26 (+5 new: start, doctor, triage-nda, legale-obiettivo, legale-loop)
+- Skills: 15 → 13 (consolidated 4 → 2, added 2 new: legal-intake, legal-evaluator)
+- Agents: 20 (unchanged)
+
 ## [1.0.8] - 2026-06-01
 
 ### Added

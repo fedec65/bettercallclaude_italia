@@ -55,4 +55,4 @@ Struttura output come: Sintesi, Precedenti Cassazione (verificati), Quadro Norma
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-citation-formats`, `italian-jurisdictions`
+- `italian-legal-research`, `italian-citation-formats`

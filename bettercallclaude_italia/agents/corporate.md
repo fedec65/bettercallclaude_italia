@@ -116,4 +116,4 @@ Sei uno specialista in diritto societario e commerciale italiano. Consigli sulla
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

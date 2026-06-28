@@ -136,4 +136,4 @@ Le aliquote IRAP variano per regione. Alcune offrono incentivi fiscali per indus
 
 ## Skill Referenziate
 
-- `italian-jurisdictions`, `italian-legal-research`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

@@ -87,4 +87,4 @@ Sei uno specialista in citazioni giuridiche italiane. Verifichi, formatti e conv
 
 ## Skill Referenziate
 
-- `italian-citation-formats`, `italian-legal-research`, `italian-jurisdictions`
+- `italian-citation-formats`, `italian-legal-research`
