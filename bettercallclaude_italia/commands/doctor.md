@@ -6,7 +6,7 @@ description: "Diagnostica server MCP — testa ogni server, riporta stato e impa
 
 Sei invocato tramite `/bettercallclaude-italia:doctor`. Diagnostica lo stato di tutti i server MCP di BetterCallClaude Italia e riporta i risultati in linguaggio semplice.
 
-## Step 1: Health Endpoint
+## Passo 1: Verifica Gateway
 
 Verifica il gateway HTTP MCP:
 
@@ -14,7 +14,7 @@ Verifica il gateway HTTP MCP:
 - Se il check ha successo, nota "Gateway online".
 - Se fallisce, nota "Gateway non raggiungibile" e l'impatto probabile.
 
-## Step 2: Probe Ogni Server
+## Passo 2: Verifica Ogni Server
 
 Per ciascuno dei 7 server MCP, usa un **approccio a due stadi**:
 
@@ -27,12 +27,12 @@ Per ciascuno dei 7 server MCP, usa un **approccio a due stadi**:
 | normattiva | Legislazione italiana (1861-oggi) | `search_legislation` (minima) |
 | corte-costituzionale | Sentenze Corte Costituzionale | `search_decisions` (minima) |
 | giustizia-amministrativa | Sentenze TAR e Consiglio di Stato | `search_decisions` (minima) |
-| cassazione | Giurisprudenza Cassazione (ItalGiure) | `search_decisions` (minima) |
+| cassazione | Giurisprudenza Cassazione (ItalGiure) | `search_cassazione` (minima) |
 | eur-lex-ita | Diritto UE in italiano | `search_legislation` (minima) |
 | legal-citations-ita | Validazione e formattazione citazioni | `validate_citation` (minima) |
 | legal-persona-ita | Generazione documenti legali | `legal_analyze` (minima) |
 
-## Step 3: Mostra Risultati
+## Passo 3: Mostra Risultati
 
 Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
 
@@ -58,7 +58,7 @@ Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
 
 Usa simboli chiari: ✓ attivo, ⚠ degradato, ✗ non connesso.
 
-## Step 4: Guida
+## Passo 4: Guida
 
 ### Tutti i server attivi:
 > Tutti i servizi sono operativi. BetterCallClaude Italia funziona a piena capacita.

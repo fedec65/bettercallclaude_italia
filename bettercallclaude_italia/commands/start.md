@@ -6,7 +6,7 @@ description: "Benvenuto e onboarding — verifica connettivita MCP, guida la cre
 
 Sei invocato tramite `/bettercallclaude-italia:start`. Questo e il comando di onboarding per utenti nuovi e di ritorno.
 
-## Step 1: Rileva Lingua
+## Passo 1: Rileva Lingua
 
 Determina la lingua dell'utente dal suo messaggio. Se ambigua, chiedi:
 
@@ -14,7 +14,7 @@ Determina la lingua dell'utente dal suo messaggio. Se ambigua, chiedi:
 
 Usa la lingua rilevata per tutto l'output successivo. L'italiano e la lingua predefinita.
 
-## Step 2: Saluta
+## Passo 2: Saluta
 
 Saluta l'utente nella sua lingua. Esempio (IT):
 
@@ -26,7 +26,7 @@ Esempio (EN):
 > Welcome to **BetterCallClaude Italia** — your Italian law assistant.
 > I'm checking the legal services connection and setting everything up.
 
-## Step 3: Verifica Connettivita MCP
+## Passo 3: Verifica Connettivita MCP
 
 Esegui la stessa logica diagnostica di `/bettercallclaude-italia:doctor` (vedi doctor.md). Presenta i risultati in linguaggio semplice — nessun gergo tecnico. Esempio:
 
@@ -45,7 +45,7 @@ Stato dei servizi:
 
 Se un server non e disponibile, spiega in linguaggio semplice cosa manca (es. "Senza questo servizio, la ricerca di precedenti della Cassazione deve essere fatta manualmente su ItalGiure").
 
-## Step 4: Cerca Playbook
+## Passo 4: Cerca Playbook
 
 Cerca il playbook locale nell'ordine di precedenza:
 
@@ -79,7 +79,7 @@ Se l'utente accetta, poni queste domande una alla volta:
 
 Dopo aver raccolto le risposte, genera un file `bettercallclaude-italia.local.md` nella cartella condivisa (Cowork) o `.claude/` (Claude Code) basato sul template appropriato (vedi `docs/PLAYBOOK.md`).
 
-## Step 5: Esempi d'Uso
+## Passo 5: Esempi d'Uso
 
 Mostra 3-4 esempi personalizzati per il profilo dell'utente (dal playbook se disponibile, altrimenti generici):
 
@@ -106,7 +106,7 @@ Mostra 3-4 esempi personalizzati per il profilo dell'utente (dal playbook se dis
 ## Comando Assorbito: configurazione
 
 Questo comando assorbe tutte le funzionalita del precedente `/bettercallclaude-italia:configurazione`:
-- Lo Step 3 (verifica connettivita MCP) copre la diagnostica completa.
+- Il Passo 3 (verifica connettivita MCP) copre la diagnostica completa.
 - La tabella diagnostica, il health check e le note sul reduced mode sono gestiti dal comando `doctor`, che `start` invoca internamente.
 - Nessuna funzionalita di `configurazione` viene persa.
 

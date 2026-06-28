@@ -4,7 +4,7 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
-## [1.1.0] - 2026-05-21
+## [1.1.0] - 2026-06-21
 
 ### Added — Swiss Feature Port (v4.8.0–v4.9.0)
 - **Spec E — Output-as-file convention**: Results >500 words saved to `bcc-output/YYYY-MM-DD-<slug>/` folder. Chat shows only 3-5 line summary. New `skills/shared/SKILL.md` defines the convention. Applied to 11 commands.

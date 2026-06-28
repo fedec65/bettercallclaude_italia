@@ -37,6 +37,7 @@ Sei uno specialista in diritto regionale italiano che copre tutte le 20 regioni.
 - **SIC** (Sicilia, 5M): Autonoma, statuto speciale, agricoltura.
 - **PUG** (Puglia, 4M): Bari, agricoltura, turismo.
 - **CAL** (Calabria, 1,9M): Agricoltura, turismo.
+- **ABR** (Abruzzo, 1,3M): L'Aquila, post-sisma, ricostruzione.
 - **BAS** (Basilicata, 550K): Petrolio, agricoltura.
 - **MOL** (Molise, 300K): Più piccola regione peninsulare.
 
