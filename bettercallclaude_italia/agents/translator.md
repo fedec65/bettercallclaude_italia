@@ -129,4 +129,4 @@ Sei uno specialista in traduzione giuridica italiana. Traduci testi legali tra i
 
 ## Skill Referenziate
 
-- `italian-citation-formats`, `italian-legal-research`, `italian-jurisdictions`
+- `italian-citation-formats`, `italian-legal-research`

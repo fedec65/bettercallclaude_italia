@@ -1,5 +1,5 @@
 ---
-description: "Ingresso principale per tutte le richieste BetterCallClaude Italia — classifica intento, risolve giurisdizione (via skill italian-jurisdictions), esegue briefing inline per complessità 4–6, attiva sessione briefing completa per complessità ≥ 7 (via skill legal-briefing), e indirizza ad agenti specialistici o pipeline di workflow. Supporta flag --refine, --briefing, --skip-briefing/--direct, --no-framework."
+description: "Ingresso principale per tutte le richieste BetterCallClaude Italia — classifica intento, risolve giurisdizione (via shared/references/italian-jurisdictions.md), esegue briefing inline per complessita 4-6, attiva sessione briefing completa per complessita ≥ 7 (via skill legal-intake), e indirizza ad agenti specialistici o pipeline di workflow. Supporta flag --refine, --briefing, --skip-briefing/--direct, --no-framework."
 ---
 
 # Assistente Legale Intelligente
@@ -14,6 +14,13 @@ L'utente può specificare un flag modalità per controllare il comportamento:
 - `--briefing` — Forza sessione briefing completa indipendentemente dalla complessità.
 - `--skip-briefing` o `--direct` — Bypassa completamente il briefing e indirizza direttamente.
 - `--no-framework` — Salta il menu post-esecuzione del framework. Solo output, nessun prompt di continuazione.
+
+**Equivalenti in linguaggio naturale**: puoi anche dire:
+- "analisi breve" o "in breve" -> `--breve` (se applicabile al sotto-comando)
+- "affina la domanda" o "migliora il prompt" -> `--refine`
+- "voglio un briefing completo" -> `--briefing`
+- "salta il briefing" o "senza briefing" -> `--skip-briefing`
+- "vai diretto" -> `--direct`
 
 ## Modalità Affinamento (`--refine`)
 
@@ -104,7 +111,7 @@ Prima di intraprendere qualsiasi azione, classifica la query lungo queste dimens
    - Sportivo: parole chiave come "TAS", "CAS", "doping", "sports arbitration"
    - Traduzione: parole chiave come "traduci", "terminologia", "bilingue"
 
-2. **Giurisdizione**: Nazionale (default), o regionale se menzionato un codice regione (LOM, LAZ, CAM, ecc.). Per questioni giurisdizionali ambigue o cross-regionali, delega alla skill `italian-jurisdictions` prima dell'indirizzo.
+2. **Giurisdizione**: Nazionale (default), o regionale se menzionato un codice regione (LOM, LAZ, CAM, ecc.). Per questioni giurisdizionali ambigue o cross-regionali, consulta `skills/shared/references/italian-jurisdictions.md` prima dell'indirizzo.
 
 3. **Lingua**: Corrisponde alla lingua di input dell'utente. Usa terminologia giuridica appropriata in tutta la risposta.
 
@@ -134,7 +141,7 @@ Dopo la risposta dell'utente, indirizza all'agente appropriato con contesto arri
 
 ### Complessità 7-10 (Complessa): Sessione Briefing Completa
 
-Attiva la skill `legal-briefing` e reindirizza all'**agente coordinatore briefing**:
+Attiva la skill `legal-intake` in modalita Briefing e reindirizza all'**agente coordinatore briefing**:
 
 ```
 💡 Questa query coinvolge multipli domini giuridici e beneficerà di una sessione di briefing
@@ -301,9 +308,15 @@ Scriva la sua domanda per continuare l'interazione, o scegli **4** o **5** per p
 - Dopo completamento analisi avversariale, offri solo opzione 5 (Sintesi Finale)
 
 **Sintesi Finale (utente digita "5", "sintesi", o "sintetizza"):**
-- Applica la skill output-summarization per consolidare tutto l'output di questa sessione
+- Applica la logica di consolidamento del comando `/riassumi` per sintetizzare tutto l'output di questa sessione
 - Default a lunghezza `--medium` salvo `--short` o `--long` specificati in precedenza nella stessa query
 - Passo terminale — nessun ulteriore menu viene presentato
+
+---
+
+## Convenzione Output
+
+Quando l'esecuzione produce output lungo (memoria, ricerca, strategia, analisi, bozza), scrivi il risultato in `bcc-output/YYYY-MM-DD-<slug>/`. In chat mostra solo un riassunto di 3-5 righe. Vedi `skills/shared/SKILL.md`.
 
 ---
 

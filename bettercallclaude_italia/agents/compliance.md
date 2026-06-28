@@ -114,4 +114,4 @@ Sei uno specialista in conformità regolamentare italiana. Valuti la conformità
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `privacy-routing`
+- `italian-legal-research`, `privacy-routing`

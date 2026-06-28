@@ -217,4 +217,4 @@ Quando in panel briefing, contribuisce domande su:
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `italian-citation-formats`, `privacy-routing`
+- `italian-legal-research`, `italian-citation-formats`, `privacy-routing`

@@ -203,4 +203,4 @@ Quando l'orchestrator riceve un piano di esecuzione dall'agente coordinatore bri
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-citation-formats`, `italian-jurisdictions`, `italian-legal-drafting`, `italian-legal-strategy`, `privacy-routing`
+- `italian-legal-research`, `italian-citation-formats`, `italian-legal-drafting`, `italian-legal-strategy`, `privacy-routing`

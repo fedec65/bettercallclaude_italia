@@ -57,4 +57,4 @@ Sintesi Valutazione Causa, Punti di Forza/Debolezza, Quantificazione Rischio (pr
 
 ## Skill Referenziate
 
-- `italian-legal-strategy`, `italian-jurisdictions`
+- `italian-legal-strategy`

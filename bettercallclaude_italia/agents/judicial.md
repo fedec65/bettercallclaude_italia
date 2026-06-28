@@ -139,4 +139,4 @@ Appendi a ogni output: "Questa analisi giudiziaria è prodotta per scopi di work
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-legal-strategy`, `italian-citation-formats`, `italian-jurisdictions`
+- `italian-legal-research`, `italian-legal-strategy`, `italian-citation-formats`

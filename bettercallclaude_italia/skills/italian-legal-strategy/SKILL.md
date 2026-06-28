@@ -86,6 +86,15 @@ Valore netto atteso:          EUR [X*Y - Z]
 ### Mediazione (D.Lgs. 28/2010)
 ### Arbitrato (Codice di Arbitrato / Camera Arbitrale)
 
+## Reduced Mode
+
+| Funzionalita | Con MCP | Senza MCP |
+|-------------|---------|-----------|
+| Precedenti per stima probabilita | Automatica via cassazione | Stime basate su conoscenze del modello, segnalare assenza verifica |
+| Verifica normativa | Automatica via normattiva | Conoscenze del modello, link a Normattiva per verifica manuale |
+
+In modalita ridotta, le stime di probabilita non sono supportate da ricerca precedenti verificata. Segnala sempre all'utente questa limitazione.
+
 ## Disclaimer Professionale
 
 > Questa valutazione strategica si basa sulle informazioni fornite e sul diritto italiano vigente. Le stime di probabilità sono informate dall'analisi dei precedenti ma non sono garanzie.
