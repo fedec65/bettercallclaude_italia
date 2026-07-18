@@ -1,9 +1,9 @@
 {
-  "description": "Rilevamento segreto professionale per la pratica legale italiana. Scansiona Write/Edit/MultiEdit/WebFetch e tutti gli input tool MCP (mcp__.*) prima che il contenuto lasci la macchina.",
+  "description": "Rilevamento segreto professionale per la pratica legale italiana. Scansiona Write/Edit/MultiEdit/WebFetch/Bash e tutti gli input tool MCP (mcp__.*) prima che il contenuto lasci la macchina. Pattern forti: DENY (blocco). Pattern deboli con contesto: ASK. Configurabile via userConfig.privacy_mode (strict/balanced/cloud).",
   "hooks": {
     "PreToolUse": [
       {
-        "matcher": "Write|Edit|MultiEdit|WebFetch|mcp__.*",
+        "matcher": "Write|Edit|MultiEdit|WebFetch|Bash|mcp__.*",
         "hooks": [
           {
             "type": "command",

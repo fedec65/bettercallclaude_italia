@@ -1,6 +1,6 @@
 ---
 name: privacy-routing
-description: "Routing privacy per il segreto professionale italiano (segreto professionale, Art. 622 CP, Art. 9 D.Lgs. 96/2001) con rilevamento pattern in italiano e inglese per proteggere le comunicazioni legali confidenziali."
+description: "Routing privacy per il segreto professionale italiano (segreto professionale, Art. 622 CP, L. 247/2012, CDF Art. 13) con rilevamento pattern in italiano e inglese per proteggere le comunicazioni legali confidenziali."
 ---
 
 # Routing Privacy
@@ -17,8 +17,8 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 - Copre tutte le informazioni apprese in qualità professionale
 - Nessun limite temporale
 
-**Dovere professionale**: Art. 9 D.Lgs. 96/2001 (Codice Deontologico Forense)
-- Gli avvocati devono mantenere il segreto professionale
+**Dovere professionale**: L. 247/2012 + CDF Art. 13 (Dovere di segretezza) + CDF Art. 28 (Riserbo)
+- Il Codice Deontologico Forense (approvato dal CNF il 31/01/2014) obbliga gli avvocati al segreto professionale
 - Copre tutti i prodotti del lavoro e le comunicazioni
 - Le violazioni possono comportare procedimenti disciplinari
 
@@ -53,7 +53,9 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 | Pattern | Significato | Livello Privacy |
 |---------|-------------|-----------------|
 | `Art. 622 CP` | Disposizione penale segreto | PRIVILEGIATO |
-| `Art. 9 D.Lgs. 96/2001` | Dovere professionale avvocato | PRIVILEGIATO |
+| `L. 247/2012` | Ordinamento professione forense | PRIVILEGIATO |
+| `CDF Art. 13` | Dovere di segretezza | PRIVILEGIATO |
+| `CDF Art. 28` | Dovere di riserbo | PRIVILEGIATO |
 
 ## Livelli di Privacy
 
@@ -65,7 +67,7 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 - Preferisci elaborazione locale quando disponibile
 
 ### PRIVILEGIATO
-- **Solo elaborazione locale** (Ollama o equivalente)
+- **Solo elaborazione locale**
 - Nessuna API cloud. Fallire piuttosto che inviare esternamente.
 
 ## Regole di Routing
@@ -88,6 +90,23 @@ Prima di inviare qualsiasi contenuto a un servizio cloud, rimuovi o sostituisci:
 - [ ] Nomi delle parti avverse
 - [ ] Nomi dei giudici o giudici specifici (se identificativi)
 
+## Fallback Cowork (Difesa in Profondita)
+
+Quando l'hook `PreToolUse` non e attivo (es. in ambienti che non supportano hook o quando il file `hooks/privacy-check.js` non e caricato), applica queste regole a livello skill:
+
+1. **Prima di ogni chiamata tool** che trasmette contenuto a server cloud, scansiona il contenuto per pattern forti e deboli (tabelle sopra).
+2. **Se trovati pattern forti** (livello PRIVILEGIATO): avvisa l'utente in chat e chiedi conferma esplicita prima di procedere.
+3. **Se in modalita strict** (file `.privacy-mode` con valore `strict`): rifiuta di inviare il contenuto a server cloud. Solo Ollama (locale) e server MCP locali sono permessi.
+4. **Ollama e sempre esente**: `mcp__ollama__*` opera su `localhost:11434` e non trasmette dati all'esterno.
+5. **Se non riesci a determinare** se un tool trasmette contenuto esternamente, trattalo come cloud e applica le regole di routing.
+
+Questo garantisce un livello base di protezione anche senza l'hook attivo.
+
+## Limitazioni Note
+
+- **Elusione keyword**: il rilevamento è basato su pattern regex e non cattura concatenazioni senza spazi (`segretoprofessionale`), varianti accentate (`segrèto`), contenuto in altre lingue (DE/FR), encoding base64, né contenuto privilegiato senza marcatori espliciti. Il modello di minaccia principale è la fuga accidentale, non l'attaccante determinato.
+- **Bash file content**: l'hook analizza i path referenziati nei comandi Bash ma non legge il contenuto dei file. La protezione completa contro esfiltrazione via shell richiede la modalità `strict`.
+
 ## Disclaimer Professionale
 
-> Il routing privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o all'Art. 9 D.Lgs. 96/2001. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.
+> Il routing privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o alla L. 247/2012 / CDF Art. 13. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente.

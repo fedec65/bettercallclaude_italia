@@ -27,13 +27,6 @@
     "legal-persona-ita": {
       "type": "http",
       "url": "https://mcp-italia.bettercallclaude.ch/legal-persona-ita/mcp"
-    },
-    "ollama": {
-      "command": "node",
-      "args": ["${CLAUDE_PLUGIN_ROOT}/mcp-servers/ollama/dist/index.js"],
-      "env": {
-        "OLLAMA_HOST": "${user_config.ollama_host}"
-      }
     }
   }
 }

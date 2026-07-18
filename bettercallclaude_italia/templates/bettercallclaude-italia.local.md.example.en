@@ -1,0 +1,48 @@
+# Local Playbook — BetterCallClaude Italia
+
+> Copy this file to the `.claude/` folder of your project (Claude Code) or to the shared folder (Cowork Desktop) and rename it to `bettercallclaude-italia.local.md`. Customize each section for your firm.
+
+## Firm Profile
+
+- **Name**: [Firm name]
+- **Location**: [City]
+- **Type**: Law firm
+- **Main regions**: [e.g. Lombardia, Lazio]
+- **Working languages**: IT, EN
+
+## Standard Contractual Positions
+
+- **Governing law**: Italian law
+- **Jurisdiction**: Court of [city]
+- **Liability cap**: Contract value
+- **Penalty clause**: Art. 1382 CC — max [X]% of contract value
+- **Express termination clause**: Art. 1456 CC — always included
+- **NDA max duration**: 5 years
+- **NDA preferred type**: Bilateral, reciprocal obligations
+- **CISG**: Excluded per Art. 6 CISG
+
+## Risk Thresholds
+
+- **Value requiring mandatory human review**: > EUR [amount]
+- **Clauses triggering escalation**:
+  - Waiver of mandatory rights
+  - Unlimited guarantees or uncapped indemnities
+  - Derogation of Art. 1229 CC
+  - Non-compete clauses (Art. 2125 CC)
+  - Non-Italian jurisdiction
+  - Foreign-seated arbitration
+
+## Data Protection
+
+- **Prevalent role**: Data controller
+- **Applicable law**: GDPR + Italian Privacy Code (D.Lgs. 196/2003, mod. D.Lgs. 101/2018)
+- **Extra-EU transfers**: Require adequate safeguards (Art. 46 GDPR)
+- **DPO**: [Yes/No]
+
+## Style and Format
+
+- **Citation format**: Cass. civ., sez. [X], [date], n. [number]
+- **Output format**: Markdown
+- **Citation language**: Italian
+- **Output folder**: bcc-output
+- **Default length**: medium

@@ -37,6 +37,7 @@ Sei uno specialista in diritto regionale italiano che copre tutte le 20 regioni.
 - **SIC** (Sicilia, 5M): Autonoma, statuto speciale, agricoltura.
 - **PUG** (Puglia, 4M): Bari, agricoltura, turismo.
 - **CAL** (Calabria, 1,9M): Agricoltura, turismo.
+- **ABR** (Abruzzo, 1,3M): L'Aquila, post-sisma, ricostruzione.
 - **BAS** (Basilicata, 550K): Petrolio, agricoltura.
 - **MOL** (Molise, 300K): Più piccola regione peninsulare.
 
@@ -49,7 +50,7 @@ Sei uno specialista in diritto regionale italiano che copre tutte le 20 regioni.
 - Determina regione/i applicabile/i dal contesto della query, domicilio, situs o menzione esplicita.
 - Applica regole di competenza: ubicazione immobile, domicilio convenuto, luogo esecuzione.
 - Identifica se esiste conflitto interregionale.
-- Verifica prelazione federale vs. autonomia regionale (Art. 117 Cost.).
+- Verifica prelazione nazionale vs. autonomia regionale (Art. 117 Cost.).
 
 ### Passo 2: RICERCA DIRITTO REGIONALE
 - Accedi a raccolte legali regionali: Gazzette Ufficiali Regionali, statuti regionali.
@@ -89,7 +90,7 @@ Sei uno specialista in diritto regionale italiano che copre tutte le 20 regioni.
 ### Analisi Regione [X]
 #### Diritto Regionale Applicabile
 - Legislazione primaria: [statuto regionale]
-- Quadro federale: [legge nazionale se applicabile]
+- Quadro nazionale: [legge nazionale se applicabile]
 - Specificità locali: [tribunale, procedura, prassi]
 
 #### Competenza Giurisdizionale
@@ -136,4 +137,4 @@ Le aliquote IRAP variano per regione. Alcune offrono incentivi fiscali per indus
 
 ## Skill Referenziate
 
-- `italian-jurisdictions`, `italian-legal-research`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

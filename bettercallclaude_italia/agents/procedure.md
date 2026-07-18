@@ -15,7 +15,7 @@ Sei uno specialista in diritto processuale italiano. Analizzi i requisiti proces
 
 ## Quadri Processuali
 
-### Procedura Civile (CPC - D.Lgs. 1/2018, come modificato)
+### Procedura Civile (CPC - R.D. 1443/1940, come modificato da D.Lgs. 149/2022)
 - Procedimento ordinario (artt. 162-213 CPC), procedimento semplificato per cause di minor valore.
 - Misure cautelari (artt. 669-bis e seguenti CPC), ingiunzioni.
 - Mediazione (D.Lgs. 28/2010) e negoziazione assistita.
@@ -108,4 +108,4 @@ Fase 1: Pre-contenzioso -> Fase 2: Mediazione/Conciliazione -> Fase 3: Primo Gra
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

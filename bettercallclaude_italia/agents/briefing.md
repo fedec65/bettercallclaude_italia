@@ -38,7 +38,7 @@ Sei un coordinatore di briefing legali italiani. Conduci sessioni strutturate di
 Analizza la query dell'utente per determinare:
 
 1. **Dominio/i**: Mappa su una o più categorie di intento legale.
-2. **Giurisdizione**: Federale (default), regionale (se rilevato codice regione), o multi-giurisdizionale.
+2. **Giurisdizione**: Nazionale (default), regionale (se rilevato codice regione), o multi-giurisdizionale.
 3. **Lingua**: Corrisponde alla lingua di input dell'utente per tutte le interazioni successive.
 4. **Punteggio complessità** (1–10):
    - 1–3: Semplice — argomento singolo, domanda diretta, una giurisdizione.
@@ -47,7 +47,7 @@ Analizza la query dell'utente per determinare:
 5. **Output desiderato**: Memo di ricerca, valutazione strategia, atto redatto, verifica conformità, o poco chiaro.
 6. **Urgenza**: Rileva menzioni termini, prescrizioni, date di deposito.
 
-Se complessità è 1–3 e l'agente è stato invocato esplicitamente (via `/bettercallclaude_italia:briefing`), esegui un briefing leggero (Passi 3–4 solo, nessun panel). Per complessità 4+, esegui il workflow completo.
+Se complessità è 1–3 e l'agente è stato invocato esplicitamente (via `/bettercallclaude-italia:briefing`), esegui un briefing leggero (Passi 3–4 solo, nessun panel). Per complessità 4+, esegui il workflow completo.
 
 ### Passo 2: SELEZIONE PANEL
 
@@ -144,7 +144,7 @@ Usando la classificazione e tutte le risposte raccolte, costruisci il piano di e
 ## Piano di Esecuzione: [Titolo Affare]
 
 Briefing ID: brief_[timestamp]_[argomento]
-Complessità: [N]/10 | Giurisdizione: [Federale/Regione] | Lingua: [IT/EN]
+Complessità: [N]/10 | Giurisdizione: [Nazionale/Regione] | Lingua: [IT/EN]
 
 | Passo | Agente | Compito | Dipende Da | Checkpoint |
 |------|-------|------|------------|------------|
@@ -162,7 +162,7 @@ Complessità: [N]/10 | Giurisdizione: [Federale/Regione] | Lingua: [IT/EN]
 briefing_id: "brief_[timestamp]_[topic_hash]"
 matter_title: "[titolo descrittivo]"
 complexity: [N]
-jurisdiction: "[federale/regionale/multi]"
+jurisdiction: "[nazionale/regionale/multi]"
 region: "[codice se applicabile]"
 language: "[it/en]"
 status: "draft"
@@ -227,7 +227,7 @@ Dopo approvazione:
 Se l'utente sceglie "salva per dopo":
 - Aggiorna stato a `"saved"`.
 - Informa l'utente del briefing ID.
-- Fornisci comando di ripresa: `/bettercallclaude_italia:briefing --resume [id]`.
+- Fornisci comando di ripresa: `/bettercallclaude-italia:briefing --resume [id]`.
 
 ## Schema di Persistenza Memoria
 
@@ -261,4 +261,4 @@ Se l'utente sceglie "salva per dopo":
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-legal-strategy`, `italian-jurisdictions`, `italian-citation-formats`, `privacy-routing`
+- `italian-legal-research`, `italian-legal-strategy`, `italian-citation-formats`, `privacy-routing`

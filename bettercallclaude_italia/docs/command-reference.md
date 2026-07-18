@@ -4,7 +4,7 @@
 
 Tutti i comandi seguono il pattern:
 ```
-/bettercallclaude_italia:<comando> [argomenti] [--flag]
+/bettercallclaude-italia:<comando> [argomenti] [--flag]
 ```
 
 ## Flag Globali
@@ -23,92 +23,92 @@ Questi flag possono essere aggiunti alla maggior parte dei comandi:
 
 ## Dettagli Comandi
 
-### `/bettercallclaude_italia:legal`
+### `/bettercallclaude-italia:legale`
 **Scopo**: Gateway primario. Classifica intento, risolve giurisdizione, indirizza a specialisti.
 **Argomenti**: Query legale in linguaggio naturale.
 **Flag**: `--refine`, `--briefing`, `--skip-briefing`, `--direct`, `--no-framework`
 **Esempi**:
 ```
-/bettercallclaude_italia:legal Valutazione responsabilità art. 1218 CC per ritardata consegna
-/bettercallclaude_italia:legal --refine Ho problemi con il mio locatore
+/bettercallclaude-italia:legale Valutazione responsabilità art. 1218 CC per ritardata consegna
+/bettercallclaude-italia:legale --refine Ho problemi con il mio locatore
 ```
 
-### `/bettercallclaude_italia:research`
+### `/bettercallclaude-italia:ricerca`
 **Scopo**: Ricerca legale su Cassazione e normativa.
 **Argomenti**: Questione giuridica o riferimento normativo.
 **Esempi**:
 ```
-/bettercallclaude_italia:research Art. 1218 CC responsabilità contrattuale
-/bettercallclaude_italia:research Cassazione su mora del conduttore locazione
+/bettercallclaude-italia:ricerca Art. 1218 CC responsabilità contrattuale
+/bettercallclaude-italia:ricerca Cassazione su mora del conduttore locazione
 ```
 
-### `/bettercallclaude_italia:strategy`
+### `/bettercallclaude-italia:strategia`
 **Scopo**: Strategia di causa con valutazione del rischio e analisi costi-benefici.
 **Argomenti**: Descrizione della causa.
 **Esempi**:
 ```
-/bettercallclaude_italia:strategy Contenzioso locativo Milano, locatore chiede EUR 200k
+/bettercallclaude-italia:strategia Contenzioso locativo Milano, locatore chiede EUR 200k
 ```
 
-### `/bettercallclaude_italia:draft`
+### `/bettercallclaude-italia:redazione`
 **Scopo**: Redazione documenti legali.
 **Argomenti**: Tipo di documento e requisiti.
 **Esempi**:
 ```
-/bettercallclaude_italia:draft Contratto di lavoro ingegnere software Roma
-/bettercallclaude_italia:draft Atto di citazione inadempimento contrattuale
+/bettercallclaude-italia:redazione Contratto di lavoro ingegnere software Roma
+/bettercallclaude-italia:redazione Atto di citazione inadempimento contrattuale
 ```
 
-### `/bettercallclaude_italia:adversarial`
+### `/bettercallclaude-italia:contraddittorio`
 **Scopo**: Stress-test a tre agenti.
 **Argomenti**: Posizione giuridica da analizzare.
 **Esempi**:
 ```
-/bettercallclaude_italia:adversarial La clausola di non concorrenza è valida?
+/bettercallclaude-italia:contraddittorio La clausola di non concorrenza è valida?
 ```
 
-### `/bettercallclaude_italia:workflow`
+### `/bettercallclaude-italia:flusso`
 **Scopo**: Esegue pipeline multi-agente predefinite.
 **Argomenti**: Nome workflow + descrizione della causa.
 **Workflow**: `due-diligence`, `litigation-prep`, `contract-lifecycle`, `real-estate-closing`, `compliance-check`, `cross-border-ma`, `adversarial-review`
 **Esempi**:
 ```
-/bettercallclaude_italia:workflow litigation-prep Risarcimento danni produttore
+/bettercallclaude-italia:flusso litigation-prep Risarcimento danni produttore
 ```
 
-### `/bettercallclaude_italia:briefing`
+### `/bettercallclaude-italia:briefing`
 **Scopo**: Intake strutturato prima dell'esecuzione.
 **Argomenti**: Descrizione della causa.
 **Flag**: `--resume [id]`
 **Esempi**:
 ```
-/bettercallclaude_italia:briefing Prepara lite completa art. 1218 CC, EUR 500K
+/bettercallclaude-italia:briefing Prepara lite completa art. 1218 CC, EUR 500K
 ```
 
-### `/bettercallclaude_italia:regional`
+### `/bettercallclaude-italia:regionale`
 **Scopo**: Analisi del diritto regionale.
 **Argomenti**: Codice regione + questione giuridica.
 **Esempi**:
 ```
-/bettercallclaude_italia:regional LOM Giurisdizione Tribunale delle Imprese
+/bettercallclaude-italia:regionale LOM Giurisdizione Tribunale delle Imprese
 ```
 
-### `/bettercallclaude_italia:doc-analyze`
+### `/bettercallclaude-italia:analisi-doc`
 **Scopo**: Intelligenza documentale.
 **Argomenti**: Riferimento `@file` + istruzioni.
 **Esempi**:
 ```
-/bettercallclaude_italia:doc-analyze @contratto.pdf Analizza clausole rischiose
+/bettercallclaude-italia:analisi-doc @contratto.pdf Analizza clausole rischiose
 ```
 
-### `/bettercallclaude_italia:setup`
+### `/bettercallclaude-italia:configurazione`
 **Scopo**: Verifica connettività MCP.
 **Argomenti**: Nessuno.
 
-### `/bettercallclaude_italia:version`
+### `/bettercallclaude-italia:versione`
 **Scopo**: Visualizza versione e stato.
 **Argomenti**: Nessuno.
 
-### `/bettercallclaude_italia:help`
+### `/bettercallclaude-italia:aiuto`
 **Scopo**: Riferimento completo.
 **Argomenti**: Argomento opzionale.

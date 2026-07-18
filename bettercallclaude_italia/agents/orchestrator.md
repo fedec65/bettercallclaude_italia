@@ -129,7 +129,7 @@ Impostazioni Default:
 - Gestione errori: fail-fast (arresto al primo errore agente)
 - Checkpoint: a transizioni principali (configurabile)
 - Lingua: rilevata dall'input (default IT)
-- Giurisdizione: federale (sovrascrivibile con codice regione)
+- Giurisdizione: nazionale (sovrascrivibile con codice regione)
 - Sintetizzazione: --medium (default) | --short | --long | --no-summary
 ```
 
@@ -203,4 +203,4 @@ Quando l'orchestrator riceve un piano di esecuzione dall'agente coordinatore bri
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-citation-formats`, `italian-jurisdictions`, `italian-legal-drafting`, `italian-legal-strategy`, `privacy-routing`
+- `italian-legal-research`, `italian-citation-formats`, `italian-legal-drafting`, `italian-legal-strategy`, `privacy-routing`

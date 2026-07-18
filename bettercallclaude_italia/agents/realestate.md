@@ -129,4 +129,4 @@ Conclusione: [Restrizioni applicabili / Nessuna restrizione]
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `italian-jurisdictions`, `italian-citation-formats`
+- `italian-legal-research`, `italian-citation-formats`

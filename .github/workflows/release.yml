@@ -12,10 +12,10 @@ jobs:
   release:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
 
       - name: Setup Node.js
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
           node-version: '20'
 
@@ -44,11 +44,24 @@ jobs:
       - name: Package plugin
         run: npm run package
 
+      - name: Extract release notes for this version
+        id: release_notes
+        run: |
+          VERSION="${{ steps.get_version.outputs.VERSION }}"
+          # Extract only the section for this version from CHANGELOG.md
+          awk "/^## \[${VERSION}\]/{found=1; next} found && /^## \[/{exit} found{print}" CHANGELOG.md > /tmp/release-notes.md
+          if [ ! -s /tmp/release-notes.md ]; then
+            echo "ERROR: No release notes found for version ${VERSION} in CHANGELOG.md"
+            exit 1
+          fi
+          echo "Generated release notes for v${VERSION}:"
+          cat /tmp/release-notes.md
+
       - name: Create Release
-        uses: softprops/action-gh-release@v1
+        uses: softprops/action-gh-release@da05d552573ad5aba039eaac05058a918a7bf631 # v2.2.2
         with:
           name: "v${{ steps.get_version.outputs.VERSION }}"
-          body_path: CHANGELOG.md
+          body_path: /tmp/release-notes.md
           files: |
             dist/*.zip
         env:

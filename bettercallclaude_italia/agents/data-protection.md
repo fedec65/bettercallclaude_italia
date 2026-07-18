@@ -109,4 +109,4 @@ Sei uno specialista in protezione dati italiano. Analizzi la conformità con il 
 
 ## Skill Referenziate
 
-- `italian-legal-research`, `privacy-routing`, `italian-jurisdictions`
+- `italian-legal-research`, `privacy-routing`

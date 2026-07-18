@@ -1,0 +1,48 @@
+# Playbook Locale — BetterCallClaude Italia
+
+> Copia questo file nella cartella `.claude/` del progetto (Claude Code) o nella cartella condivisa (Cowork Desktop) e rinominalo `bettercallclaude-italia.local.md`. Personalizza le sezioni per il tuo studio.
+
+## Profilo Studio
+
+- **Nome**: [Nome dello studio]
+- **Sede**: [Citta]
+- **Tipo**: Studio legale
+- **Regioni principali**: [es. Lombardia, Lazio]
+- **Lingue di lavoro**: IT, EN
+
+## Posizioni Contrattuali Standard
+
+- **Legge applicabile**: Diritto italiano
+- **Foro competente**: Tribunale di [citta]
+- **Tetto responsabilita**: Valore del contratto
+- **Clausola penale**: Art. 1382 CC — massimo [X]% del valore contratto
+- **Clausola risolutiva espressa**: Art. 1456 CC — sempre inclusa
+- **NDA durata massima**: 5 anni
+- **NDA tipo preferito**: Bilaterale, obblighi reciproci
+- **CISG**: Esclusa ex Art. 6 CISG
+
+## Soglie di Rischio
+
+- **Valore per review umano obbligatorio**: > EUR [importo]
+- **Clausole che richiedono escalation**:
+  - Rinuncia a diritti inderogabili
+  - Garanzie illimitate o indennizzi senza cap
+  - Deroga Art. 1229 CC
+  - Clausole di non concorrenza (Art. 2125 CC)
+  - Foro non italiano
+  - Arbitrato con sede all'estero
+
+## Protezione Dati
+
+- **Ruolo prevalente**: Titolare del trattamento
+- **Normativa**: GDPR + Codice Privacy (D.Lgs. 196/2003, mod. D.Lgs. 101/2018)
+- **Trasferimenti extra-UE**: Richiedono garanzie adeguate (Art. 46 GDPR)
+- **DPO**: [Si/No]
+
+## Stile e Formato
+
+- **Formato citazioni**: Cass. civ., sez. [X], [data], n. [numero]
+- **Formato output**: Markdown
+- **Lingua citazioni**: Italiano
+- **Cartella output**: bcc-output
+- **Lunghezza default**: medio

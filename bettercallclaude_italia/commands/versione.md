@@ -1,0 +1,23 @@
+---
+description: "Visualizza versione plugin, componenti installati e stato del sistema."
+---
+
+# Versione BetterCallClaude Italia
+
+Sei invocato tramite `/bettercallclaude-italia:versione`. Visualizza la versione corrente e lo stato del sistema.
+
+## Output
+
+```
+BetterCallClaude Italia v1.1.0
+
+Componenti:
+- Agenti: 20
+- Comandi: 26
+- Skill: 13
+- Server MCP: 7
+
+Intelligenza Legale Italiana per il mercato italiano.
+```
+
+$ARGUMENTS

@@ -3,36 +3,41 @@
  * BetterCallClaude Italia Privacy Check Hook
  *
  * PreToolUse hook that detects potential attorney-client privileged content
- * (segreto professionale / Art. 622 CP, Art. 9 D.Lgs. 96/2001) across IT/EN
- * before it leaves the machine via Write, Edit, MultiEdit, WebFetch, or any MCP tool.
+ * (segreto professionale / Art. 622 CP, L. 247/2012, CDF Art. 13) across IT/EN
+ * before it leaves the machine via Write, Edit, MultiEdit, WebFetch, Bash,
+ * or any MCP tool.
  *
- * Strategy:
- *   - Strong patterns (attorney-specific terms, legal article references)
- *     always trigger a permission prompt.
- *   - Weak patterns (bare "confidential", "riservato", "confidenziale")
- *     require a discriminator — a legal-context file path or
- *     another privilege marker in the content.
+ * Modes (configurable via userConfig.privacy_mode):
+ *   - strict:   Strong/weak patterns trigger DENY (blocked).
+ *               Non-privileged content passes through (cloud MCP servers usable).
+ *               mcp__ollama__* is always allowed (local).
+ *   - balanced: Strong patterns trigger ASK (user confirms).
+ *               Weak patterns with discriminator trigger ASK.
+ *               No-match content passes through.
+ *   - cloud:    Only strong patterns trigger ASK.
+ *               Weak patterns are ignored.
+ *
+ * Ollama exclusion: mcp__ollama__* tools are always allowed in all modes
+ * because Ollama runs locally (localhost:11434) and never transmits data
+ * externally.
  *
  * Per Anthropic hooks spec, stdin is:
  *   {
  *     session_id, cwd, hook_event_name: "PreToolUse",
- *     tool_name: "Write" | "Edit" | "MultiEdit" | "WebFetch" | "mcp__<server>__<tool>" | ...,
- *     tool_input: { ... }
+ *     tool_name: "Write" | "Edit" | "MultiEdit" | "WebFetch" | "Bash" | "mcp__*",
+ *     tool_input: { ... },
+ *     userConfig: { privacy_mode: "strict" | "balanced" | "cloud" }
  *   }
  *
- * A legacy flat shape (tool input fields at the top level) is also accepted
- * as a safety net.
- *
  * Output:
- *   - stdout JSON {hookSpecificOutput:{permissionDecision:"ask", ...}}
- *     written only when privileged content is detected.
+ *   - stdout JSON with permissionDecision: "deny" | "ask" | (nothing).
  *   - Exit code 0 in all non-error paths.
  */
 
 'use strict';
 
 // ---------------------------------------------------------------------------
-// Entry point — reads stdin, classifies content, writes hookSpecificOutput.
+// Entry point
 // ---------------------------------------------------------------------------
 
 function main() {
@@ -41,35 +46,155 @@ function main() {
   process.stdin.on('data', (chunk) => { input += chunk; });
   process.stdin.on('end', () => {
     let data;
-    try { data = JSON.parse(input); } catch { process.exit(0); }
+    try {
+      data = JSON.parse(input);
+    } catch {
+      process.stdout.write(JSON.stringify({
+        hookSpecificOutput: {
+          hookEventName: 'PreToolUse',
+          permissionDecision: 'deny',
+          permissionDecisionReason: 'Privacy hook: input non parsabile, blocco preventivo (fail-closed).',
+        },
+      }));
+      process.exit(0);
+    }
 
     const toolName = typeof data.tool_name === 'string' ? data.tool_name : '';
     const toolInput = (data.tool_input && typeof data.tool_input === 'object')
       ? data.tool_input
       : data;
 
+    if (isLocalTool(toolName)) { process.exit(0); }
+
+    const mode = resolveMode(data);
     const content = extractTextFromInput(toolName, toolInput);
     const pathHint = extractPathHint(toolInput);
 
-    if (!content.trim()) { process.exit(0); }
+    // NEW-2: extract file paths referenced in Bash commands and check
+    // them against discriminators (curl @file, cat file | nc, etc.)
+    const bashPaths = (toolName === 'Bash' || toolName === 'bash')
+      ? extractBashFilePaths(typeof toolInput.command === 'string' ? toolInput.command : '')
+      : [];
 
-    const category = classify(content, pathHint);
-    if (!category) { process.exit(0); }
+    if (!content.trim() && !bashPaths.length && mode !== 'strict') { process.exit(0); }
 
-    const reason =
-      `Rilevato possibile contenuto soggetto a segreto professionale (categoria: ${category}). ` +
-      'Diritto italiano: Art. 622 CP / Art. 9 D.Lgs. 96/2001. ' +
-      'Confermare che questo contenuto può lasciare la macchina.';
+    const result = decide(content, pathHint, mode, bashPaths);
+    if (!result) { process.exit(0); }
 
     process.stdout.write(JSON.stringify({
       hookSpecificOutput: {
         hookEventName: 'PreToolUse',
-        permissionDecision: 'ask',
-        permissionDecisionReason: reason,
+        permissionDecision: result.decision,
+        permissionDecisionReason: result.reason,
       },
     }));
     process.exit(0);
   });
+}
+
+// ---------------------------------------------------------------------------
+// Mode resolution
+// ---------------------------------------------------------------------------
+
+const VALID_MODES = ['strict', 'balanced', 'cloud'];
+const MODE_SEVERITY = { cloud: 0, balanced: 1, strict: 2 };
+const DEFAULT_MODE = 'balanced';
+
+function resolveMode(data) {
+  const cfg = data.userConfig || data.user_config || {};
+  const fromConfig = (typeof cfg.privacy_mode === 'string' ? cfg.privacy_mode : '').toLowerCase().trim();
+  if (VALID_MODES.includes(fromConfig)) return fromConfig;
+
+  // Fallback: read .privacy-mode file from CWD (written by /privacy command).
+  // Security (NEW-1): the file can only RAISE severity above the default
+  // (balanced). A file containing "cloud" is ignored — an attacker who
+  // deposits a .privacy-mode file cannot silently lower protection.
+  try {
+    const fs = require('fs');
+    const path = require('path');
+    const filePath = path.join(data.cwd || process.cwd(), '.privacy-mode');
+    const fromFile = fs.readFileSync(filePath, 'utf8').trim().toLowerCase();
+    if (VALID_MODES.includes(fromFile) && MODE_SEVERITY[fromFile] >= MODE_SEVERITY[DEFAULT_MODE]) {
+      return fromFile;
+    }
+  } catch (_) { /* file not found or unreadable — use default */ }
+
+  return DEFAULT_MODE;
+}
+
+// ---------------------------------------------------------------------------
+// Local tool detection
+// ---------------------------------------------------------------------------
+
+function isLocalTool(toolName) {
+  return /^mcp__ollama__/i.test(toolName);
+}
+
+// ---------------------------------------------------------------------------
+// Decision logic
+// ---------------------------------------------------------------------------
+
+function decide(content, pathHint, mode, bashPaths) {
+  const category = classify(content, pathHint);
+
+  // NEW-2: check if any Bash file path hits a discriminator
+  const bashPathHit = (bashPaths || []).some((p) => DISCRIMINATOR_PATH.test(p));
+
+  if (mode === 'strict') {
+    // NEW-3: strict now uses pattern-based deny instead of blanket deny.
+    // Content without privileged markers passes through, so the 7 cloud
+    // MCP servers remain usable for non-privileged research.
+    if (!category && !bashPathHit) return null;
+    return {
+      decision: 'deny',
+      reason: bashPathHit && !category
+        ? 'BLOCCATO: comando shell referenzia file in directory privilegiata. ' +
+          'Modalita strict: esfiltrazione di contenuto privilegiato bloccata. ' +
+          'Art. 622 CP / L. 247/2012, CDF Art. 13.'
+        : `BLOCCATO: contenuto soggetto a segreto professionale (categoria: ${category}). ` +
+          'Modalita strict: contenuto privilegiato non puo lasciare la macchina. ' +
+          'Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
+          'Usare Ollama (locale) per elaborare contenuto privilegiato.',
+    };
+  }
+
+  // NEW-2: in balanced, Bash commands referencing privileged paths trigger ask
+  if (bashPathHit && !category) {
+    if (mode === 'cloud') return null;
+    return {
+      decision: 'ask',
+      reason:
+        'Comando shell referenzia file in directory privilegiata. ' +
+        'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
+        'Confermare che il contenuto del file puo lasciare la macchina.',
+    };
+  }
+
+  if (!category) return null;
+
+  if (isStrongCategory(category)) {
+    return {
+      decision: 'ask',
+      reason:
+        `Rilevato contenuto soggetto a segreto professionale (categoria: ${category}). ` +
+        'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
+        'Confermare che questo contenuto puo lasciare la macchina.',
+    };
+  }
+
+  if (mode === 'cloud') return null;
+
+  return {
+    decision: 'ask',
+    reason:
+      `Rilevato possibile contenuto soggetto a segreto professionale (categoria: ${category}). ` +
+      'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
+      'Confermare che questo contenuto puo lasciare la macchina.',
+  };
+}
+
+function isStrongCategory(category) {
+  return !category.endsWith('+context');
 }
 
 // ---------------------------------------------------------------------------
@@ -116,6 +241,30 @@ function extractPathHint(input) {
   return '';
 }
 
+/**
+ * NEW-2: Extract file paths referenced in a Bash command string.
+ * Catches patterns like: curl @file, curl --data-binary @file,
+ * cat file | ..., head/tail/less/base64 file, input redirect < file.
+ */
+function extractBashFilePaths(cmd) {
+  const paths = [];
+  const patterns = [
+    // curl @file or curl --data-binary @file
+    /@(\/[^\s;|&"']+)/g,
+    // input redirect: < /path/to/file
+    /<\s*(\/[^\s;|&"']+)/g,
+    // cat, head, tail, less, base64, xxd followed by absolute path
+    /\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)\s+(\/[^\s;|&"']+)/g,
+  ];
+  for (const rx of patterns) {
+    let m;
+    while ((m = rx.exec(cmd)) !== null) {
+      paths.push(m[1]);
+    }
+  }
+  return paths;
+}
+
 function walkStrings(node, emit, depth) {
   if (depth === undefined) depth = 0;
   if (depth > 6) return;
@@ -134,24 +283,38 @@ function walkStrings(node, emit, depth) {
 // ---------------------------------------------------------------------------
 
 const STRONG_PATTERNS = [
-  // Italian — attorney-specific
+  // Italian -- attorney-specific
   { rx: /\bsegreto\s+professionale\b/i,                  cat: 'segreto-professionale' },
   { rx: /\bsegreto\s+commerciale\b/i,                    cat: 'segreto-commerciale' },
   { rx: /\bsegreto\s+del\s+mandato\b/i,                  cat: 'segreto-del-mandato' },
   { rx: /\bstrettamente\s+riservato\b/i,                 cat: 'strettamente-riservato' },
   { rx: /\briserbatissimo\b/i,                           cat: 'riserbatissimo' },
   { rx: /\bsegreto\s+d[' ]ufficio\b/i,                   cat: 'segreto-d-ufficio' },
+  { rx: /\bvincolo\s+(?:di\s+)?riservatezza\b/i,         cat: 'vincolo-riservatezza' },
+  { rx: /\bobbligo\s+di\s+riservatezza\b/i,              cat: 'obbligo-riservatezza' },
+  { rx: /\bsegreto\s+istruttorio\b/i,                    cat: 'segreto-istruttorio' },
+  { rx: /\bsegreto\s+investigativo\b/i,                  cat: 'segreto-investigativo' },
+  { rx: /\briservatezza\s+professionale\b/i,             cat: 'riservatezza-professionale' },
+  { rx: /\btutela\s+del\s+segreto\b/i,                   cat: 'tutela-del-segreto' },
+  { rx: /\bcomunicazion[ei]\s+privilegiat[aei]\b/i,        cat: 'comunicazione-privilegiata' },
 
   // English
   { rx: /\battorney[-\s]?client\s+privilege\b/i,        cat: 'attorney-client-privilege' },
   { rx: /\blegal\s+privilege\b/i,                        cat: 'legal-privilege' },
   { rx: /\bwork\s+product\b/i,                           cat: 'work-product' },
   { rx: /\bstrictly\s+confidential\b/i,                  cat: 'strictly-confidential' },
+  { rx: /\blegal(?:ly)?\s+privileged\b/i,                cat: 'legally-privileged' },
+  { rx: /\bprivileged\s+(?:and\s+)?confidential\b/i,     cat: 'privileged-confidential' },
+  { rx: /\bprotected\s+by\s+(?:legal\s+)?privilege\b/i,  cat: 'protected-by-privilege' },
 
-  // Legal article references — Italian
-  { rx: /\bArt\.?\s*622\s*CP\b/i,                       cat: 'art-622-cp' },
-  { rx: /\bArt\.?\s*9\s*D\.?Lgs\.?\s*96[/]2001\b/i,     cat: 'art-9-dlgs-96-2001' },
-  { rx: /\bArt\.?\s*663\s*CP\b/i,                       cat: 'art-663-cp' },
+  // Legal article references -- Italian
+  { rx: /\bArt\.?\s*622\s*C\.?\s*P\.?\b/i,                cat: 'art-622-cp' },
+  { rx: /\bL\.?\s*247[/]2012\b/i,                        cat: 'l-247-2012' },
+  { rx: /\bCDF\s+Art\.?\s*13\b/i,                         cat: 'cdf-art-13' },
+  { rx: /\bCDF\s+Art\.?\s*28\b/i,                         cat: 'cdf-art-28' },
+  { rx: /\bArt\.?\s*663\s*C\.?\s*P\.?\b/i,                cat: 'art-663-cp' },
+  { rx: /\bArt\.?\s*200\s*C\.?\s*P\.?\s*P\.?\b/i,        cat: 'art-200-cpp' },
+  { rx: /\bArt\.?\s*103\s*C\.?\s*P\.?\s*P\.?\b/i,        cat: 'art-103-cpp' },
 ];
 
 const WEAK_PATTERNS = [
@@ -159,12 +322,14 @@ const WEAK_PATTERNS = [
   { rx: /\bconfidenziale\b/i,      cat: 'confidenziale-bare' },
   { rx: /\bconfidential\b/i,       cat: 'confidential-bare' },
   { rx: /\bprivato\b/i,            cat: 'privato-bare' },
+  { rx: /\bnon\s+divulgare\b/i,    cat: 'non-divulgare' },
+  { rx: /\buso\s+interno\b/i,      cat: 'uso-interno' },
 ];
 
 const DISCRIMINATOR_PATH = new RegExp(
   '(^|[\\\\/])' +
   '(cliente|clienti|client|clients|case|cases|dossier|pratica|pratiche' +
-  '|causa|cause|atto|atti|privileged|matter|matters|case[-_]files)' +
+  '|causa|cause|atto|atti|privileged|matter|matters|case[-_]files|fascicoli|fascicolo)' +
   '([\\\\/.]|$)',
   'i'
 );
@@ -172,9 +337,10 @@ const DISCRIMINATOR_PATH = new RegExp(
 const DISCRIMINATOR_CONTENT = new RegExp(
   '\\b(' +
   'cliente|clienti|client|mandante|mandanti' +
-  '|dossier|numero\s+di\s+pratica|riferimento\s+atto' +
+  '|dossier|numero\\s+di\\s+pratica|riferimento\\s+atto' +
   '|procedimento|processo|giudizio|ricorso|opposizione' +
-  '|avvocato|avvocati|avvocatessa|studio\s+legale' +
+  '|avvocato|avvocati|avvocatessa|studio\\s+legale' +
+  '|tribunale|corte|giudice|parte\\s+avversa|controparte' +
   ')\\b',
   'i'
 );
@@ -201,11 +367,17 @@ function hasDiscriminator(content, pathHint) {
 
 module.exports = {
   classify,
+  decide,
+  resolveMode,
+  isLocalTool,
   extractTextFromInput,
   extractPathHint,
+  extractBashFilePaths,
   hasDiscriminator,
+  isStrongCategory,
   STRONG_PATTERNS,
   WEAK_PATTERNS,
+  MODE_SEVERITY,
 };
 
 if (require.main === module) {
