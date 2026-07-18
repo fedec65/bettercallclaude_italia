@@ -28,6 +28,8 @@ I server MCP si connettono automaticamente via HTTP. Nessuna configurazione manu
 
 📖 [README completo del plugin](bettercallclaude_italia/README.md)
 
+🔐 [Come accedere al server della Cassazione?](bettercallclaude_italia/docs/cassazione-cookie.md)
+
 ---
 
 ## Licenza
