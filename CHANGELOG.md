@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.3] - 2026-07-21
+
+### Added
+- **Sezione "Cookie Cassazione" nel README** — Documentazione chiara su come funziona il cookie ItalGiure: ottenere il cookie, fornirlo quando richiesto dall'agente, e gestione scadenza. Include link alla guida dettagliata `docs/cassazione-cookie.md`.
+
+---
+
 ## [1.2.2] - 2026-07-21
 
 ### Changed

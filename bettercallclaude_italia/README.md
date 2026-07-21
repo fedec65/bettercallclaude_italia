@@ -136,6 +136,21 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 
 Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazione) restituiscono URL fallback anziche dati strutturati, il plugin fornisce automaticamente link per consultazione diretta tramite ECLI, Google o portale istituzionale.
 
+### Cookie Cassazione
+
+Per accedere alle **massime complete** della Cassazione (banca dati ItalGiure), il plugin richiede un cookie di sessione ItalGiure.
+
+**Come funziona:**
+1. **Ottieni il cookie**: Accedi a [ItalGiure](https://www.italgiure.giustizia.it/sncass/) con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e copia il risultato.
+2. **Fornisci il cookie quando richiesto**: L'agente ti chiederà esplicitamente il cookie quando usi comandi che accedono alla Cassazione (es. `/bettercallclaude-italia:precedente`, `/bettercallclaude-italia:ricerca`).
+3. **Il cookie viene passato come parametro MCP** al server remoto per la durata della conversazione.
+
+**Senza cookie**: I tool restituiscono link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI) e istruzioni per configurarlo.
+
+> **Nota**: Il cookie dura 30 giorni e non viene salvato permanentemente — l'agente lo chiede quando necessario.
+
+Per istruzioni dettagliate: [docs/cassazione-cookie.md](docs/cassazione-cookie.md)
+
 ---
 
 ## Privacy
