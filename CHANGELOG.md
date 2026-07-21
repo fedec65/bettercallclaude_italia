@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.5] - 2026-07-21
+
+### Fixed
+- **Badge versione README** — Aggiornato badge versione da 1.1.0 a 1.2.4 in `README.md` (marketplace) e `bettercallclaude_italia/README.md` (plugin). I badge ora mostrano la versione corretta su GitHub.
+
+---
+
 ## [1.2.4] - 2026-07-21
 
 ### Fixed
