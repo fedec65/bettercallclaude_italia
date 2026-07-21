@@ -110,6 +110,31 @@ for (const file of criticalFiles) {
 }
 console.log(`  ✅ Critical plugin files present`);
 
+// 8. Skill frontmatter limits (Claude rejects skills whose description > 1024 chars,
+//    which silently breaks marketplace sync in Cowork Desktop)
+const SKILL_DESC_MAX = 1024;
+const skillsDir = 'bettercallclaude_italia/skills';
+if (fs.existsSync(skillsDir)) {
+  let skillCount = 0;
+  for (const entry of fs.readdirSync(skillsDir, { withFileTypes: true })) {
+    if (!entry.isDirectory()) continue;
+    const skillFile = path.join(skillsDir, entry.name, 'SKILL.md');
+    if (!fs.existsSync(skillFile)) continue;
+    skillCount++;
+    const content = fs.readFileSync(skillFile, 'utf-8');
+    const fmEnd = content.indexOf('---', 3);
+    const fm = fmEnd > 0 ? content.slice(3, fmEnd) : '';
+    const descMatch = fm.match(/^description:\s*"?([\s\S]*?)"?\s*$/m);
+    const desc = descMatch ? descMatch[1] : '';
+    assert(desc.length > 0, `skill "${entry.name}": missing "description" in SKILL.md frontmatter`);
+    assert(
+      desc.length <= SKILL_DESC_MAX,
+      `skill "${entry.name}": description is ${desc.length} chars (max ${SKILL_DESC_MAX}) — over-long descriptions break marketplace sync`
+    );
+  }
+  console.log(`  ✅ Skill descriptions within ${SKILL_DESC_MAX}-char limit (${skillCount} skills)`);
+}
+
 console.log('');
 
 if (errors.length > 0) {
