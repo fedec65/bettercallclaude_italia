@@ -4,6 +4,15 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.2] - 2026-07-21
+
+### Changed
+- **Approccio cookie ItalGiure** — Cowork Desktop non mostra i campi `userConfig` nelle impostazioni del plugin. Cambiato approccio: l'agente ora **chiede esplicitamente il cookie all'utente** quando usa i tool Cassazione, invece di leggerlo da userConfig. Il cookie viene passato come parametro MCP e mantenuto per la durata della conversazione.
+- **Skill `italian-legal-research`** — Aggiornato per chiedere il cookie ItalGiure all'utente quando necessario, con istruzioni su come ottenerlo.
+- **Documentazione `docs/cassazione-cookie.md`** — Aggiornata per spiegare il nuovo approccio: l'utente fornisce il cookie quando richiesto dall'agente, non tramite impostazioni plugin.
+
+---
+
 ## [1.2.1] - 2026-07-21
 
 ### Fixed
