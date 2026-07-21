@@ -110,6 +110,46 @@ for (const file of criticalFiles) {
 }
 console.log(`  ✅ Critical plugin files present`);
 
+// 8. Frontmatter description limits.
+//    Claude rejects skills/agents whose "description" exceeds 1024 chars.
+//    A single over-long description makes the plugin fail to load, which
+//    leaves the marketplace stuck "syncing" forever in Cowork Desktop.
+const DESC_MAX = 1024;
+function checkDescriptions(dir, label) {
+  if (!fs.existsSync(dir)) return;
+  let count = 0;
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    let file;
+    if (entry.isDirectory()) {
+      file = path.join(dir, entry.name, 'SKILL.md');
+    } else if (entry.name.endsWith('.md')) {
+      file = path.join(dir, entry.name);
+    } else {
+      continue;
+    }
+    if (!fs.existsSync(file)) continue;
+    const content = fs.readFileSync(file, 'utf-8');
+    if (!content.startsWith('---')) continue;
+    const fmEnd = content.indexOf('\n---', 3);
+    if (fmEnd < 0) continue;
+    const fm = content.slice(3, fmEnd);
+    const m = fm.match(/^description:\s*(.*)$/m);
+    if (!m) continue;
+    count++;
+    let desc = m[1].trim();
+    if ((desc.startsWith('"') && desc.endsWith('"')) || (desc.startsWith("'") && desc.endsWith("'"))) {
+      desc = desc.slice(1, -1);
+    }
+    assert(
+      desc.length <= DESC_MAX,
+      `${label} "${entry.name}": description is ${desc.length} chars (max ${DESC_MAX}) — over-long descriptions break marketplace sync`
+    );
+  }
+  console.log(`  ✅ ${label} descriptions within ${DESC_MAX}-char limit (${count} checked)`);
+}
+checkDescriptions('bettercallclaude_italia/skills', 'Skill');
+checkDescriptions('bettercallclaude_italia/agents', 'Agent');
+
 console.log('');
 
 if (errors.length > 0) {
