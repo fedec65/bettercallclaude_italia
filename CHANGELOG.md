@@ -4,6 +4,21 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.0] - 2026-07-21
+
+### Added
+- **Cookie ItalGiure via userConfig** — Gli utenti possono ora inserire il cookie di sessione ItalGiure nelle impostazioni del plugin (campo `italgiure_cookie`). Il plugin passa automaticamente il cookie al server MCP remoto come parametro, senza richiedere configurazione manuale.
+- **Parametro `cookie` nei tool Cassazione** — I tool `cassazione_search_massime` e `cassazione_get_sentenza` accettano ora il parametro opzionale `cookie`, con fallback a `ITALGIURE_COOKIE` env var o file locale per self-hosted.
+
+### Changed
+- **Skill `italian-legal-research`** — Aggiornato per passare il cookie ItalGiure come parametro `cookie` quando configurato.
+- **Documentazione `docs/cassazione-cookie.md`** — Aggiornata per spiegare la nuova UX: cookie via impostazioni plugin invece di passaggio manuale.
+
+### Fixed
+- **Server Cassazione remoto** — Risolto problema che impediva agli utenti di passare il cookie personale al server hosted. Il cookie ora viene passato come parametro MCP, mantenendo la sessione ItalGiure attiva senza condivisione con altri utenti.
+
+---
+
 ## [1.1.0] - 2026-06-21
 
 ### Added — Swiss Feature Port (v4.8.0–v4.9.0)
