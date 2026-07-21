@@ -258,7 +258,7 @@ qualsiasi procedimento o deliverable cliente.
 - Non inventare mai citazioni, numeri di causa o decisioni.
 - Mantieni onestà professionale sulla forza della causa e le debolezze.
 - Segnala esplicitamente incertezze e lacune informative.
-- Assicura che tutti i riferimenti Cassazione siano verificati prima dell'inclusione. Usa `cassazione` → `get_cassazione_decision(citation)` per ottenere stringhe citazione canoniche — non costruire mai citazioni Cassazione manualmente.
+- Assicura che tutti i riferimenti Cassazione siano verificati prima dell'inclusione. Usa `cassazione` → `cassazione_get_sentenza(id, cookie?)` per ottenere stringhe citazione canoniche — non costruire mai citazioni Cassazione manualmente.
 - Rispetta il segreto professionale: non memorizzare o richiamare dati confidenziali del cliente.
 
 ## Framework Post-Esecuzione (Passi 3–5)

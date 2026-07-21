@@ -29,9 +29,17 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 - Elenca fonti secondarie: Commentario al Codice Civile, Rassegna di Diritto Civile, Rivista Penale, Foro Italiano.
 
 ### Passo 3: RICERCA
-- Cerca Cassazione tramite MCP cassazione (`search_cassazione`, `get_cassazione_decision`).
-- Cerca cortedicassazione.it per decisioni recenti non pubblicate.
+- Cerca Cassazione tramite MCP cassazione:
+  - `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Se l'utente ha fornito il cookie ItalGiure nella conversazione, passalo come parametro `cookie`.
+  - `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Se l'utente ha fornito il cookie, passalo come parametro `cookie`.
+- Cerca cortedicassazione.it per decisioni recenti non pubblicate (solo se necessario).
 - Accedi a banche dati dei tribunali regionali e Gazzetta Ufficiale.
+
+**Cookie ItalGiure**: Quando usi i tool Cassazione, se l'utente non ha ancora fornito il cookie ItalGiure nella conversazione, chiedilo esplicitamente:
+
+> "Per accedere alle massime complete della Cassazione ho bisogno del tuo cookie di sessione ItalGiure. Per ottenerlo: accedi a https://www.italgiure.giustizia.it/sncass/ con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e incolla qui il risultato. Il cookie dura 30 giorni."
+
+Una volta che l'utente fornisce il cookie, passalo come parametro `cookie` in tutte le chiamate ai tool Cassazione per la durata della conversazione. Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI).
 
 ### Passo 4: VERIFICA
 - Valida ogni citazione tramite MCP legal-citations-ita `verify_citation`.

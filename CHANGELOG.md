@@ -4,6 +4,18 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.4] - 2026-07-21
+
+### Fixed
+- **Nomi tool MCP Cassazione corretti** — Risolto bug critico: agenti e comandi usavano nomi tool MCP sbagliati (`search_cassazione`, `get_cassazione_decision`) invece di quelli reali del server MCP (`cassazione_search_massime`, `cassazione_get_sentenza`). Questo causava la ricerca sul web invece di usare il server MCP Cassazione.
+- **Agente `researcher`** — Corretto per usare `cassazione_search_massime` e `cassazione_get_sentenza`, con istruzioni per chiedere il cookie ItalGiure.
+- **Agente `prompt-engineer`** — Corretto per usare `cassazione_search_massime` e `cassazione_get_sentenza`.
+- **Comando `doctor`** — Corretto per testare `cassazione_search_massime` invece di `search_cassazione`.
+- **Comando `legale`** — Corretto per usare `cassazione_get_sentenza` invece di `get_cassazione_decision`.
+- **Skill `italian-legal-strategy`** — Corretto per usare `cassazione_search_massime` e `cassazione_get_sentenza`.
+
+---
+
 ## [1.2.3] - 2026-07-21
 
 ### Added

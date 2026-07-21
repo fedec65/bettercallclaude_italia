@@ -27,7 +27,7 @@ Per ciascuno dei 7 server MCP, usa un **approccio a due stadi**:
 | normattiva | Legislazione italiana (1861-oggi) | `search_legislation` (minima) |
 | corte-costituzionale | Sentenze Corte Costituzionale | `search_decisions` (minima) |
 | giustizia-amministrativa | Sentenze TAR e Consiglio di Stato | `search_decisions` (minima) |
-| cassazione | Giurisprudenza Cassazione (ItalGiure) | `search_cassazione` (minima) |
+| cassazione | Giurisprudenza Cassazione (ItalGiure) | `cassazione_search_massime` (minima) |
 | eur-lex-ita | Diritto UE in italiano | `search_legislation` (minima) |
 | legal-citations-ita | Validazione e formattazione citazioni | `validate_citation` (minima) |
 | legal-persona-ita | Generazione documenti legali | `legal_analyze` (minima) |
