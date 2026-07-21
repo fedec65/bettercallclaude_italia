@@ -20,13 +20,16 @@ Istruzioni per l'utente del plugin BetterCallClaude — Come usare il server Cas
 
 **Conserva questa stringa**: è il tuo "biglietto d'ingresso" per il server Cassazione.
 
-### Passo 2: Usare il cookie nel plugin BetterCallClaude
+### Passo 2: Inserire il cookie nelle impostazioni del plugin
 
-Quando chiami il tool `cassazione_search_massime` o `cassazione_get_sentenza` dal plugin, includi il cookie come parametro della chiamata.
+1. Apri **Cowork Desktop**.
+2. Vai su **Personalizza** → **Sfoglia plugin** → **BetterCallClaude Italia**.
+3. Clicca **Impostazioni** (ingranaggio).
+4. Trova il campo **"Cookie sessione ItalGiure"**.
+5. Incolla la stringa che hai copiato nel Passo 1.
+6. Salva le impostazioni.
 
-Il plugin BetterCallClaude accetta il parametro opzionale `cookie` in entrambi i tool. Basta aggiungerlo alla richiesta.
-
-**Non devi configurare nulla sul server**: il cookie passa direttamente dalla tua chiamata al tool.
+**Non devi fare altro**: il plugin passerà automaticamente il cookie al server Cassazione ogni volta che usi i comandi di ricerca.
 
 ### Passo 3: Gestire il cookie quando scade
 
@@ -34,19 +37,19 @@ Il cookie dura fino a 30 giorni. Quando scade:
 
 1. Torna su ItalGiure (la sessione browser deve essere ancora attiva).
 2. Ripeti il Passo 1 (estrai un nuovo cookie con `document.cookie`).
-3. Usa il nuovo cookie nelle tue chiamate successive.
+3. Aggiorna il campo **"Cookie sessione ItalGiure"** nelle impostazioni del plugin.
 
 ---
 
 ## Domande frequenti
 
-**"Perché devo passare il cookie ogni volta?"**
-Perché il server Cassazione non salva il tuo cookie per privacy e sicurezza. Ogni chiamata è indipendente.
+**"Perché devo inserire il cookie nelle impostazioni?"**
+Perché il server Cassazione è remoto (hosted su `mcp-italia.bettercallclaude.ch`). Il cookie viene passato come parametro MCP a ogni chiamata, mantenendo la tua sessione ItalGiure attiva senza condividere il cookie con altri utenti.
 
-**"Posso non passare il cookie?"**
-Sì, ma allora il tool restituirà solo link di fallback (Google, DuckDuckGo, ECLI) e istruzioni su come configurare il cookie. Non vedrai i risultati reali di ItalGiure.
+**"Posso non inserire il cookie?"**
+Sì. Senza cookie, i tool restituiranno solo link di fallback (Google, DuckDuckGo, ECLI) e istruzioni su come configurare il cookie. Non vedrai i risultati reali di ItalGiure.
 
-**"Il cookie è sicuro da passare?"**
+**"Il cookie è sicuro da inserire nelle impostazioni?"**
 Sì, è un cookie di sessione standard. Non contiene la tua password, solo un identificativo temporaneo di sessione. Non condividerlo pubblicamente.
 
 **"Cosa succede se sbaglio cookie?"**
@@ -58,7 +61,7 @@ Il server risponde con `cookieValido: false` e un messaggio che ti guida all'agg
 
 **Scenario A — Cookie corretto:**
 Chiedi al plugin: "Cerca massime sulla responsabilità medica"
-→ Il plugin chiama `cassazione_search_massime` con il tuo cookie
+→ Il plugin chiama `cassazione_search_massime` con il tuo cookie (passato come parametro MCP)
 → Ricevi i risultati strutturati da ItalGiure (estremi, sezione, data, link PDF)
 
 **Scenario B — Cookie mancante o scaduto:**
@@ -73,5 +76,5 @@ Chiedi al plugin: "Cerca massime sulla responsabilità medica"
 | Cosa | Dove | Come |
 |------|------|------|
 | **Ottenere il cookie** | Browser su ItalGiure | Login → DevTools → Console → `document.cookie` |
-| **Passare il cookie** | Plugin BetterCallClaude | Aggiungilo come parametro `cookie` nella chiamata MCP |
-| **Aggiornare il cookie** | Browser (quando scade) | Ripeti il primo passo |
+| **Inserire il cookie** | Cowork Desktop | Impostazioni plugin → "Cookie sessione ItalGiure" |
+| **Aggiornare il cookie** | Browser (quando scade) | Ripeti il primo passo e aggiorna le impostazioni |
