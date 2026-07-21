@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.1] - 2026-07-21
+
+### Fixed
+- **Campo `italgiure_cookie` visibile** — Rimosso `sensitive: true` dal campo `italgiure_cookie` in `plugin.json`. Cowork Desktop nascondeva i campi sensibili nelle impostazioni, impedendo agli utenti di configurare il cookie ItalGiure. Ora il campo è visibile e modificabile.
+
+---
+
 ## [1.2.0] - 2026-07-21
 
 ### Added
