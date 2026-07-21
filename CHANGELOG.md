@@ -4,6 +4,15 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.5] - 2026-07-21
+
+### Fixed
+- **Marketplace sync bloccato in Cowork Desktop** — Risolto il blocco che impediva al marketplace di completare la sincronizzazione. La descrizione della skill `legal-5step-framework` era di **1378 caratteri**, oltre il limite di **1024** che Claude impone al campo `description` delle skill: una singola descrizione troppo lunga fa fallire il caricamento del plugin, lasciando il marketplace in stato "syncing" indefinito. Descrizione ridotta a ~490 caratteri mantenendo i criteri di attivazione/non-attivazione (in linea con le descrizioni skill del plugin svizzero, tutte < 600 caratteri).
+- **Guard di validazione** — Aggiunto a `scripts/validate-plugin.js` un controllo che fallisce se una descrizione di skill o agente supera 1024 caratteri, così il problema non può ripresentarsi silenziosamente.
+- **Versioni allineate** — Badge versione (`README.md` marketplace e plugin) portati a 1.2.5, `commands/versione.md` da v1.1.0 a v1.2.5, `bettercallclaude_italia/package.json` da 1.0.4 a 1.2.5.
+
+---
+
 ## [1.2.4] - 2026-07-21
 
 ### Fixed
