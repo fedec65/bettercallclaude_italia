@@ -9,7 +9,8 @@
     "dev": "tsc --watch"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.0.0"
+    "@modelcontextprotocol/sdk": "^1.0.0",
+    "hono": "^4.12.25"
   },
   "devDependencies": {
     "@types/node": "^20.0.0",
