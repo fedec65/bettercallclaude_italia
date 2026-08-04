@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.2.6] - 2026-08-04
+
+### Fixed
+- **Hook privacy-check rotto su macOS** — Risolto bug critico segnalato da un utente: il comando dell'hook PreToolUse (`node ${CLAUDE_PLUGIN_ROOT}/scripts/privacy-check.js`) non racchiudeva il path tra virgolette. Su macOS il plugin root sta sotto `~/Library/Application Support/...` e lo spazio in "Application Support" spezzava il comando: Node cercava `/Users/<utente>/Library/Application` e falliva a ogni tool call. Conseguenza: il controllo sul segreto professionale era **silenziosamente inattivo** (hook non-blocking) per tutti gli utenti con spazi nel path. Comando corretto in `node "${CLAUDE_PLUGIN_ROOT}/scripts/privacy-check.js"`.
+
+---
+
 ## [1.2.5] - 2026-07-21
 
 ### Fixed

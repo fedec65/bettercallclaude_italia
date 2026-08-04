@@ -7,7 +7,7 @@
         "hooks": [
           {
             "type": "command",
-            "command": "node ${CLAUDE_PLUGIN_ROOT}/scripts/privacy-check.js",
+            "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/privacy-check.js\"",
             "timeout": 15
           }
         ]
