@@ -7,11 +7,11 @@ tools:
   - Grep
   - Glob
   - Bash
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
-  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
-  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_get_sentenza
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
+  - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
 ---
 
 # Agente Specialista in Procedura Italiana

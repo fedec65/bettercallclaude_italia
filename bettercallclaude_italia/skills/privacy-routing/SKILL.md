@@ -103,8 +103,8 @@ Quando l'hook `PreToolUse` non e attivo (es. in ambienti che non supportano hook
 
 1. **Prima di ogni chiamata tool** che trasmette contenuto a server cloud, scansiona il contenuto per pattern forti e deboli (tabelle sopra).
 2. **Se trovati pattern forti** (livello PRIVILEGIATO): avvisa l'utente in chat e chiedi conferma esplicita prima di procedere.
-3. **Se in modalita strict** (file `.privacy-mode` con valore `strict`): rifiuta di inviare il contenuto a server cloud. Solo Ollama (locale) e server MCP locali sono permessi.
-4. **Ollama e sempre esente**: `mcp__ollama__*` opera su `localhost:11434` e non trasmette dati all'esterno.
+3. **Se in modalita strict** (file `.privacy-mode` con valore `strict`): rifiuta di inviare il contenuto a server cloud. Solo server MCP locali (es. Ollama, se configurato) sono permessi.
+4. **I tool locali sono sempre esenti**: se configuri un server MCP locale (es. Ollama su `localhost:11434`), i suoi tool (`mcp__ollama__*`) non trasmettono dati all'esterno e sono sempre esenti.
 5. **Se non riesci a determinare** se un tool trasmette contenuto esternamente, trattalo come cloud e applica le regole di routing.
 
 Questo garantisce un livello base di protezione anche senza l'hook attivo.

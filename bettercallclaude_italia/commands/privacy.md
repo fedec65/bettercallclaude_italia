@@ -29,7 +29,7 @@ Mostra all'utente:
 
 Modalita corrente: **[balanced]**
 
-| Modalita | Pattern forti | Pattern deboli+contesto | Ollama |
+| Modalita | Pattern forti | Pattern deboli+contesto | Tool locali |
 |----------|--------------|------------------------|--------|
 | strict | BLOCCATO (deny) | BLOCCATO (deny) | Sempre permesso |
 |        | Contenuto non privilegiato passa (server MCP cloud usabili) | | |
@@ -42,7 +42,7 @@ vincolo di riservatezza, attorney-client privilege, ecc.
 Pattern deboli: riservato, confidenziale, confidential, privato, non divulgare,
 uso interno (richiedono contesto legale: cliente, tribunale, avvocato, ecc.)
 
-Ollama (mcp__ollama__*) e sempre escluso dal controllo perche locale.
+I tool locali (es. `mcp__ollama__*`, se Ollama e configurato) sono sempre esclusi dal controllo perche non trasmettono dati all'esterno.
 
 Per cambiare: /bettercallclaude-italia:privacy strict|balanced|cloud
 ```
@@ -66,7 +66,7 @@ L'hook PreToolUse usera questa modalita per le prossime chiamate tool.
 
 Quando l'utente chiede quale modalita usare, consiglia:
 
-- **strict** -- Per lavoro su contenuto altamente privilegiato. Le chiamate contenenti pattern privilegiati sono bloccate. Il contenuto non privilegiato passa normalmente (i server MCP cloud restano usabili per la ricerca). Ollama sempre permesso.
+- **strict** -- Per lavoro su contenuto altamente privilegiato. Le chiamate contenenti pattern privilegiati sono bloccate. Il contenuto non privilegiato passa normalmente (i server MCP cloud restano usabili per la ricerca). I tool locali sono sempre permessi.
 - **balanced** (default) -- Per uso quotidiano. L'hook chiede conferma quando rileva contenuto potenzialmente privilegiato. L'utente mantiene il controllo.
 - **cloud** -- Per lavoro su contenuto non sensibile. Solo i pattern forti generano un avviso.
 

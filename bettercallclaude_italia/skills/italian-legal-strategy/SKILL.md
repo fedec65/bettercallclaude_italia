@@ -8,11 +8,11 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search_advanced
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
 ---
 
 # Strategia Legale Italiana

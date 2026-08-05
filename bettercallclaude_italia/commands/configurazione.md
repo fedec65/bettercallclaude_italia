@@ -7,13 +7,13 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
-  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
-  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
-  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
-  - mcp__bettercallclaude-italia-http-legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
+  - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_search
+  - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # Configurazione BetterCallClaude Italia

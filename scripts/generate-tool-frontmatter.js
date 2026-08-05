@@ -95,7 +95,7 @@ function resolveServer(tool, text) {
 }
 
 function fullyQualified(tool, server) {
-  return `mcp__bettercallclaude-italia-http-${server}__${tool}`;
+  return `mcp__plugin_bettercallclaude-italia_${server}__${tool}`;
 }
 
 function analyzeFile(filePath) {

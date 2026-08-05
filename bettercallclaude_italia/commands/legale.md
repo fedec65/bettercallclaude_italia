@@ -7,23 +7,23 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
-  - mcp__bettercallclaude-italia-http-normattiva__normattiva_elenco_tipi
-  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
-  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_get_sentenza
-  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_norme_incostituzionali
-  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
-  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_get_sentenza
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
-  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
-  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
-  - mcp__bettercallclaude-italia-http-legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search_advanced
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
+  - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_search
+  - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # Assistente Legale Intelligente

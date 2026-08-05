@@ -4,6 +4,21 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.6.0] - 2026-08-04
+
+Porting della release svizzera **v4.9.3** (Cowork MCP tool naming).
+
+### Changed
+- **Prefisso tool Cowork** — Tutti i riferimenti MCP in agenti, skill e comandi (49 file) migrati dal prefisso intermedio `mcp__bettercallclaude-italia-http-<server>__<tool>` al prefisso plugin-scoped richiesto da Claude Cowork Desktop: `mcp__plugin_bettercallclaude-italia_<server>__<tool>`. Il prefisso precedente veniva rifiutato da Cowork, lasciando gli agenti senza accesso alle banche dati legali italiane e forzando il fallback su ricerca web.
+- **`scripts/generate-tool-frontmatter.js`** — Aggiornato per emettere il prefisso Cowork corretto.
+- **Riferimenti Ollama aggiornati** — Ollama non e piu bundled nel plugin (rimosso da `.mcp.json`): documentazione (`privacy-routing`, `/privacy`, `/aiuto`, README) aggiornata per descrivere l'esenzione dei tool locali come opzione "se configurata", non come funzionalita inclusa. La logica di esenzione in `privacy-check.js` resta attiva come difesa per chi configura un server MCP locale proprio.
+
+### Note per i manutentori
+- Da verificare in Cowork Desktop dopo il sync del marketplace: un agente deve poter invocare `mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime` senza fallback su web search.
+- Riferimenti residui senza equivalente italiano (`find_leading_cases`, `get_article`, `get_decision`, `format_citation`, `parse_citation`) restano in roadmap MCP.
+
+---
+
 ## [1.5.0] - 2026-08-04
 
 Porting della release svizzera **v4.9.2** (MCP tool integration in skills and commands).

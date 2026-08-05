@@ -7,11 +7,11 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
-  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
-  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:contraddittorio`. Applica la metodologia della skill adversarial-analysis in modo completo alla richiesta dell'utente.
