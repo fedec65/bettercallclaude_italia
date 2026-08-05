@@ -42,7 +42,11 @@ Per ogni criterio di successo, esegui la verifica usando i tool MCP specificati:
 - Confronta il risultato con il criterio
 - Produci un finding (PASS/FAIL/WARN)
 
-### 3. Produci Verdetto
+### 3. Gate Citazioni Sostanziale (pre-score)
+
+Prima di calcolare lo score, esegui lo stadio `citation-content-verify` sull'artefatto: ogni citazione viene controllata contro la fonte live per esistenza E supporto del contenuto (implicazione). Ogni citazione riportata come `UNVERIFIED` o `MISMATCH` produce un finding FAIL (check: `citation-content-verify`) indipendentemente dal profilo; `PARTIAL` produce un finding WARN. Se lo stadio restituisce `delivery_blocked: true`, il verdetto non puo essere `pass: true`.
+
+### 4. Produci Verdetto
 
 ## Struttura Verdetto
 

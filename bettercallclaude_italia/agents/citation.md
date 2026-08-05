@@ -48,6 +48,11 @@ Sei uno specialista in citazioni giuridiche italiane. Verifichi, formatti e conv
 - Conferma numero decisione, data e accuratezza riferimento.
 - Valida riferimenti normativi contro fonti normattiva vigenti.
 
+### Passo 2.5: VERIFICA-CONTENUTO
+- Applica la skill `citation-content-verify` al documento: per ogni citazione, verifica contro la fonte live che esista E che supporti l'affermazione a cui e collegata (implicazione).
+- Registra lo stato contenuto per citazione: MATCH / PARTIAL / MISMATCH / UNVERIFIED.
+- Qualsiasi citazione UNVERIFIED o MISMATCH blocca la consegna del documento cosi com'e: segnala e offri le opzioni (correggi / dichiara / escala).
+
 ### Passo 3: RIFERIMENTO INCROCIATO
 - Verifica se decisioni sono state annullate o modificate da Cassazione successiva.
 - Identifica decisioni correlate e citanti.

@@ -4,6 +4,29 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.7.0] - 2026-08-05
+
+Porting della release svizzera **v4.9.4** (substantive citation verification).
+
+### Added
+- **Skill `citation-content-verify`** — Nuova skill che verifica ogni citazione di una bozza contro la fonte live su due assi: esistenza E supporto del contenuto. Stato per citazione: `MATCH` / `PARTIAL` / `MISMATCH` / `UNVERIFIED` / `SKIPPED`. Qualsiasi citazione `UNVERIFIED` o `MISMATCH` blocca la consegna automatica — la bozza va corretta, esplicitamente disclaimed o escalata. Output strutturato per citazione (`citation_id`, `source_mcp`, `query_used`, `status`, `matched_snippet`, `confidence_score`) registrato in `bcc-output/<data-slug>/citation-verify.json`.
+- **Eval set di accettazione** — `bettercallclaude_italia/evals/citation-verify-evals.json` con 39 casi: 12 citazioni inventate (devono essere 100% `UNVERIFIED`), 20 citazioni genuine (tasso di falsi positivi `MISMATCH` < 5%), 4 mismatch di contenuto, 2 match parziali, 1 caso di dottrina informale (`SKIPPED`).
+
+### Changed
+- **Skill `legal-evaluator`** — Nuovo gate pre-score (Passo 3): esegue `citation-content-verify` prima di calcolare il verdetto. Citazioni `UNVERIFIED`/`MISMATCH` producono finding FAIL indipendentemente dal profilo; `PARTIAL` produce WARN; una consegna bloccata impedisce al verdetto di passare.
+- **`/legale-loop`** — Lo step del verdetto ora include il gate sostanziale delle citazioni.
+- **Agente orchestrator** — `citation-content-verify` e gate di qualita obbligatorio prima di DELIVER per qualsiasi deliverable contenente citazioni; la pipeline contenziosa lo attraversa esplicitamente.
+- **Agente citation** — Nuovo passo 2.5 VERIFICA-CONTENUTO tra VALIDAZIONE e RIFERIMENTO INCROCIATO.
+- **`/verifica`** — Rimanda a `citation-content-verify` per la verifica sostanziale (esistenza + contenuto) delle bozze.
+
+### Note per i manutentori
+- **Nessun LLM judge server-side**: `check_claim_support` non esiste nel catalogo MCP italiano — tutte le verifiche di supporto del contenuto sono giudizio dell'agente verificatore sul testo recuperato, con confidence ridotta documentata (testo integrale ≤ 0.8, solo massima/metadati ≤ 0.6, web non strutturato ≤ 0.4).
+- Riusa solo l'infrastruttura MCP esistente: `legal-citations-ita` (parse/validate/format), `normattiva`, `cassazione` (con cookie ItalGiure; solo link di fallback → `UNVERIFIED`), `eur-lex-ita`.
+- Decisioni di merito (Corte d'Appello/Tribunale) e dottrina non hanno fonte MCP strutturata: best-effort via web search a bassa confidence, dottrina informale `SKIPPED`.
+- Privacy: in modalita `strict` le frasi claim non vengono mai inviate a content-check cloud — solo verifica di esistenza con nota `(privacy-gated)`.
+
+---
+
 ## [1.6.0] - 2026-08-04
 
 Porting della release svizzera **v4.9.3** (Cowork MCP tool naming).

@@ -56,6 +56,8 @@ Il worker produce o rivede l'artefatto secondo l'obiettivo del Goal Record.
 ### 3. Step Verdetto (Valutatore)
 Il valutatore giudica l'artefatto usando la skill `legal-evaluator`. Produce un Verdetto strutturato (vedi skill legal-evaluator per il formato).
 
+Come parte del passo verdetto, il valutatore esegue anche il **gate citazioni sostanziale** (`citation-content-verify`): ogni citazione nell'artefatto viene controllata contro la fonte live per esistenza E supporto del contenuto. Qualsiasi citazione `UNVERIFIED`/`MISMATCH` implica che il verdetto non puo essere `pass: true` — le citazioni bloccanti vengono passate al worker come finding FAIL.
+
 ### 4. Decisione
 - **pass = true**: loop terminato con successo. Scrivi output finale.
 - **pass = false E iterazione < max**: continua al prossimo ciclo.

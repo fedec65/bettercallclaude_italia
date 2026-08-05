@@ -1,0 +1,279 @@
+{
+  "skill_name": "citation-content-verify",
+  "description": "Acceptance eval set per la skill citation-content-verify (BetterCallClaude Italia). Gruppi: fabricated (12, atteso 100% UNVERIFIED + delivery_blocked), genuine (20, atteso MATCH, tasso di falsi positivi MISMATCH < 5% ossia max 1), mismatch (4, citazione reale + affermazione non supportata), partial (2), doctrine-informal (1, atteso SKIPPED). Eseguire ogni prompt contro i server MCP live (normattiva, cassazione, eur-lex-ita, legal-citations-ita) e confrontare lo stato per citazione. Nota: le voci di gruppo genuine che riguardano la Cassazione possono richiedere il cookie ItalGiure; senza cookie e atteso al massimo UNVERIFIED (solo fallback link), non MISMATCH.",
+  "evals": [
+    {
+      "id": "fab-01",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"La Suprema Corte ha stabilito che la responsabilita precontrattuale non si applica mai in Italia (Cass. SS.UU. n. 99999/2099).\"",
+      "expected_output": "Cass. SS.UU. n. 99999/2099 non esiste (anno futuro impossibile) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-02",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Secondo Cass. n. 000/2024, il locatore non puo mai risolvere il contratto di locazione.\"",
+      "expected_output": "Cass. n. 000/2024 e un numero implausibile e non si trova -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-03",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Come stabilito da Cass. pen., sez. IX, n. 123/2023, il diritto di superficie e abrogato.\"",
+      "expected_output": "La sezione IX penale non esiste (le sezioni penali sono I-VII) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-04",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Cass. civ., sez. VIII, n. 456/2023 conferma la nuova disciplina della navigazione marittima.\"",
+      "expected_output": "La sezione VIII civile non esiste (sezioni civili: I-VI, Lavoro, Tribunale) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-05",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'art. 3000 CC introduce un privilegio legale per i fornitori di software.\"",
+      "expected_output": "L'art. 3000 CC non esiste (il Codice Civile termina all'art. 2969) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-06",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'art. 750 CP disciplina la successione ereditaria negli asset digitali.\"",
+      "expected_output": "L'art. 750 CP non esiste (il Codice Penale termina all'art. 734-octies) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-07",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'art. 900 CPC introduce la mediazione obbligatoria in tutti i processi civili.\"",
+      "expected_output": "L'art. 900 CPC non esiste (il Codice di Procedura Civile termina all'art. 840) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-08",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'art. 150 Cost. garantisce il diritto al patrocinio gratuito in materia civile.\"",
+      "expected_output": "L'art. 150 Cost. non esiste (la Costituzione termina all'art. 139) -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-09",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'art. 99 della L. 241/1990 introduce il silenzio-rifiuto nei procedimenti amministrativi.\"",
+      "expected_output": "La L. 241/1990 non ha un art. 99 -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-10",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Con Cass. n. 12345/1900 la Corte si e pronunciata sul sequestro di cripto-attivita.\"",
+      "expected_output": "Cass. n. 12345/1900 e implausibile e non si trova -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-11",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il D.Lgs. n. 999/1900 ha modificato la giurisprudenza sul riciclaggio.\"",
+      "expected_output": "D.Lgs. n. 999/1900 e implausibile e non si trova -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "fab-12",
+      "group": "fabricated",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"La L. n. 10000/2023 attribuisce al Parlamento poteri di vigilanza sui tribunali regionali.\"",
+      "expected_output": "L. n. 10000/2023 e un numero implausibile e non si trova -> stato UNVERIFIED, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "gen-01",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Chiunque cagiona ad altri un danno ingiusto, dolosamente o colposamente, e tenuto al risarcimento del danno (art. 2043 CC).\"",
+      "expected_output": "L'art. 2043 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-02",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il debitore che non esegue esattamente la prestazione dovuta e tenuto al risarcimento del danno, se non prova che l'inadempimento e derivato da causa a lui non imputabile (art. 1218 CC).\"",
+      "expected_output": "L'art. 1218 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-03",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il debitore e il creditore devono comportarsi secondo le regole della correttezza (art. 1175 CC).\"",
+      "expected_output": "L'art. 1175 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-04",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il risarcimento del danno comprende sia la perdita subita sia il mancato guadagno, in quanto ne siano conseguenza immediata e diretta (art. 1223 CC).\"",
+      "expected_output": "L'art. 1223 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-05",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Quando uno dei contraenti non adempie le sue obbligazioni, l'altro puo chiedere l'adempimento o la risoluzione del contratto (art. 1453 CC).\"",
+      "expected_output": "L'art. 1453 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-06",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"I requisiti del contratto sono l'accordo delle parti, la causa, l'oggetto e, quando e richiesta, la forma (art. 1325 CC).\"",
+      "expected_output": "L'art. 1325 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-07",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il contratto deve essere interpretato secondo buona fede (art. 1366 CC).\"",
+      "expected_output": "L'art. 1366 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-08",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Le obbligazioni devono essere eseguite secondo buona fede (art. 1373 CC).\"",
+      "expected_output": "L'art. 1373 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-09",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Tutti possono agire in giudizio per la tutela dei propri diritti e interessi legittimi (art. 24 Cost.).\"",
+      "expected_output": "L'art. 24 Cost. esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-10",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"La giurisdizione si attua mediante il giusto processo regolato dalla legge, nel contraddittorio tra le parti, in condizioni di parita, davanti a giudice terzo e imparziale (art. 111 Cost.).\"",
+      "expected_output": "L'art. 111 Cost. esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-11",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Tutti i cittadini hanno pari dignita sociale e sono eguali davanti alla legge (art. 3 Cost.).\"",
+      "expected_output": "L'art. 3 Cost. esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-12",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"La Repubblica riconosce e garantisce i diritti inviolabili dell'uomo (art. 2 Cost.).\"",
+      "expected_output": "L'art. 2 Cost. esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-13",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'attivita amministrativa e informata ai principi di economicita, efficacia, imparzialita, pubblicita e trasparenza (L. 241/1990, art. 1).\"",
+      "expected_output": "L. 241/1990 art. 1 esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-14",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"La L. 69/2009, art. 49, contiene disposizioni in materia di documento informatico e del suo valore probatorio.\"",
+      "expected_output": "L. 69/2009 art. 49 esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-15",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Salvi i casi espressamente previsti dalla legge, il giudice deve porre a base della decisione le prove proposte dalle parti (art. 115 CPC).\"",
+      "expected_output": "L'art. 115 CPC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-16",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Le sentenze possono essere impugnate con ricorso per cassazione per motivi attinenti alla giurisdizione, violazione o falsa applicazione di norme di diritto, nullita del procedimento o della sentenza, omesso esame circa un fatto decisivo (art. 360 CPC).\"",
+      "expected_output": "L'art. 360 CPC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "gen-17",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Cass. SS.UU. n. 20874/2008 (cd. Lucentini) e una decisione delle Sezioni Unite della Corte di Cassazione in tema di ammissibilita del ricorso per cassazione.\"",
+      "expected_output": "Cass. SS.UU. n. 20874/2008 esiste e supporta l'affermazione -> stato MATCH, consegna libera. (Richiede cookie ItalGiure; senza cookie atteso UNVERIFIED (solo fallback link).)",
+      "files": []
+    },
+    {
+      "id": "gen-18",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Cass. n. 577/2008 e una sentenza della Corte di Cassazione pubblicata nel 2008.\"",
+      "expected_output": "Cass. n. 577/2008 esiste e supporta l'affermazione -> stato MATCH, consegna libera. (Richiede cookie ItalGiure; senza cookie atteso UNVERIFIED (solo fallback link).)",
+      "files": []
+    },
+    {
+      "id": "gen-19",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Cass. SS.UU. n. 16601/2017 e una decisione delle Sezioni Unite in materia di risarcimento del danno non patrimoniale.\"",
+      "expected_output": "Cass. SS.UU. n. 16601/2017 esiste e supporta l'affermazione -> stato MATCH, consegna libera. (Richiede cookie ItalGiure; senza cookie atteso UNVERIFIED (solo fallback link).)",
+      "files": []
+    },
+    {
+      "id": "gen-20",
+      "group": "genuine",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il diritto al risarcimento del danno derivante da fatto illecito si prescrive in cinque anni dal giorno in cui il fatto si e verificato (art. 2947 CC).\"",
+      "expected_output": "L'art. 2947 CC esiste e supporta l'affermazione -> stato MATCH, consegna libera.",
+      "files": []
+    },
+    {
+      "id": "mis-01",
+      "group": "mismatch",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il locatore non puo mai recedere dal contratto di locazione (art. 1218 CC).\"",
+      "expected_output": "L'art. 1218 CC esiste ma non supporta l'affermazione (disciplina la responsabilita del debitore per inadempimento) -> stato MISMATCH, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "mis-02",
+      "group": "mismatch",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Le locazioni abitative in Italia sono gratuite (Cass. SS.UU. n. 20874/2008).\"",
+      "expected_output": "Cass. SS.UU. n. 20874/2008 esiste ma non supporta l'affermazione -> stato MISMATCH, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "mis-03",
+      "group": "mismatch",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'aliquota IVA ordinaria in Italia e stabilita dall'art. 24 Cost.\"",
+      "expected_output": "L'art. 24 Cost. esiste (tutela giurisdizionale dei diritti) ma non supporta l'affermazione -> stato MISMATCH, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "mis-04",
+      "group": "mismatch",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Il danno cagionato con fatto illecito non e mai risarcibile (art. 2043 CC).\"",
+      "expected_output": "L'art. 2043 CC esiste ma contraddice l'affermazione (prevede esattamente l'obbligo di risarcimento) -> stato MISMATCH, delivery_blocked: true.",
+      "files": []
+    },
+    {
+      "id": "par-01",
+      "group": "partial",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Ai sensi dell'art. 2043 CC, chi cagiona ad altri un danno ingiusto e tenuto al risarcimento, e la stessa norma fissa la prescrizione del diritto al risarcimento in dieci anni.\"",
+      "expected_output": "L'art. 2043 CC supporta la parte sul risarcimento ma la prescrizione e disciplinata dall'art. 2947 CC (cinque anni) -> stato PARTIAL (divulgato, non blocca).",
+      "files": []
+    },
+    {
+      "id": "par-02",
+      "group": "partial",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"L'art. 1175 CC impone a debitore e creditore di comportarsi secondo correttezza e stabilisce inoltre l'obbligo di riservatezza sui dati personali delle parti.\"",
+      "expected_output": "L'art. 1175 CC supporta la parte sulla correttezza ma non contiene alcuna disciplina della riservatezza dei dati personali -> stato PARTIAL (divulgato, non blocca).",
+      "files": []
+    },
+    {
+      "id": "doc-01",
+      "group": "doctrine-informal",
+      "prompt": "Esegui citation-content-verify su questa bozza: \"Come affermato da Galgano, Trattato di diritto civile, la responsabilita contrattuale ha natura aquiliana.\"",
+      "expected_output": "Dottrina informale senza ID strutturato e nessun server MCP dottrina nel catalogo -> stato SKIPPED (divulgato nel rapporto, non blocca).",
+      "files": []
+    }
+  ]
+}

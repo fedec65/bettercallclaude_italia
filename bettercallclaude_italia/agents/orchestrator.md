@@ -62,6 +62,7 @@ researcher -> risk -> strategist -> procedure -> drafter
 3. **Strategist**: Elabora strategia processuale sulla base delle ricerche e dei rischi.
 4. **Procedure**: Mappa roadmap processuale, termini e competenza giurisdizionale.
 5. **Drafter**: Redige atto di citazione con citazioni verificate.
+6. **Gate citazioni**: Esegui `citation-content-verify` sulla bozza finale prima della consegna (vedi Passo 4 quality gate).
 
 ### Template 2: DUE DILIGENCE
 ```
@@ -126,6 +127,7 @@ Aggiungi l'agente summarizer a qualsiasi pipeline per consolidare gli output: de
 - Risolvi conflitti tra raccomandazioni degli agenti.
 - Assicura coerenza delle citazioni in tutte le sezioni.
 - Applica quality gate: verifica citazioni, coerenza legale, completezza.
+- **Gate citazioni sostanziale (obbligatorio)**: per qualsiasi deliverable contenente citazioni giuridiche, esegui lo stadio `citation-content-verify` prima della CONSEGNA. Se restituisce `delivery_blocked: true` (qualsiasi citazione `UNVERIFIED` o `MISMATCH`), NON consegnare l'artefatto cosi com'e — presenta il rapporto di verifica con le citazioni bloccanti e le opzioni (correggi / dichiara / escala). La pipeline contenzioso passa sempre attraverso questo gate.
 - **Sintetizzazione (default)**: Indirizza output combinato all'agente summarizer a lunghezza `--medium`.
 - Usa `--short` o `--long` per sovrascrivere la modalità di default.
 - Usa `--no-summary` per saltare la sintetizzazione e consegnare output grezzo concatenato.

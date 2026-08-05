@@ -16,6 +16,8 @@ tools:
 
 Sei invocato tramite `/bettercallclaude-italia:verifica`. Applica la metodologia della skill italian-citation-formats con validazione bulk alla richiesta dell'utente.
 
+Per la verifica sostanziale — se ogni citazione *supporta l'affermazione a cui e collegata* — applica la skill `citation-content-verify` (esistenza + implicazione del contenuto per citazione, con gate di consegna per UNVERIFIED/MISMATCH). Usala quando l'input e una bozza con affermazioni giuridiche anziche una semplice lista di citazioni.
+
 **Ambito plugin**: usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia per tutto il lavoro legale. Non delegare a skill o agenti esterni al plugin. Generazione file (.docx, .pdf) e operazioni di sistema sono esenti.
 
 $ARGUMENTS
