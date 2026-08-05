@@ -566,6 +566,61 @@ t('NEW-3: weak+context -> deny in strict', () => {
   assert.strictEqual(r.decision, 'deny');
 });
 
+// ---------------------------------------------------------------------------
+// NEW-4: regression guards -- quoting of ${CLAUDE_PLUGIN_ROOT}
+// ---------------------------------------------------------------------------
+// Plugin root paths can contain spaces (e.g. "Library/Application Support/...").
+// Any unquoted ${CLAUDE_PLUGIN_ROOT} in a shipped shell snippet breaks the
+// command (the shell splits on the space). See v1.2.6 / Swiss v4.9.6.
+
+console.log('regression: CLAUDE_PLUGIN_ROOT quoting');
+
+const fs = require('node:fs');
+const path = require('node:path');
+const PLUGIN_ROOT = path.join(__dirname, '..');
+
+function walkMd(dir) {
+  const out = [];
+  for (const entry of fs.readdirSync(dir, { withFileTypes: true })) {
+    const full = path.join(dir, entry.name);
+    if (entry.isDirectory()) out.push(...walkMd(full));
+    else if (entry.name.endsWith('.md')) out.push(full);
+  }
+  return out;
+}
+
+t('NEW-4: hooks.json commands quote ${CLAUDE_PLUGIN_ROOT}', () => {
+  const hooks = JSON.parse(fs.readFileSync(path.join(PLUGIN_ROOT, 'hooks', 'hooks.json'), 'utf8'));
+  for (const group of hooks.hooks.PreToolUse || []) {
+    for (const h of group.hooks || []) {
+      if (typeof h.command === 'string' && h.command.includes('${CLAUDE_PLUGIN_ROOT}')) {
+        assert.ok(
+          h.command.includes('"${CLAUDE_PLUGIN_ROOT}'),
+          'unquoted ${CLAUDE_PLUGIN_ROOT} in hooks.json command: ' + h.command
+        );
+      }
+    }
+  }
+});
+
+t('NEW-4: no unquoted ${CLAUDE_PLUGIN_ROOT} in shipped shell snippets', () => {
+  const offenders = [];
+  for (const dir of ['commands', 'skills', 'agents']) {
+    const abs = path.join(PLUGIN_ROOT, dir);
+    if (!fs.existsSync(abs)) continue;
+    for (const file of walkMd(abs)) {
+      const text = fs.readFileSync(file, 'utf8');
+      text.split('\n').forEach((line, i) => {
+        const idx = line.indexOf('${CLAUDE_PLUGIN_ROOT}');
+        if (idx !== -1 && line[idx - 1] !== '"') {
+          offenders.push(path.relative(PLUGIN_ROOT, file) + ':' + (i + 1));
+        }
+      });
+    }
+  }
+  assert.deepStrictEqual(offenders, [], 'unquoted ${CLAUDE_PLUGIN_ROOT} at: ' + offenders.join(', '));
+});
+
 console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');
 process.exit(failed === 0 ? 0 : 1);

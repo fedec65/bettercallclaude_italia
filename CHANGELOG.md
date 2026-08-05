@@ -4,6 +4,18 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.9.0] - 2026-08-05
+
+Porting della release svizzera **v4.9.6** (privacy hook quoting + regression guards).
+
+### Added
+- **Regression guards anti-quoting** — Nuovi test in `scripts/privacy-check.test.js` (NEW-4): verificano che ogni comando hook in `hooks.json` racchiuda `"${CLAUDE_PLUGIN_ROOT}/..."` tra virgolette e che nessuno snippet shell distribuito (comandi, skill, agenti) contenga occorrenze non quotate di `${CLAUDE_PLUGIN_ROOT}`. Il bug (percorsi del plugin con spazi, es. `Library/Application Support/...`) era gia stato corretto nella v1.2.6 italiana e segnalato allo svizzero; questi test impediscono la regressione.
+
+### Note per i manutentori
+- `hooks/hooks.json` italiano era gia quotato (fix v1.2.6); le invocazioni di `timeline-render.mjs` portate nella v1.8.0 sono nate gia quotate — verificato dai nuovi test (90/90).
+
+---
+
 ## [1.8.0] - 2026-08-05
 
 Porting della release svizzera **v4.9.5** (sourced legal chronology).
