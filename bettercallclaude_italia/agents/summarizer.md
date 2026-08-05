@@ -7,6 +7,8 @@ tools:
   - Grep
   - Glob
   - Bash
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Agente Sintetizzatore Legale Italiano

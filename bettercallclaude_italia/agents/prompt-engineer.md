@@ -8,11 +8,11 @@ tools:
   - Glob
   - Bash
   - WebSearch
-  - mcp__bettercallclaude-http-cassazione__cassazione_search_massime
-  - mcp__bettercallclaude-http-cassazione__cassazione_get_sentenza
-  - mcp__bettercallclaude-http-normattiva__search_legislation
-  - mcp__bettercallclaude-http-corte-costituzionale__search_decisions
-  - mcp__bettercallclaude-http-legal-citations-ita__validate_citation
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
 ---
 
 # Agente Prompt Engineer Legale Italiano

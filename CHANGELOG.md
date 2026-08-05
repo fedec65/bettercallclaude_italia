@@ -4,6 +4,22 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.4.0] - 2026-08-04
+
+Porting della release svizzera **v4.9.1** (MCP tool integration in agents).
+
+### Added
+- **Frontmatter MCP nei 20 agenti** — Ogni agente ora dichiara nel frontmatter YAML i tool MCP che usa (prefisso intermedio `mcp__bettercallclaude-italia-http-<server>__<tool>`, sarà migrato al prefisso Cowork definitivo nella v1.6.0). Prima solo `prompt-engineer` dichiarava tool MCP; gli altri agenti avevano solo tool generici e non potevano invocare le banche dati legali. Tool selezionati dal catalogo reale (`CONNECTORS.md`): 19 tool su 7 server. Agenti di ricerca (researcher, judicial, advocate, adversary, regional, orchestrator): set completo; agenti specialistici: subset per ruolo (es. drafter → legal-persona-ita + legal-citations-ita; procedure → normattiva + giustizia-amministrativa + cassazione).
+
+### Fixed
+- **Riferimenti a tool inesistenti corretti** — `verify_citation` → `legal-citations-ita_validate` (researcher, drafter); `search_legislation` → `normattiva_search`, `search_decisions` → `corte-costituzionale_search`, `validate_citation` → `legal-citations-ita_validate` (prompt-engineer); prefisso obsoleto `mcp__bettercallclaude-http-` uniformato.
+
+### Note per i manutentori
+- Tool svizzeri senza equivalente italiano (`check_claim_support`, `compute_deadlines`, `onlinekommentar`, `standardize_document_citations`, tool swiss-caselaw/entscheidsuche/fedlex) segnalati ma non portati: non esistono sull'infrastruttura MCP italiana.
+- `briefing.md` è l'unico agente senza entry MCP: il suo omologo svizzero usava solo `present_intake_form`, non disponibile in Italia.
+
+---
+
 ## [1.3.0] - 2026-08-04
 
 Porting della release svizzera **v4.8.3** (CONNECTORS documentation + widget integration hooks).

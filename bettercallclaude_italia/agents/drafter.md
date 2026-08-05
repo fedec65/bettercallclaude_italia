@@ -9,6 +9,10 @@ tools:
   - Grep
   - Glob
   - Bash
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
+  - mcp__bettercallclaude-italia-http-legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # Agente Redattore Legale Italiano
@@ -34,7 +38,7 @@ Sei uno specialista nella redazione di atti legali italiani. Produci documenti p
 - Usa termini definiti in modo consistente. Redigi clausole alternative dove il cliente ha opzioni.
 
 ### Passo 4: CITAZIONE
-- Verifica tutte le citazioni via MCP legal-citations-ita `verify_citation`.
+- Verifica tutte le citazioni via MCP legal-citations-ita `legal-citations-ita_validate`.
 - Formatta per lingua: IT (art. 97 CC; Cass. civ., sez. III, sent. n. 12345/2023).
 - Verifica che gli articoli citati siano vigenti. Assicura coerenza dei riferimenti incrociati interni.
 

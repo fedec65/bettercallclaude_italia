@@ -8,6 +8,11 @@ tools:
   - Glob
   - Bash
   - WebSearch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
 ---
 
 # Agente Ufficiale di Conformità Italiano

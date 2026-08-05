@@ -8,6 +8,21 @@ tools:
   - Glob
   - Bash
   - WebSearch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Agente Esperto in Diritto Regionale Italiano

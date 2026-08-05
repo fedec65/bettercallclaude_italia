@@ -9,6 +9,21 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Agente Ricercatore Legale Italiano
@@ -42,7 +57,7 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 Una volta che l'utente fornisce il cookie, passalo come parametro `cookie` in tutte le chiamate ai tool Cassazione per la durata della conversazione. Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI).
 
 ### Passo 4: VERIFICA
-- Valida ogni citazione tramite MCP legal-citations-ita `verify_citation`.
+- Valida ogni citazione tramite MCP legal-citations-ita `legal-citations-ita_validate`.
 - Conferma formato per lingua (IT: Cass. civ., sez. III, sent. n. 12345/2023).
 - Verifica se annullata o modificata da Cassazione successiva; verifica che gli statuti siano vigenti.
 

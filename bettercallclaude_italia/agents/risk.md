@@ -7,6 +7,9 @@ tools:
   - Grep
   - Glob
   - Bash
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
 ---
 
 # Agente Analista del Rischio Legale Italiano

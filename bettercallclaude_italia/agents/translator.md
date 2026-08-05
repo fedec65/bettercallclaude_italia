@@ -8,6 +8,9 @@ tools:
   - Edit
   - Grep
   - Glob
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Agente Traduttore Legale Italiano
