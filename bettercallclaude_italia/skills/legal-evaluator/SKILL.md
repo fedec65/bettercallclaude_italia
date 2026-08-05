@@ -94,6 +94,15 @@ Quando il profilo include verifica citazioni:
 
 Vedi `references/loop-profiles.md` per i dettagli di ogni profilo predefinito.
 
+### Regole di valutazione `timeline-sourced`
+
+Per il profilo `timeline-sourced` (worker: `chronology-builder` via `/cronologia-legale`; valutatore: agente `citation`):
+1. Ogni evento della cronologia deve avere una fonte tracciabile (documento + locus) — R1/R2 applicata ai fatti. Verifica la fonte di ogni evento contro i documenti della causa.
+2. Ogni conflitto di date deve essere segnalato esplicitamente con entrambe le date e le rispettive fonti.
+3. Ogni marcatore di termine deve ancorare a un evento con fonte (nessun termine fluttuante) ed essere etichettato indicativo.
+
+Score = (eventi con fonte verificata / eventi totali) * 100. Qualsiasi conflitto di date non segnalato o termine non ancorato e un finding FAIL automatico. Soglia di pass: 100 (tolleranza zero per eventi senza fonte).
+
 ## Reduced Mode
 
 | Funzionalita | Con MCP | Senza MCP |

@@ -1,0 +1,62 @@
+{
+  "skill_name": "legal-chronology",
+  "description": "Set di eval di accettazione per /cronologia-legale. I documenti di test in bettercallclaude_italia/testdocs/cronologia/ contengono un conflitto di date pianificato (consegna 3.3 vs 10.3.2024), un evento contestato pianificato (vizio al momento della consegna), una lacuna documentale di 48 giorni (15.1 → 3.3.2024), e un evento di notifica che alimenta un marcatore di termine da tabella di mapping (appello 30 giorni ex art. 325 CPC, indicativo — nessun calcolo automatico nell'ordinamento italiano).",
+  "evals": [
+    {
+      "id": "tl-01",
+      "group": "provenienza",
+      "prompt": "Esegui /cronologia-legale su bettercallclaude_italia/testdocs/cronologia/ e mostra events.json.",
+      "expected_output": "Ogni evento in events.json ha un array source non vuoto con doc + locus. Nessun evento senza provenienza appare in alcun output. Il passo validate dello script di render passa.",
+      "files": []
+    },
+    {
+      "id": "tl-02",
+      "group": "conflitto-date",
+      "prompt": "Verifica come l'evento di consegna è rappresentato nella cronologia.",
+      "expected_output": "L'evento di consegna porta un array conflicts con ENTRAMBE le date: 2024-03-03 (01-contratto, art. 4.1) e 2024-03-10 (02-lettera, p. 1). La discrepanza è segnalata esplicitamente in cronologia.md e cronologia.html; nessuna delle due date è scelta silenziosamente.",
+      "files": []
+    },
+    {
+      "id": "tl-03",
+      "group": "contestato",
+      "prompt": "Verifica lo stato dell'allegazione di vizio al momento della consegna.",
+      "expected_output": "Lo status è 'contested' (contestato) con attribution che registra che Bianchi allega che il macchinario era viziato alla consegna e Esempio S.r.l. lo contesta.",
+      "files": []
+    },
+    {
+      "id": "tl-04",
+      "group": "fusione-fonti",
+      "prompt": "Verifica come i riferimenti alla consegna nel contratto e nella lettera sono fusi.",
+      "expected_output": "Un unico evento di consegna con DUE fonti (01-contratto art. 4.1 e 02-lettera p. 1) — non due eventi separati.",
+      "files": []
+    },
+    {
+      "id": "tl-05",
+      "group": "lacuna",
+      "prompt": "Verifica se le lacune probatorie sono segnalate.",
+      "expected_output": "Il periodo 2024-01-15 → 2024-03-03 (48 giorni senza eventi documentati) è segnalato come lacuna probatoria in tutti gli output (regola dei >= 30 giorni).",
+      "files": []
+    },
+    {
+      "id": "tl-06",
+      "group": "termini",
+      "prompt": "Esegui /cronologia-legale --deadlines e verifica il marcatore di appello.",
+      "expected_output": "Esiste un marcatore di termine procedurale ancorato all'evento di notifica (15.4.2024), derivato dalla tabella di mapping (appello, art. 325 CPC: 30 giorni): due 2024-05-15, etichettato con la base normativa e il flag 'tabella-mapping (indicativo)'. Nessun marcatore è presentato come calcolato autorevolmente.",
+      "files": []
+    },
+    {
+      "id": "tl-07",
+      "group": "formati",
+      "prompt": "Verifica gli output generati.",
+      "expected_output": "cronologia.md (tabella), cronologia.html (interattivo, autonomo, stati colorati) e cronologia.docx esistono tutti sotto bcc-output/cronologia/.",
+      "files": []
+    },
+    {
+      "id": "tl-08",
+      "group": "negativo",
+      "prompt": "Inietta un evento senza fonte in events.json ed esegui il passo validate dello script di render.",
+      "expected_output": "La validazione fallisce e rifiuta il rendering: l'evento senza fonte è segnalato come rifiutato. Nessun output è prodotto con l'evento senza fonte.",
+      "files": []
+    }
+  ]
+}

@@ -32,6 +32,7 @@ Sei invocato tramite `/bettercallclaude-italia:legale-obiettivo`. Definisci una 
 - "stress test convergenza" -> profilo `contraddittorio-convergenza`
 - "triage NDA completo" -> profilo `nda-batch-pulito`
 - "monitoraggio normativo" -> profilo `monitoraggio-normativo`
+- "cronologia documentata" o "timeline sourced" -> profilo `timeline-sourced`
 - "massimo 3 iterazioni" -> `--max-iterazioni=3`
 
 ## Profili Predefiniti
@@ -43,6 +44,7 @@ Sei invocato tramite `/bettercallclaude-italia:legale-obiettivo`. Definisci una 
 | `contraddittorio-convergenza` | Stress-test iterativo fino a convergenza o max iterazioni | advocate | adversary + judicial |
 | `nda-batch-pulito` | Completezza triage NDA per cartelle | analista documenti | specialista compliance |
 | `monitoraggio-normativo` | Monitoraggio cambiamenti normativi (normattiva + cassazione) | researcher | compliance |
+| `timeline-sourced` | Provenienza cronologia: zero eventi senza fonte, conflitti di date segnalati, termini ancorati | chronology-builder (via /cronologia-legale) | agente citation |
 
 Per dettagli sui profili, vedi `skills/legal-evaluator/references/loop-profiles.md`.
 

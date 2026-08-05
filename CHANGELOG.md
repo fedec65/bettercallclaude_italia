@@ -4,6 +4,26 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.8.0] - 2026-08-05
+
+Porting della release svizzera **v4.9.5** (sourced legal chronology).
+
+### Added
+- **`/cronologia-legale` — cronologia legale documentata dai documenti del fascicolo.** Trasforma una cartella di documenti (contratti, corrispondenza, atti giudiziari, perizie) in una cronologia legale come la leggerebbe un avvocato. Nuovo comando `commands/cronologia-legale.md`, skill `legal-chronology` (+ 4 reference: event schema, normalizzazione date DE/FR/IT/EN, mapping termini, registro parti) e agente `chronology-builder.md` (worker di estrazione isolato).
+- **Provenienza obbligatoria (R1/R2 applicata ai fatti)** — ogni evento porta documento + locus; un evento senza fonte non appare mai in alcun output. Il renderer deterministico `scripts/timeline-render.mjs` (Node, zero dipendenze) valida lo schema e rifiuta di renderizzare eventi senza fonte.
+- **Modello del fatto contestato** — stato per evento `undisputed` / `alleged` / `contested` (non contestato / allegato / contestato) con attribuzione di parte; conflitti di data registrati con ENTRAMBE le date e le rispettive fonti, mai risolti silenziosamente; lacune probatorie (>= 30 giorni non documentati) segnalate.
+- **Marcatori di termine** — nessun calcolo automatico server-side in Italia: i termini processuali (CPC: comparsa di risposta artt. 163/163-bis, memorie artt. 183-184, appello artt. 325/327, ricorso cassazione art. 369 ss., opposizione a decreto ingiuntivo art. 641) e la prescrizione (artt. 2934-2969 CC) derivano dalla tabella di mapping della skill, sempre etichettati "indicativo — verificare". Ogni marcatore ancora a un evento con fonte.
+- **Tre formati di output** in `bcc-output/cronologia/`: `cronologia.md` (tabella), `cronologia.html` (vista interattiva self-contained, colorata per stato, bande di lacuna, marcatori di termine, click-through alle fonti), `cronologia.docx` (export per fascicolo, writer OOXML minimale in JS puro).
+- **Profilo goal-loop `timeline-sourced`** — worker `chronology-builder`, valutatore agente `citation`: il loop si chiude solo quando ogni evento ha fonte tracciabile, tutti i conflitti sono segnalati e tutti i termini sono ancorati. Aggiunto a `/legale-obiettivo`, `legal-evaluator` e `references/loop-profiles.md`.
+- **Set di accettazione** — `bettercallclaude_italia/testdocs/cronologia/` (caso civile fittizio con un conflitto di data pianificato, un evento contestato, una lacuna di 48 giorni, un evento di notifica) + `evals/legal-timeline-evals.json` (8 casi mappati sui criteri di accettazione).
+
+### Note per i manutentori
+- La posizione di output segue la specifica (`bcc-output/cronologia/`) come eccezione documentata alla convenzione delle cartelle datate: la cronologia e un artefatto vivo del fascicolo, aggiornabile via `--merge`.
+- I termini non sono mai calcolati in modo autorevole (nessun tool `compute_deadlines` nel catalogo MCP italiano): derivano dalla tabella di mapping e sono marcati indicativi in ogni output.
+- Il writer docx e intenzionalmente minimale (tabella + riepilogo); md/html restano gli output autorevoli.
+
+---
+
 ## [1.7.0] - 2026-08-05
 
 Porting della release svizzera **v4.9.4** (substantive citation verification).

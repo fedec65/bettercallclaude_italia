@@ -94,3 +94,26 @@
 **Iterazioni default**: 1 (one-pass-per-run, schedulabile)
 
 **Note**: questo profilo e pensato per esecuzioni periodiche (es. settimanali). Una singola iterazione produce il report delle modifiche dall'ultimo check.
+
+---
+
+## timeline-sourced
+
+**Obiettivo**: provenienza della cronologia. Zero eventi senza fonte; disciplina R1/R2 applicata ai fatti.
+
+**Worker**: chronology-builder (via `/cronologia-legale`)
+**Valutatore**: specialista citazioni (agente citation)
+
+**Criteri di successo**:
+- Ogni evento della cronologia ha una fonte tracciabile (documento + locus)
+- Zero eventi senza provenienza in qualsiasi output
+- Tutti i conflitti di date segnalati esplicitamente con entrambe le date e le fonti
+- Tutti i marcatori di termine ancorati a un evento con fonte ed etichettati indicativi
+
+**Tool MCP usati**: verifica delle fonti contro i documenti della causa (lookup documento + locus); `legal-citations-ita` per eventuali citazioni legali nel testo degli eventi
+
+**Iterazioni default**: 5
+
+**Scoring**: (eventi con fonte verificata / eventi totali) * 100; qualsiasi conflitto di date non segnalato o termine non ancorato e un FAIL automatico
+
+**Note**: il chronology-builder estrae; l'agente citation verifica la provenienza. Un evento senza documento+locus e l'equivalente fattuale di una citazione fabbricata e non puo mai passare. In caso di FAIL: ogni evento senza fonte, conflitto non segnalato o termine fluttuante viene restituito al worker come finding azionabile.
