@@ -1,6 +1,13 @@
 ---
 name: legal-intake
 description: "Intake legale unificato — due modalita: Refine (singolo dominio, dialogo socratico ≤3 round) e Briefing (multi-dominio, panel specialisti + piano di esecuzione). Attivazione: flag --refine, query vaga (chiarezza < 6), complessita ≥ 7 o multi-dominio."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Intake Legale

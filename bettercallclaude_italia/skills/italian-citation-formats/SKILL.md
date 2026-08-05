@@ -1,6 +1,18 @@
 ---
 name: italian-citation-formats
 description: "Specialista di formattazione citazioni giuridiche italiane — verifica e formatta citazioni Cassazione, tribunali regionali, leggi nazionali e dottrina secondo gli standard italiani. Attivazione quando: l'utente chiede di verificare, formattare o validare citazioni legali. NON attivare per: ricerca legale (usa italian-legal-research), redazione documenti (usa italian-legal-drafting), o strategia legale (usa italian-legal-strategy)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Formati di Citazione Giuridica Italiana

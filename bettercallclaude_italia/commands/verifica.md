@@ -1,5 +1,17 @@
 ---
 description: "Valida citazioni giuridiche italiane in bulk — verifica formato, esistenza e coerenza cross-lingua."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:verifica`. Applica la metodologia della skill italian-citation-formats con validazione bulk alla richiesta dell'utente.

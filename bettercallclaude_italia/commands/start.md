@@ -1,5 +1,19 @@
 ---
 description: "Benvenuto e onboarding — verifica connettivita MCP, guida la creazione del playbook locale, mostra esempi d'uso personalizzati per il profilo utente. Sostituisce /configurazione."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # BetterCallClaude Italia — Benvenuto

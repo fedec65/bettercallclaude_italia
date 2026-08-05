@@ -1,5 +1,17 @@
 ---
 description: "Esegue analisi avversariale a tre agenti — l'avvocato costruisce la causa, l'avversario la sfida, l'analista giudiziario sintetizza."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:contraddittorio`. Applica la metodologia della skill adversarial-analysis in modo completo alla richiesta dell'utente.

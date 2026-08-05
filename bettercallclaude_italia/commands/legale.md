@@ -1,5 +1,29 @@
 ---
 description: "Ingresso principale per tutte le richieste BetterCallClaude Italia — classifica intento, risolve giurisdizione (via shared/references/italian-jurisdictions.md), esegue briefing inline per complessita 4-6, attiva sessione briefing completa per complessita ≥ 7 (via skill legal-intake), e indirizza ad agenti specialistici o pipeline di workflow. Supporta flag --refine, --briefing, --skip-briefing/--direct, --no-framework."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_elenco_tipi
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
+  - mcp__bettercallclaude-italia-http-legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # Assistente Legale Intelligente

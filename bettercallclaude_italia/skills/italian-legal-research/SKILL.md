@@ -1,6 +1,29 @@
 ---
 name: italian-legal-research
 description: "Specialista di ricerca legale italiana — cerca precedenti della Cassazione, interpreta leggi nazionali e regionali, e produce analisi giuridica multilingue verificata. Attivazione quando: l'utente chiede cosa dice la legge su un argomento, richiede precedenti o decisioni della Cassazione, necessita di sapere come una norma è interpretata, chiede di dottrina o commento scientifico, o necessita un memo di ricerca. Usa i server MCP cassazione, normattiva, corte-costituzionale, giustizia-amministrativa e eur-lex-ita. NON attivare per: solo formattazione citazioni (usa italian-citation-formats), chiarimento query (usa legal-intake in modalita Refine), redazione documenti (usa italian-legal-drafting), o traduzione (usa italian-legal-translation)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_elenco_tipi
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_search
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__bettercallclaude-italia-http-corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__bettercallclaude-italia-http-giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Ricerca Legale Italiana
@@ -31,19 +54,19 @@ Quando usi i tool Cassazione, se l'utente non ha ancora fornito il cookie ItalGi
 Una volta che l'utente fornisce il cookie, passalo come parametro `cookie` in tutte le chiamate ai tool Cassazione per la durata della conversazione. Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI).
 
 **MCP `normattiva`** (legislazione nazionale aggiornata):
-- `search_legislation(query)` — ricerca leggi nazionali
+- `normattiva_search(query)` — ricerca leggi nazionali
 - `get_article(statute_number, article)` — recupera testo articolo
 
 **MCP `corte-costituzionale`** (sentenze Corte Costituzionale):
-- `search_decisions(query)` — ricerca sentenze Corte Costituzionale
+- `corte-costituzionale_search(query)` — ricerca sentenze Corte Costituzionale
 - `get_decision(id)` — recupera testo sentenza
 
 **MCP `giustizia-amministrativa`** (TAR e Consiglio di Stato):
-- `search_decisions(query, court?)` — ricerca decisioni giustizia amministrativa
+- `giustizia-amministrativa_search(query, court?)` — ricerca decisioni giustizia amministrativa
 - `get_decision(id)` — recupera testo decisione
 
 **MCP `eur-lex-ita`** (diritto UE in italiano):
-- `search_legislation(query)` — ricerca atti UE in italiano
+- `eur-lex-ita_search(query)` — ricerca atti UE in italiano
 - `get_article(act_number, article)` — recupera testo articolo
 
 ### Passo 3: Analisi dei Precedenti
@@ -61,7 +84,7 @@ Applica questo framework a 5 punti a ogni decisione Cassazione rilevante:
 
 ### Passo 4: Verifica Citazioni
 Usa MCP `legal-citations-ita`:
-- `validate_citation(citation)` — verifica esistenza e formato
+- `legal-citations-ita_validate(citation)` — verifica esistenza e formato
 - `format_citation(citation, target_language)` — converte IT/EN
 - `parse_citation(citation)` — scompone i componenti
 

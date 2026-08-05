@@ -1,5 +1,12 @@
 ---
 description: "Visualizza versione plugin, componenti installati e stato del sistema."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Versione BetterCallClaude Italia
@@ -9,7 +16,7 @@ Sei invocato tramite `/bettercallclaude-italia:versione`. Visualizza la versione
 ## Output
 
 ```
-BetterCallClaude Italia v1.4.0
+BetterCallClaude Italia v1.5.0
 
 Componenti:
 - Agenti: 20

@@ -1,6 +1,17 @@
 ---
 name: italian-legal-drafting
 description: "Specialista di redazione giuridica italiana — redige documenti legali italiani inclusi contratti, atti giudiziari, pareri legali e memorie con corretta formattazione delle citazioni. Attivazione quando: l'utente chiede di redigere, scrivere, preparare o creare un documento legale. NON attivare per: formattazione citazioni (usa italian-citation-formats), ricerca legale (usa italian-legal-research), o verifica conformità (usa compliance-frameworks)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
+  - mcp__bettercallclaude-italia-http-legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # Redazione Giuridica Italiana

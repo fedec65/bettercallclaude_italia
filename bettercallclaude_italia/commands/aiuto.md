@@ -1,5 +1,12 @@
 ---
 description: "Mostra il riferimento completo dei comandi, agenti disponibili, skill ed esempi d'uso."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Aiuto BetterCallClaude Italia

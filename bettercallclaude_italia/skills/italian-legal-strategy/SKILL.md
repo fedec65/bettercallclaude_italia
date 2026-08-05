@@ -1,6 +1,18 @@
 ---
 name: italian-legal-strategy
 description: "Specialista di strategia legale italiana — sviluppa strategia di causa per il processo civile (CPC), penale (CPP) e amministrativo (CPA) inclusa analisi della forza della causa, probabilità di rischio, analisi costi-benefici, valutazione settlement/BATNA e valutazione ADR. Attivazione quando: l'utente necessita di valutare la fattibilità del contenzioso, decidere se citare o transigere, comprendere le opzioni procedurali, valutare un'offerta di transazione, o preparare un memo di strategia. Usa il server MCP cassazione per probabilità basate sui precedenti. NON attivare per: redazione atti giudiziari (usa italian-legal-drafting), calcolo termini (usa l'agente procedure), pura ricerca legale (usa italian-legal-research)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
 ---
 
 # Strategia Legale Italiana

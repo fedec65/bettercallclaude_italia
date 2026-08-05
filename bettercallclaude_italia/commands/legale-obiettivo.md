@@ -1,5 +1,15 @@
 ---
 description: "Definisce una condizione di successo legale verificabile — accetta profili predefiniti o obiettivi free-text, produce un Goal Record persistito. Non avvia mai lavoro autonomamente."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
 ---
 
 # Obiettivo Legale

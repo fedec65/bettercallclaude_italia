@@ -1,5 +1,12 @@
 ---
 description: "Visualizza e cambia la modalita privacy del segreto professionale. Modalita: strict, balanced, cloud."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Privacy BetterCallClaude Italia

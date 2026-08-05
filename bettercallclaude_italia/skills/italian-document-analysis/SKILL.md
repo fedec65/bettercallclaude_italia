@@ -1,6 +1,21 @@
 ---
 name: italian-document-analysis
 description: "Intelligenza documentale legale italiana — analizza contratti, atti giudiziari, norme e testi regolamentari per identificare questioni giuridiche, estrarre clausole chiave, verificare citazioni, valutare conformità e segnalare rischi. Attivazione quando: l'utente carica o fa riferimento a un documento per analisi, chiede di rivedere un contratto, necessita estrazione clausole, o richiede valutazione di conformità di un documento. NON attivare per: redazione documenti (usa italian-legal-drafting), pura verifica citazioni senza contesto documentale (usa italian-citation-formats), o ricerca legale senza documento specifico (usa italian-legal-research)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Analisi Documentale Italiana

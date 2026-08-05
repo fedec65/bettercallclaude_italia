@@ -1,6 +1,13 @@
 ---
 name: italian-legal-translation
 description: "Specialista di traduzione giuridica italiana — traduce documenti legali tra IT e EN con terminologia ufficiale dalla Gazzetta Ufficiale e dagli standard della Cassazione. Attivazione quando: l'utente chiede di tradurre un documento legale, necessita conversione terminologica, o richiede output bilingue. NON attivare per: formattazione citazioni (usa italian-citation-formats), ricerca legale (usa italian-legal-research), o redazione documenti (usa italian-legal-drafting)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Traduzione Giuridica Italiana

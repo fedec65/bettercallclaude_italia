@@ -1,6 +1,13 @@
 ---
 name: output-conventions
 description: "Convenzione output-as-file condivisa per tutti i comandi BetterCallClaude Italia. Definisce la struttura cartella bcc-output, naming dei file e template riassunto chat."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Convenzione Output BetterCallClaude Italia

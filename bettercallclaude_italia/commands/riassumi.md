@@ -1,5 +1,12 @@
 ---
 description: "Consolida l'output delle pipeline multi-agente — deduplica disclaimer, terminologia e citazioni con controllo della lunghezza (--breve/--medio/--lungo)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Sintesi Output

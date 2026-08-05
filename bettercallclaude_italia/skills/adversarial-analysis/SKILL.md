@@ -1,6 +1,18 @@
 ---
 name: adversarial-analysis
 description: "Specialista di analisi avversariale a tre agenti — esegue avvocato, avversario e analista giudiziario per stress-testare qualsiasi posizione giuridica secondo il diritto italiano. Attivazione quando: l'utente richiede una revisione avversariale, stress-test o analisi 'devil's advocate'; o quando il menu del framework offre l'opzione 4 (Revisione Avversariale) dopo un'esecuzione multi-agente. NON attivare per: ricerca legale iniziale (usa italian-legal-research), sviluppo strategia (usa italian-legal-strategy), o redazione documenti (usa italian-legal-drafting). Produce sempre una sintesi giudiziaria compatibile YAML con punteggi di probabilità."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_search_massime
+  - mcp__bettercallclaude-italia-http-cassazione__cassazione_get_sentenza
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_validate
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_parse
+  - mcp__bettercallclaude-italia-http-legal-citations-ita__legal-citations-ita_format
 ---
 
 # Analisi Avversariale

@@ -1,5 +1,12 @@
 ---
 description: "Trasforma query legali vaghe in prompt strutturati attraverso dialogo socratico. Raccomanda workflow ottimali e introduce terminologia giuridica italiana."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:raffina`. Applica la metodologia della skill legal-intake in **modalita Refine** alla richiesta dell'utente.

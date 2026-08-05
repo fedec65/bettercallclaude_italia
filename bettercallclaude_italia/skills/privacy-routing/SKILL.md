@@ -1,6 +1,13 @@
 ---
 name: privacy-routing
 description: "Routing privacy per il segreto professionale italiano (segreto professionale, Art. 622 CP, L. 247/2012, CDF Art. 13) con rilevamento pattern in italiano e inglese per proteggere le comunicazioni legali confidenziali."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
 ---
 
 # Routing Privacy

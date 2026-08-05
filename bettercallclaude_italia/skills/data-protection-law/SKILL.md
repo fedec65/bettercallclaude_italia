@@ -1,6 +1,18 @@
 ---
 name: data-protection-law
 description: "Specialista di protezione dati italiana ed europea — analizza GDPR, D.Lgs. 196/2003 (Codice Privacy come modificato dal D.Lgs. 101/2018), linee guida del Garante, e conduce DPIA e valutazioni d'impatto trasferimenti. Attivazione quando: l'utente chiede di GDPR, privacy, protezione dati, DPIA, diritti dell'interessato, trasferimenti transfrontalieri, o conformità Codice Privacy. NON attivare per: questioni di compliance generali senza focus privacy (usa compliance-frameworks), ricerca legale senza angolo privacy (usa italian-legal-research), o redazione documenti (usa italian-legal-drafting)."
+tools:
+  - Read
+  - Grep
+  - Glob
+  - Bash
+  - WebSearch
+  - WebFetch
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_search_advanced
+  - mcp__bettercallclaude-italia-http-normattiva__normattiva_get_atto
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_search
+  - mcp__bettercallclaude-italia-http-eur-lex-ita__eur-lex-ita_get_atto_celex
 ---
 
 # Diritto della Protezione dei Dati

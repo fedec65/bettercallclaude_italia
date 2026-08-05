@@ -4,6 +4,23 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.5.0] - 2026-08-04
+
+Porting della release svizzera **v4.9.2** (MCP tool integration in skills and commands).
+
+### Added
+- **Frontmatter MCP nelle 14 skill e nei 26 comandi** — Ogni skill e comando ora dichiara nel frontmatter YAML i tool MCP che usa (prefisso intermedio `mcp__bettercallclaude-italia-http-<server>__<tool>`, migrazione al prefisso Cowork nella v1.6.0). Regola di delega: i comandi che orchestrano skill ereditano il set completo dei tool MCP delle skill invocate (es. `/ricerca` dichiara tutti i 16 tool di `italian-legal-research`; `/legale` e `/legale-5step` tutti i 19 tool).
+- **`scripts/generate-tool-frontmatter.js`** — Script di analisi statica portato dallo svizzero e adattato all'infrastruttura italiana: mappatura dei 19 tool reali sui 7 server, prefisso italiano, path del plugin. Dry-run di default, `--apply` per scrivere.
+
+### Fixed
+- **Correzioni nel corpo di `italian-legal-research`** — `search_legislation` → `normattiva_search`/`eur-lex-ita_search` (per sezione), `search_decisions` → `corte-costituzionale_search`/`giustizia-amministrativa_search`, `validate_citation` → `legal-citations-ita_validate`.
+
+### Note per i manutentori
+- Riferimenti senza equivalente italiano segnalati per roadmap MCP: `present_adversarial_analysis`, `present_intake_form`, `compute_deadlines` (hanno gia fallback funzionanti), `find_leading_cases`, `get_article`, `get_decision`, `format_citation`, `parse_citation` (hanno candidati naturali, valutare nelle prossime release).
+- Riferimenti concettuali a Ollama in `privacy-routing`, `/privacy`, `/aiuto` — pulizia prevista in v1.6.0.
+
+---
+
 ## [1.4.0] - 2026-08-04
 
 Porting della release svizzera **v4.9.1** (MCP tool integration in agents).
