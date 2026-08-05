@@ -24,13 +24,13 @@ Per ciascuno dei 7 server MCP, usa un **approccio a due stadi**:
 
 | Server | Cosa fornisce | Chiamata di test |
 |--------|--------------|-----------------|
-| normattiva | Legislazione italiana (1861-oggi) | `search_legislation` (minima) |
-| corte-costituzionale | Sentenze Corte Costituzionale | `search_decisions` (minima) |
-| giustizia-amministrativa | Sentenze TAR e Consiglio di Stato | `search_decisions` (minima) |
+| normattiva | Legislazione italiana (1861-oggi) | `normattiva_search` (minima) |
+| corte-costituzionale | Sentenze Corte Costituzionale | `corte-costituzionale_search` (minima) |
+| giustizia-amministrativa | Sentenze TAR e Consiglio di Stato | `giustizia-amministrativa_search` (minima) |
 | cassazione | Giurisprudenza Cassazione (ItalGiure) | `cassazione_search_massime` (minima) |
-| eur-lex-ita | Diritto UE in italiano | `search_legislation` (minima) |
-| legal-citations-ita | Validazione e formattazione citazioni | `validate_citation` (minima) |
-| legal-persona-ita | Generazione documenti legali | `legal_analyze` (minima) |
+| eur-lex-ita | Diritto UE in italiano | `eur-lex-ita_search` (minima) |
+| legal-citations-ita | Validazione e formattazione citazioni | `legal-citations-ita_validate` (minima) |
+| legal-persona-ita | Generazione documenti legali | `legal-persona-ita_draft_document` (minima) |
 
 ## Passo 3: Mostra Risultati
 

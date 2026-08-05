@@ -82,3 +82,20 @@ conclusione_giuridica:
 - Linguaggio neutro in tutta la sintesi giudiziaria.
 - Onestà intellettuale: se una posizione è chiaramente più forte, dirlo.
 - Includi disclaimer professionale.
+
+---
+
+## Integrazione Widget — Dashboard Contraddittorio
+
+Dopo il completamento della sintesi giudiziale, verifica se il tool `present_adversarial_analysis` (server `legal-persona-ita`) è disponibile.
+
+**Se disponibile**: invoca `present_adversarial_analysis` passando la sintesi strutturata in questo formato:
+- `advocate_summary`: argomenti chiave del Patrocinatore con punteggi di forza e citazioni
+- `adversary_summary`: argomenti chiave dell'Avversario con punteggi di forza e citazioni
+- `judicial_synthesis`: sintesi motivazionale dell'agente Giudicante con probabilità di rischio
+- `overall_assessment`: livello di rischio complessivo e raccomandazione
+- `language`: lingua dell'analisi (`it`, `en`)
+
+Il tool renderizza una dashboard interattiva; la skill NON duplica l'output in chat. Fornisci solo una breve conferma in chat (es. "Analisi in contraddittorio completata — vedi dashboard interattiva").
+
+**Se non disponibile** (tool non trovato, MCP Apps non supportate, o server irraggiungibile — è il caso attuale: il server `legal-persona-ita` espone solo `legal-persona-ita_draft_document`): produci l'output testuale completo in chat come descritto nelle sezioni precedenti. Questo è il comportamento predefinito corrente e deve restare pienamente funzionante — il widget è un miglioramento, non una sostituzione.

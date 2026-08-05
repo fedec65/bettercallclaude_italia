@@ -107,3 +107,18 @@ flags:
 - Le domande del panel devono essere specifiche e actionable.
 - Non procedere mai senza approvazione esplicita dell'utente.
 - Rispetta il segreto professionale.
+
+---
+
+## Integrazione Widget — Form di Intake
+
+Quando raccogli informazioni in modalita Briefing (dialogo socratico), verifica se il tool `present_intake_form` (server `legal-persona-ita`) e disponibile.
+
+**Se disponibile**: invece di porre le domande come messaggi chat, invoca `present_intake_form` con:
+- `questions`: array di oggetti domanda, ciascuno con `id`, `text`, `type` (`text` | `select` | `multiselect`) e `options` opzionale per i tipi select
+- `language`: lingua utente (`it`, `en`)
+- `context`: breve descrizione di cosa raccoglie il form (es. "Intake briefing — controversia multi-dominio lavoro/contratti")
+
+La skill decide QUALI domande porre; il tool le renderizza solo come form. Dopo l'invio dell'utente, processa le risposte esattamente come se avesse risposto in chat. Consenti al massimo un round di follow-up (totale: iniziale + 1 follow-up). Poi produci il piano di esecuzione come da workflow.
+
+**Se non disponibile** (tool non trovato, MCP Apps non supportate, o server irraggiungibile — e il caso attuale: il server `legal-persona-ita` espone solo `legal-persona-ita_draft_document`): conduci il dialogo socratico in chat come descritto sopra. Questo e il comportamento predefinito e deve restare pienamente funzionante.

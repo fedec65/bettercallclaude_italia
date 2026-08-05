@@ -4,6 +4,25 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.3.0] - 2026-08-04
+
+Porting della release svizzera **v4.8.3** (CONNECTORS documentation + widget integration hooks).
+
+### Added
+- **`CONNECTORS.md`** — Documentazione completa dei 7 server MCP italiani (panoramica, configurazione, tabella tool per server, fonti dati, affidabilita, sezione privacy). Portata dalla struttura svizzera, contenuti allineati alle specifiche reali di `BetterCallClaudeMCP_Italy`.
+- **Integrazione Widget — Dashboard Contraddittorio** (`adversarial-analysis`) — Dopo la sintesi giudiziale, la skill verifica la disponibilita del tool `present_adversarial_analysis`: se presente renderizza una dashboard interattiva, altrimenti produce l'output testuale completo (comportamento predefinito, pienamente funzionante).
+- **Integrazione Widget — Form di Intake** (`legal-intake`) — In modalita Briefing, verifica la disponibilita del tool `present_intake_form`: se presente renderizza le domande socratiche come form (max 1 follow-up), altrimenti dialogo in chat (predefinito).
+- **Calcolo termini processuali** (`italian-legal-strategy`) — Nuovo paragrafo sul calcolo dei termini: usa `compute_deadlines` se disponibile, altrimenti calcolo manuale con regole CPC (art. 155, sospensione feriale L. 742/1969, art. 163-bis, termini impugnazioni) e contrassegno *(calcolato manualmente — verificare presso la cancelleria competente)*.
+
+### Fixed
+- **`doctor.md`** — Corrette le chiamate di test: erano nomi tool svizzeri/inesistenti (`search_legislation`, `search_decisions`, `validate_citation`, `legal_analyze`), ora quelli reali italiani (`normattiva_search`, `corte-costituzionale_search`, `giustizia-amministrativa_search`, `eur-lex-ita_search`, `legal-citations-ita_validate`, `legal-persona-ita_draft_document`).
+- **README** — Conteggio skill corretto (13 → 14); rimosso riferimento ad arbitrato CAS/TAS (server non presente nell'infrastruttura italiana).
+
+### Note per i manutentori
+- I tool widget (`present_adversarial_analysis`, `present_intake_form`) e `compute_deadlines` **non esistono** ancora sul server `legal-persona-ita` (che espone solo `legal-persona-ita_draft_document`): le skill usano il pattern "verifica disponibilita → fallback" dello svizzero, quindi funzionano oggi e si attiveranno automaticamente se il server aggiungera i tool.
+
+---
+
 ## [1.2.6] - 2026-08-04
 
 ### Fixed

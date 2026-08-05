@@ -63,6 +63,8 @@ Baseline da esiti simili della Cassazione, aggiustata per fattori caso-specifici
 | Appello | 12-36 mesi |
 | Cassazione | 12-48 mesi |
 
+**Calcolo dei termini processuali**: quando la questione coinvolge termini processuali (CPC, CPP, CPA), usa il tool `compute_deadlines` (server `legal-persona-ita`) se disponibile, invece di calcolare manualmente. Il tool applicherebbe le regole di computo corrette (art. 155 CPC — dies a quo non computatur, proroga per sabato e giorni festivi), la sospensione feriale del periodo 1°–31 agosto (L. 742/1969 e succ. mod.) e i termini chiave (art. 163-bis CPC: 90 giorni fra citazione e prima udienza, 150 se la controparte risiede all'estero; impugnazioni: 30/60 giorni dalla notifica o 6 mesi dalla pubblicazione). Includi sempre il calcolo passo-passo nel deliverable, con il disclaimer obbligatorio che i termini devono essere verificati presso la cancelleria del giudice competente. Se `compute_deadlines` non è disponibile (attualmente il server `legal-persona-ita` espone solo `legal-persona-ita_draft_document`), calcola manualmente seguendo le stesse regole e contrassegna il risultato come *(calcolato manualmente — verificare presso la cancelleria competente)*.
+
 ## Analisi Costi-Benefici
 
 ```
