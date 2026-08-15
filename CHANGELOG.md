@@ -4,6 +4,14 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.9.1] - 2026-08-05
+
+### Fixed
+- Aggiunto file `LICENSE` mancante (testo integrale GNU AGPL-3.0, copyright Federico Cesconi) — il README e il `package.json` lo linkavano ma non esisteva.
+- Corretto flag `sensitive` su `italgiure_cookie` in `plugin.json` (`false` → `true`): il cookie di sessione ItalGiure e una credenziale (login SPID), come `api_token`.
+
+---
+
 ## [1.9.0] - 2026-08-05
 
 Porting della release svizzera **v4.9.6** (privacy hook quoting + regression guards).

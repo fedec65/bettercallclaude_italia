@@ -16,7 +16,7 @@ Sei invocato tramite `/bettercallclaude-italia:versione`. Visualizza la versione
 ## Output
 
 ```
-BetterCallClaude Italia v1.9.0
+BetterCallClaude Italia v1.9.1
 
 Componenti:
 - Agenti: 20
