@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.9.3] - 2026-08-15
+
+### Added
+- **Badge "Buy Me a Coffee"** nei README del marketplace e del plugin, con link "Supporta il progetto" nel footer — allineato al repository svizzero.
+
+---
+
 ## [1.9.2] - 2026-08-05
 
 ### Fixed

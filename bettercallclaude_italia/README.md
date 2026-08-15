@@ -1,6 +1,7 @@
-[![Version](https://img.shields.io/badge/version-1.9.2-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.9.3-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
+[![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
 
 <p align="center">
   <img src="docs/images/logo.png" alt="Meglio Chiamare Claude" width="400">
@@ -192,6 +193,8 @@ Federico Cesconi — [fedec65/bettercallclaude_italia](https://github.com/fedec6
 ## Licenza
 
 AGPL-3.0 — Vedi [LICENSE](LICENSE) per i termini completi.
+
+[Supporta il progetto](https://buymeacoffee.com/federicocesconi)
 
 ---
 
