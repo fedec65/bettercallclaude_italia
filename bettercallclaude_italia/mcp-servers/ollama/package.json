@@ -11,6 +11,10 @@
   "dependencies": {
     "@modelcontextprotocol/sdk": "^1.0.0"
   },
+  "overrides": {
+    "hono": "^4.12.25",
+    "@hono/node-server": "^1.19.15"
+  },
   "devDependencies": {
     "@types/node": "^20.0.0",
     "esbuild": "^0.20.0",
