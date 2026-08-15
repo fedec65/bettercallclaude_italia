@@ -9,7 +9,9 @@ Istruzioni per l'utente del plugin BetterCallClaude — Come usare il server Cas
 ### Passo 1: Ottenere il cookie di sessione ItalGiure
 
 1. Apri il tuo browser (Chrome, Firefox, Safari, Edge).
-2. Vai su [https://www.italgiure.giustizia.it/sncass/](https://www.italgiure.giustizia.it/sncass/)
+2. Vai sull'area riservata ItalGiure: [https://www.italgiure.giustizia.it/new/archives](https://www.italgiure.giustizia.it/new/archives)
+
+   > Nota: la pagina di ricerca libera (`/sncass/`, "Sentenze Cassazione") **non** richiede login — non è lì che si ottiene il cookie. Il cookie di sessione viene rilasciato dall'area riservata dopo l'autenticazione, e vale per tutto il dominio `www.italgiure.giustizia.it`.
 3. Fai login con SPID o con le tue credenziali professionali (es. Avvocatura).
 4. Quando sei sulla pagina principale (motore di ricerca sentenze), apri gli Strumenti per sviluppatori:
    - **Windows/Linux**: F12 o Ctrl+Shift+I
@@ -24,7 +26,7 @@ Istruzioni per l'utente del plugin BetterCallClaude — Come usare il server Cas
 
 Quando usi un comando che accede alla Cassazione (es. `/bettercallclaude_italia:legal`, `/bettercallclaude_italia:precedente`), l'agente ti chiederà:
 
-> *"Per accedere alle massime complete della Cassazione ho bisogno del tuo cookie di sessione ItalGiure. Per ottenerlo: accedi a https://www.italgiure.giustizia.it/sncass/ con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e incolla qui il risultato. Il cookie dura 30 giorni."**
+> *"Per accedere alle massime complete della Cassazione ho bisogno del tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e incolla qui il risultato. Il cookie dura 30 giorni."**
 
 Incolla il cookie che hai copiato nel Passo 1. L'agente lo userà per tutte le chiamate Cassazione durante la conversazione.
 

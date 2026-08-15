@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.9.2] - 2026-08-05
+
+### Fixed
+- **URL errato nelle istruzioni per il cookie ItalGiure** — Le istruzioni indicavano `https://www.italgiure.giustizia.it/sncass/` (pagina "Sentenze Cassazione", accesso libero, nessun login) come punto dove ottenere il cookie di sessione. Corretto in tutti i punti (`plugin.json`, README plugin, `agents/researcher.md`, `skills/italian-legal-research`, `docs/cassazione-cookie.md`) verso l'area riservata `https://www.italgiure.giustizia.it/new/archives`, con nota esplicita che la pagina `/sncass/` non richiede login. Segnalazione di un utente.
+
+---
+
 ## [1.9.1] - 2026-08-05
 
 ### Fixed

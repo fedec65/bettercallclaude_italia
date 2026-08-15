@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.9.1-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.9.2-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 
@@ -141,7 +141,7 @@ Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazi
 Per accedere alle **massime complete** della Cassazione (banca dati ItalGiure), il plugin richiede un cookie di sessione ItalGiure.
 
 **Come funziona:**
-1. **Ottieni il cookie**: Accedi a [ItalGiure](https://www.italgiure.giustizia.it/sncass/) con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e copia il risultato.
+1. **Ottieni il cookie**: Accedi all'area riservata [ItalGiure](https://www.italgiure.giustizia.it/new/archives) con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e copia il risultato.
 2. **Fornisci il cookie quando richiesto**: L'agente ti chiederà esplicitamente il cookie quando usi comandi che accedono alla Cassazione (es. `/bettercallclaude-italia:precedente`, `/bettercallclaude-italia:ricerca`).
 3. **Il cookie viene passato come parametro MCP** al server remoto per la durata della conversazione.
 
