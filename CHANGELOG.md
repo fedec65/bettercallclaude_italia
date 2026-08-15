@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.9.4] - 2026-08-15
+
+### Security
+- **CVE-2026-54290 (hono)** — Forzate via npm `overrides` le versioni patched delle dipendenze transitive del server MCP Ollama (`mcp-servers/ollama/package.json`): `hono` ^4.12.25 (il middleware CORS rifletteva qualsiasi Origin con credenziali) e `@hono/node-server` ^1.19.15 (advisory HIGH proprie). Applicati anche i fix non-breaking di `npm audit` (body-parser, fast-uri). Resta 1 vulnerabilità moderata su `esbuild` (dev-server, usato solo in fase di build). Sostituisce la PR esterna #31, chiusa perché basata su un branch stale (dev@1.2.4) che avrebbe revertito lo stato del repository.
+
+---
+
 ## [1.9.3] - 2026-08-15
 
 ### Added
