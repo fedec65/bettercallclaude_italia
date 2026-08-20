@@ -4,6 +4,12 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.0.0] - (in sviluppo)
+
+Linea di sviluppo 2.0.0 aperta. Nessun cambiamento ancora — le prossime feature atterreranno qui.
+
+---
+
 ## [1.10.0] - 2026-08-20
 
 Porting della release svizzera **v4.10.1** (legal-wayfinder + scheduling monitoraggio-normativo).
