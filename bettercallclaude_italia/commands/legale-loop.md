@@ -15,6 +15,10 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
 ---
 
 # Loop Legale

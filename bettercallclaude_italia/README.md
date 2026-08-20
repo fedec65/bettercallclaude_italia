@@ -9,7 +9,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 29 comandi, 17 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 29 comandi, 17 skill e 8 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane.
 
 ---
 
@@ -124,7 +124,8 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | `cassazione` | Giurisprudenza Corte di Cassazione | HTTP |
 | `eur-lex-ita` | Diritto UE in lingua italiana | HTTP |
 | `legal-citations-ita` | Validazione citazioni normative italiane | HTTP |
-| `legal-persona-ita` | Drafting documenti giuridici italiani | HTTP |
+| `legal-persona-ita` | Drafting documenti + calcolo termini processuali (CPC/CPP/CPA) | HTTP |
+| `citation-verify-ita` | Verifica esistenza citazioni giuridiche | HTTP |
 
 ### Affidabilita Server
 
@@ -133,7 +134,8 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | normattiva | Alta | API Open Data ufficiale |
 | eur-lex-ita | Alta | SPARQL su EUR-Lex |
 | legal-citations-ita | Alta | Funziona localmente |
-| legal-persona-ita | Alta | Funziona localmente |
+| legal-persona-ita | Alta | Funziona localmente (calcolo termini deterministico) |
+| citation-verify-ita | Media | Dipende da ItalGiure (cookie) e Normattiva |
 | corte-costituzionale | Bassa | Protezione anti-bot (DataDome) |
 | giustizia-amministrativa | Bassa | Portale instabile, timeout frequenti |
 | cassazione | Molto bassa | HTTP 403 sistematico |

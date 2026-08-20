@@ -15,7 +15,7 @@ const skillsDir = path.join(root, 'bettercallclaude_italia', 'skills');
 const commandsDir = path.join(root, 'bettercallclaude_italia', 'commands');
 const apply = process.argv.includes('--apply');
 
-// Server → list of tools (from CONNECTORS.md — the 19 real tools on 7 servers)
+// Server → list of tools (from CONNECTORS.md — the 21 real tools on 8 servers)
 const SERVER_TOOLS = {
   normattiva: ['normattiva_search', 'normattiva_search_advanced', 'normattiva_get_atto', 'normattiva_elenco_tipi'],
   'corte-costituzionale': ['corte-costituzionale_search', 'corte-costituzionale_get_sentenza', 'corte-costituzionale_norme_incostituzionali'],
@@ -23,7 +23,8 @@ const SERVER_TOOLS = {
   cassazione: ['cassazione_search_massime', 'cassazione_get_sentenza'],
   'eur-lex-ita': ['eur-lex-ita_search', 'eur-lex-ita_get_atto_celex'],
   'legal-citations-ita': ['legal-citations-ita_validate', 'legal-citations-ita_parse', 'legal-citations-ita_format'],
-  'legal-persona-ita': ['legal-persona-ita_draft_document'],
+  'legal-persona-ita': ['legal-persona-ita_draft_document', 'legal-persona-ita_compute_deadlines'],
+  'citation-verify-ita': ['citation-verify-ita_check_existence'],
 };
 
 const TOOL_TO_SERVERS = {};
@@ -42,7 +43,7 @@ const COMMAND_SKILL_MAP = {
   'flusso.md': ['italian-legal-strategy', 'italian-legal-research'],
   'legale-5step.md': ['legal-5step-framework', 'italian-legal-research', 'italian-legal-strategy', 'adversarial-analysis', 'italian-legal-drafting', 'italian-citation-formats'],
   'legale.md': ['italian-legal-research', 'legal-intake'],
-  'legale-loop.md': ['legal-evaluator'],
+  'legale-loop.md': ['legal-evaluator', 'citation-content-verify'],
   'mappa-legale.md': ['legal-wayfinder'],
   'percorso-legale.md': ['legal-wayfinder'],
   'nazionale.md': ['italian-legal-research'],
@@ -55,7 +56,7 @@ const COMMAND_SKILL_MAP = {
   'strategia.md': ['italian-legal-strategy'],
   'traduci.md': ['italian-legal-translation'],
   'triage-nda.md': ['italian-document-analysis'],
-  'verifica.md': ['italian-citation-formats'],
+  'verifica.md': ['italian-citation-formats', 'citation-content-verify'],
 };
 
 const GENERIC_TOOLS = ['Read', 'Grep', 'Glob', 'Bash', 'WebSearch', 'WebFetch'];
@@ -100,6 +101,22 @@ function fullyQualified(tool, server) {
   return `mcp__plugin_bettercallclaude-italia_${server}__${tool}`;
 }
 
+// When a file references any tool of a server, grant the full toolset of that server
+// (frontmatter convention of this repo: complete per-server sets).
+function serversFromResolved(resolved) {
+  const servers = new Set();
+  for (const r of Object.values(resolved)) servers.add(r.server);
+  return servers;
+}
+
+function fqForServers(servers) {
+  const tools = new Set();
+  for (const server of servers) {
+    for (const tool of SERVER_TOOLS[server]) tools.add(fullyQualified(tool, server));
+  }
+  return tools;
+}
+
 function analyzeFile(filePath) {
   const text = readFile(filePath);
   const bare = extractBareToolNames(text);
@@ -111,28 +128,30 @@ function analyzeFile(filePath) {
   return { bare, resolved, text };
 }
 
-function skillTools(skillName) {
+function skillServers(skillName) {
   const skillPath = path.join(skillsDir, skillName, 'SKILL.md');
-  if (!fs.existsSync(skillPath)) return [];
+  if (!fs.existsSync(skillPath)) return new Set();
   const { resolved } = analyzeFile(skillPath);
-  return Object.values(resolved).map(r => r.fq);
+  return serversFromResolved(resolved);
 }
 
 function commandTools(cmdFile) {
   const text = readFile(cmdFile);
   const bare = extractBareToolNames(text);
-  const tools = new Set(GENERIC_TOOLS);
+  const servers = new Set();
 
   for (const tool of bare) {
-    const server = resolveServer(tool, text);
-    tools.add(fullyQualified(tool, server));
+    servers.add(resolveServer(tool, text));
   }
 
   const base = path.basename(cmdFile);
   const skills = COMMAND_SKILL_MAP[base] || [];
   for (const skill of skills) {
-    for (const fq of skillTools(skill)) tools.add(fq);
+    for (const server of skillServers(skill)) servers.add(server);
   }
+
+  const tools = new Set(GENERIC_TOOLS);
+  for (const fq of fqForServers(servers)) tools.add(fq);
 
   return [...tools];
 }
@@ -141,13 +160,31 @@ function insertToolsIntoFrontmatter(content, tools) {
   const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n/);
   if (!fmMatch) return null;
 
-  const fm = fmMatch[1];
   const rest = content.slice(fmMatch[0].length);
 
-  const toolsYaml = 'tools:\n' + tools.map(t => `  - ${t}`).join('\n');
+  // Drop the existing tools: block but keep its entries: regeneration is a
+  // union (computed ∪ existing) and never removes previously granted tools.
+  const oldLines = fmMatch[1].split('\n');
+  const existing = [];
+  const lines = [];
+  let skippingTools = false;
+  for (const line of oldLines) {
+    if (/^tools:\s*$/.test(line)) {
+      skippingTools = true;
+      continue;
+    }
+    if (skippingTools && /^  - /.test(line)) {
+      existing.push(line.replace(/^  - /, ''));
+      continue;
+    }
+    skippingTools = false;
+    lines.push(line);
+  }
+
+  const merged = [...new Set([...existing, ...tools])];
+  const toolsYaml = 'tools:\n' + merged.map(t => `  - ${t}`).join('\n');
 
   // Insert after description line, or append at end of frontmatter
-  const lines = fm.split('\n');
   let insertAt = -1;
   for (let i = 0; i < lines.length; i++) {
     if (lines[i].startsWith('description:')) {
@@ -193,7 +230,7 @@ for (const skillDir of fs.readdirSync(skillsDir)) {
   if (!fs.existsSync(skillPath)) continue;
   const { resolved } = analyzeFile(skillPath);
   const tools = new Set(GENERIC_TOOLS);
-  for (const r of Object.values(resolved)) tools.add(r.fq);
+  for (const fq of fqForServers(serversFromResolved(resolved))) tools.add(fq);
   if (processFile(skillPath, [...tools])) ok++;
   else fail++;
 }

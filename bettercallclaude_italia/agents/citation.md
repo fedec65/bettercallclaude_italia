@@ -13,6 +13,7 @@ tools:
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: legal-chronology
-description: "Costruttore di cronologie legali — trasforma i documenti della causa (contratti, corrispondenza, atti giudiziari, perizie) in una cronologia legale documentata. Ogni evento porta provenienza obbligatoria (documento + locus), uno stato non contestato/allegato/contestato con attribuzione, conflitti di date espliciti (mai risolti silenziosamente), lacune probatorie e marcatori di termini facoltativi da tabella di mapping (sempre indicativi: nessun calcolo automatico dei termini nell'ordinamento italiano). Attiva quando: costruzione di una cronologia della causa, ricostruzione del fatto storico, tabella dei fatti contestati, panoramica di prescrizione da documenti. NON attivare per: analisi di singolo documento (italian-document-analysis), formattazione citazioni (italian-citation-formats), o ricerca senza documenti di causa (italian-legal-research)."
+description: "Costruttore di cronologie legali — trasforma i documenti della causa (contratti, corrispondenza, atti giudiziari, perizie) in una cronologia legale documentata. Ogni evento porta provenienza obbligatoria (documento + locus), uno stato non contestato/allegato/contestato con attribuzione, conflitti di date espliciti (mai risolti silenziosamente), lacune probatorie e marcatori di termini facoltativi calcolati con il tool legal-persona-ita_compute_deadlines o da tabella di mapping (sempre indicativi — verificare: computazione ausiliaria, non consulenza legale). Attiva quando: costruzione di una cronologia della causa, ricostruzione del fatto storico, tabella dei fatti contestati, panoramica di prescrizione da documenti. NON attivare per: analisi di singolo documento (italian-document-analysis), formattazione citazioni (italian-citation-formats), o ricerca senza documenti di causa (italian-legal-research)."
 tools:
   - Read
   - Grep
@@ -8,6 +8,8 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 # Cronologia Legale
@@ -48,9 +50,9 @@ Fondi i candidati:
 ### Passo 4: LACUNE E TERMINI
 - **Lacune probatorie**: qualsiasi periodo documentato di ≥ 30 giorni senza eventi è segnalato come lacuna (lo script di render inietta righe di gap) — aiuta a individuare prove mancanti.
 - **Termini** (solo con `--deadlines`): mappa gli eventi ai termini per `references/deadline-mapping.md`:
-  - **Processuali** (eventi di tipo notifica: notifica della sentenza, del decreto, deposito ordinanza) → tabella dei termini CPC nella reference (data evento + termine legale).
-  - **Prescrizione sostanziale** (artt. 2934-2969 CC) → tabella di mapping nella reference (data evento + periodo legale).
-  - **Ogni marcatore è etichettato indicativo — verificare**: nessun tool MCP italiano calcola i termini automaticamente; l'output non deve mai suggerire il contrario. Il computo manuale segue le regole di cui all'art. 155 CPC (dies a quo non computatur, proroga per sabato e festivi) e la sospensione feriale 1°–31 agosto (L. 742/1969), da verificare presso la cancelleria competente.
+  - **Processuali** (eventi di tipo notifica: notifica della sentenza, del decreto, deposito ordinanza) → se il termine ha un `tipo_termine` coperto dal catalogo, calcolalo con il tool `legal-persona-ita_compute_deadlines` (deterministico: art. 155 CPC, proroga a festivi, sospensione feriale) e riporta `basis: compute_deadlines (tool)`; altrimenti tabella dei termini CPC nella reference (data evento + termine legale) con `basis: tabella-mapping (indicativo)`.
+  - **Prescrizione sostanziale** (artt. 2934-2969 CC) → tabella di mapping nella reference (data evento + periodo legale); nessun tool la copre.
+  - **Ogni marcatore è etichettato indicativo — verificare**: anche il tool emette un disclaimer di computazione ausiliaria (non consulenza legale); il calcolo copre art. 155 CPC (dies a quo non computatur, proroga per sabato e festivi) e la sospensione feriale 1°–31 agosto (L. 742/1969), e la verifica finale spetta alla cancelleria competente.
 
 ### Passo 5: RENDER
 Gli eventi vanno in `bcc-output/cronologia/events.json`, poi render deterministico:
@@ -72,7 +74,7 @@ La cronologia è un artefatto vivo della causa. Al rieseguire con `--merge`, car
 ## Modalità Ridotta
 
 - Documento illeggibile (scansione/OCR fallito) → segnalato come illeggibile nell'inventario; **mai** fabbricare eventi per compensare.
-- I marcatori di termine restano sempre e solo dalla tabella di mapping, etichettati indicativi — non esiste modalità "con tool di calcolo" nell'ordinamento italiano.
+- I marcatori di termine derivano dal tool `legal-persona-ita_compute_deadlines` (termini coperti dal catalogo) o dalla tabella di mapping (tutti gli altri) — sempre etichettati indicativi, mai presentati come calcolo autorevole.
 
 ## Regole di Qualità
 
