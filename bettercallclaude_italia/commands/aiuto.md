@@ -13,7 +13,7 @@ tools:
 
 Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento completo dei comandi.
 
-## Comandi (26)
+## Comandi (29)
 
 | Comando | Descrizione |
 |---------|-------------|
@@ -21,6 +21,8 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:legale-5step` | Pipeline completa a 5 fasi: intake → ricerca → strategia → contraddittorio → redazione |
 | `/bettercallclaude-italia:legale-obiettivo` | Definisce condizione di successo legale verificabile (Goal Record) |
 | `/bettercallclaude-italia:legale-loop` | Esegue ciclo worker-valutatore contro un Goal Record |
+| `/bettercallclaude-italia:mappa-legale` | Traccia una pratica grande come mappa decisionale wayfinder |
+| `/bettercallclaude-italia:percorso-legale` | Lavora un ticket decisionale di una mappa wayfinder |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
@@ -36,6 +38,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:traduci` | Traduce documenti legali IT/EN |
 | `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
 | `/bettercallclaude-italia:triage-nda` | Triage NDA: classifica GREEN/YELLOW/RED secondo diritto italiano |
+| `/bettercallclaude-italia:cronologia-legale` | Cronologia legale documentata da atti di causa |
 | `/bettercallclaude-italia:riassumi` | Consolida output delle pipeline multi-agente |
 | `/bettercallclaude-italia:start` | Onboarding — verifica MCP, guida playbook, esempi d'uso |
 | `/bettercallclaude-italia:doctor` | Diagnostica server MCP con guida contestuale |
@@ -44,7 +47,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:versione` | Visualizza versione plugin e stato sistema |
 | `/bettercallclaude-italia:aiuto` | Mostra questo aiuto |
 
-## Agenti (20)
+## Agenti (21)
 
 | Agente | Ruolo |
 |-------|------|
@@ -64,12 +67,13 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | regional | Tutte le 20 regioni italiane |
 | summarizer | Consolidamento output pipeline |
 | prompt-engineer | Affinamento query, raccomandazione workflow |
+| chronology-builder | Estrae eventi di cronologia con provenienza documento+locus |
 | briefing | Coordinatore briefing pre-esecuzione |
 | judicial | Sintesi neutrale in workflow avversariale |
 | advocate | Costruisce caso pro-posizione |
 | adversary | Sfida posizioni giuridiche |
 
-## Skill (13)
+## Skill (16)
 
 | Skill | Scopo |
 |-------|---------|
@@ -81,11 +85,14 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | italian-legal-strategy | Sviluppo strategia di causa |
 | legal-intake | Intake unificato: modalita Refine + Briefing |
 | italian-citation-formats | Formattazione citazioni |
+| citation-content-verify | Verifica sostanziale citazioni (esistenza + implicazione) |
 | italian-document-analysis | Intelligenza documentale + integrazione playbook |
 | data-protection-law | Conformita GDPR/Codice Privacy |
 | adversarial-analysis | Stress-test a tre agenti |
 | legal-5step-framework | Pipeline end-to-end a 5 fasi |
+| legal-chronology | Cronologia legale con provenienza obbligatoria |
 | legal-evaluator | Motore verdetti per sistema goal-loop |
+| legal-wayfinder | Mappe decisionali per pratiche grandi o nebbiose |
 
 **Risorse condivise** (non skill attivabili):
 - `shared/SKILL.md` — Convenzione output-as-file (bcc-output/)

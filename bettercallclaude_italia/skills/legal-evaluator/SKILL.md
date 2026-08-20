@@ -92,7 +92,7 @@ Quando il profilo include verifica citazioni:
 
 ## Profili Supportati
 
-Vedi `references/loop-profiles.md` per i dettagli di ogni profilo predefinito.
+Vedi `references/loop-profiles.md` per i dettagli di ogni profilo predefinito. Per la schedulazione automatica del profilo `monitoraggio-normativo`, vedi `references/scheduling-monitoraggio-normativo.md`.
 
 ### Regole di valutazione `timeline-sourced`
 

@@ -4,6 +4,24 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [1.10.0] - 2026-08-20
+
+Porting della release svizzera **v4.10.1** (legal-wayfinder + scheduling monitoraggio-normativo).
+
+### Added
+- **Legal wayfinder — mappe decisionali** — Pratiche troppo grandi o troppo nebbiose per un piano di esecuzione statico vengono tracciate come mappa decisionale (destinazione, decisioni, nebbia, fuori ambito) con ticket decisionali (`research` / `grilling` / `prototype` / `task`) in `bcc-output/YYYY-MM-DD-<slug>/wayfinder/`:
+  - Nuova skill `legal-wayfinder` (metodologia completa: frontiera e claiming, fog of war, casi limite, handoff pack verso `/legale-5step` o orchestratore, opzione `--gate` verso `/legale-obiettivo`).
+  - Nuovo comando `/mappa-legale` (charting: interrogazione breadth-first dell'avvocato, uscita anticipata senza nebbia, lancio dei ticket research in parallelo; flag `--privacy`, `--lang`, `--regione`).
+  - Nuovo comando `/percorso-legale` (lavora un ticket per invocazione per tipo, mantiene la mappa, promuove la nebbia, emette l'handoff pack; flag `--map`, `--gate`, `--list`).
+  - **Fog check** nel briefing: complessità 8+ o decisioni aperte interdipendenti → il coordinatore si ferma e offre la mappa (`/briefing --chart`, `/legale`, agente `briefing`).
+- **Scheduling `monitoraggio-normativo`** — Nuovo reference `legal-evaluator/references/scheduling-monitoraggio-normativo.md`: schedulazione del profilo reg-watch (Cowork Scheduled Tasks, cron esterno, sessioni schedulate), formato del file dei temi sorvegliati (fonti italiane: Normattiva, Gazzetta Ufficiale, Bollettini Regionali, Cassazione, CONSOB/Banca d'Italia/Garante) e comportamento per esecuzione.
+
+### Fixed
+- **Conteggi in `/aiuto`** — Aggiunti ai riferimenti i comandi/agenti/skill mancanti (`/cronologia-legale`, agente `chronology-builder`, skill `citation-content-verify` e `legal-chronology`); conteggi allineati alla realta' (21 agenti, 29 comandi, 16 skill attivabili + shared).
+- Conteggi e tabella comandi aggiornati nel README del plugin e in `docs/command-reference.md` (nuove voci `/mappa-legale`, `/percorso-legale`; flag `--chart` in `/briefing`).
+
+---
+
 ## [1.9.4] - 2026-08-15
 
 ### Security

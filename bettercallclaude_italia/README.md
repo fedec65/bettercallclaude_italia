@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-1.9.4-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-1.10.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -9,7 +9,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 20 agenti, 26 comandi, 14 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni e intelligenza documentale in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 29 comandi, 17 skill e 7 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, verifica delle citazioni, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane.
 
 ---
 
@@ -43,6 +43,8 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:legale-5step` | Pipeline completa a 5 fasi: intake → ricerca → strategia → contraddittorio → redazione |
 | `/bettercallclaude-italia:legale-obiettivo` | Definisce condizione di successo legale verificabile (Goal Record) |
 | `/bettercallclaude-italia:legale-loop` | Esegue ciclo worker-valutatore contro un Goal Record |
+| `/bettercallclaude-italia:mappa-legale` | Traccia una pratica grande come mappa decisionale wayfinder |
+| `/bettercallclaude-italia:percorso-legale` | Lavora un ticket decisionale di una mappa wayfinder |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
@@ -97,6 +99,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 ## Funzionalità Chiave
 
 - **Sessioni di briefing** — Query complesse attivano intake collaborativo con panel di specialisti.
+- **Mappe decisionali (wayfinder)** — Pratiche troppo grandi o troppo nebbiose per un piano statico vengono tracciate come mappa decisionale (`/mappa-legale`) e lavorate un ticket alla volta (`/percorso-legale`) fino all'handoff all'esecuzione.
 - **Analisi avversariale** — Workflow a tre agenti: l'avvocato costruisce, l'avversario sfida, l'analista giudiziario sintetizza.
 - **Workflow multi-agente** — Pipeline predefinite per due diligence, preparazione contenzioso, ciclo contrattuale, closing immobiliare.
 - **Tutte le 20 regioni** — Copertura regionale completa con sistemi giudiziari, formati di citazione e ricerca MCP.
