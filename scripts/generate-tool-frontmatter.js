@@ -43,7 +43,7 @@ const COMMAND_SKILL_MAP = {
   'flusso.md': ['italian-legal-strategy', 'italian-legal-research'],
   'legale-5step.md': ['legal-5step-framework', 'italian-legal-research', 'italian-legal-strategy', 'adversarial-analysis', 'italian-legal-drafting', 'italian-citation-formats'],
   'legale.md': ['italian-legal-research', 'legal-intake'],
-  'legale-loop.md': ['legal-evaluator'],
+  'legale-loop.md': ['legal-evaluator', 'citation-content-verify'],
   'mappa-legale.md': ['legal-wayfinder'],
   'percorso-legale.md': ['legal-wayfinder'],
   'nazionale.md': ['italian-legal-research'],
@@ -56,7 +56,7 @@ const COMMAND_SKILL_MAP = {
   'strategia.md': ['italian-legal-strategy'],
   'traduci.md': ['italian-legal-translation'],
   'triage-nda.md': ['italian-document-analysis'],
-  'verifica.md': ['italian-citation-formats'],
+  'verifica.md': ['italian-citation-formats', 'citation-content-verify'],
 };
 
 const GENERIC_TOOLS = ['Read', 'Grep', 'Glob', 'Bash', 'WebSearch', 'WebFetch'];
