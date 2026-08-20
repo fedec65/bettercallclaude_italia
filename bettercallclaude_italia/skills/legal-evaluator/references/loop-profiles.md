@@ -93,7 +93,7 @@
 
 **Iterazioni default**: 1 (one-pass-per-run, schedulabile)
 
-**Note**: questo profilo e pensato per esecuzioni periodiche (es. settimanali). Una singola iterazione produce il report delle modifiche dall'ultimo check.
+**Note**: questo profilo e pensato per esecuzioni periodiche (es. settimanali). Una singola iterazione produce il report delle modifiche dall'ultimo check. Per la schedulazione automatica (Cowork, cron, sessioni schedulate) e il formato del file dei temi sorvegliati, vedi `references/scheduling-monitoraggio-normativo.md`.
 
 ---
 
