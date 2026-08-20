@@ -76,7 +76,7 @@ if (packageJson) {
   console.log(`  ✅ package.json — v${packageJson.version}`);
 }
 
-// 5. Version alignment
+// 5. Version alignment (manifests + README badges)
 if (marketplace && pluginJson && packageJson) {
   const mv = marketplace.plugins[0].version;
   const pv = pluginJson.version;
@@ -86,6 +86,17 @@ if (marketplace && pluginJson && packageJson) {
     console.log(`  ✅ Version alignment — ${pkgv}`);
   } else {
     errors.push(`Version mismatch: marketplace=${mv}, plugin=${pv}, package=${pkgv}`);
+  }
+
+  const badgeRe = /img\.shields\.io\/badge\/version-(\d+\.\d+\.\d+)-blue/;
+  for (const readme of ['README.md', 'bettercallclaude_italia/README.md']) {
+    const match = fs.readFileSync(readme, 'utf8').match(badgeRe);
+    const bv = match && match[1];
+    if (bv === pkgv) {
+      console.log(`  ✅ Version badge — ${readme} (${bv})`);
+    } else {
+      errors.push(`Version badge mismatch in ${readme}: badge=${bv || 'not found'}, expected=${pkgv}`);
+    }
   }
 }
 
