@@ -85,12 +85,12 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | italian-legal-strategy | Sviluppo strategia di causa |
 | legal-intake | Intake unificato: modalita Refine + Briefing |
 | italian-citation-formats | Formattazione citazioni |
-| citation-content-verify | Verifica sostanziale citazioni (esistenza + implicazione) |
+| citation-content-verify | Verifica sostanziale citazioni (esistenza server-side via citation-verify-ita + implicazione) |
 | italian-document-analysis | Intelligenza documentale + integrazione playbook |
 | data-protection-law | Conformita GDPR/Codice Privacy |
 | adversarial-analysis | Stress-test a tre agenti |
 | legal-5step-framework | Pipeline end-to-end a 5 fasi |
-| legal-chronology | Cronologia legale con provenienza obbligatoria |
+| legal-chronology | Cronologia legale con provenienza obbligatoria e termini calcolabili via compute_deadlines |
 | legal-evaluator | Motore verdetti per sistema goal-loop |
 | legal-wayfinder | Mappe decisionali per pratiche grandi o nebbiose |
 

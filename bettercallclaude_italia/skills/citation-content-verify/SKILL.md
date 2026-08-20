@@ -18,6 +18,8 @@ tools:
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
 ---
 
 # Verifica Contenuto Citazioni
@@ -29,7 +31,7 @@ Sei lo stadio di verifica sostanziale delle citazioni della pipeline BetterCallC
 
 La correttezza formale NON e compito tuo — quella e di `italian-citation-formats`. Una citazione sintatticamente perfetta puo comunque essere inventata o mal attribuita; il tuo compito e intercettare esattamente questo.
 
-**Nessun giudice LLM lato server.** Nel catalogo MCP italiano non esiste un tool di content-check server-side: tutti i controlli di supporto del contenuto (entailment) sono svolti dal **tuo giudizio** sul testo recuperato dai tool, come gia avviene per norme e dottrina. Il `confidence_score` va ridotto di conseguenza (vedi Passo 4).
+**Esistenza server-side, implicazione lato LLM.** Il tool `citation-verify-ita_check_existence` (server `citation-verify-ita`) verifica l'**esistenza** della fonte in banca dati con logica zero-LLM lato server. Il **supporto del contenuto** (entailment) non e verificabile server-side: resta al **tuo giudizio** sul testo recuperato dai tool, come gia avviene per norme e dottrina. Il `confidence_score` va ridotto di conseguenza (vedi Passo 4).
 
 ## Vocabolario degli Stati
 
@@ -47,7 +49,7 @@ La correttezza formale NON e compito tuo — quella e di `italian-citation-forma
 
 Determina la modalita privacy attiva (file `.privacy-mode` o stato di sessione; default `balanced`, vedi `/bettercallclaude-italia:privacy`). Le chiamate MCP raggiungono server cloud remoti:
 
-- **Modalita `strict`**: le frasi di affermazione (claim) NON devono mai essere inviate a content-check cloud. Esegui solo verifiche di esistenza con query minime (numero sentenza, articolo), mai il testo della bozza; marca lo stato contenuto come `UNVERIFIED` con nota `(privacy-gated: esistenza confermata, contenuto non verificato in modalita strict)`.
+- **Modalita `strict`**: le frasi di affermazione (claim) NON devono mai essere inviate a content-check cloud. Esegui solo verifiche di esistenza con query minime (numero sentenza, articolo), mai il testo della bozza; marca lo stato contenuto come `UNVERIFIED` con nota `(privacy-gated: esistenza confermata, contenuto non verificato in modalita strict)`. `citation-verify-ita_check_existence` invia solo la stringa della citazione: e compatibile con la modalita `strict`.
 - **Modalita `balanced`**: i passaggi privilegiati sono trattenuti; solo le frasi di affermazione non privilegiate possono alimentare le query.
 - **Modalita `cloud`**: procedi normalmente.
 
@@ -72,6 +74,13 @@ Usa `legal-citations-ita_validate` / `legal-citations-ita_parse` per ottenere la
 **Nota**: nel catalogo MCP italiano non esiste un server per la dottrina strutturata (commentari online) ne per le decisioni di merito in forma strutturata. La dottrina e sempre `SKIPPED`; le decisioni di merito si verificano solo best-effort via web, altrimenti `UNVERIFIED`.
 
 ### Passo 3: ROTTA E VERIFICA
+
+**Gate di esistenza (sempre per primo)**: prima di ogni verifica di implicazione, chiama `citation-verify-ita_check_existence` con la citazione normalizzata. Se l'utente ha configurato il cookie ItalGiure, passalo come parametro `italgiure_cookie` (stesso pattern dei tool `cassazione_*`). Il tool NON verifica l'implicazione — solo l'esistenza della fonte.
+
+- `exists: true` → prosegui con la verifica di implicazione lato LLM tramite la route specifica qui sotto.
+- `exists: false` con `fonte` valorizzata → la fonte esiste ma la citazione specifica non risulta in banca dati → `UNVERIFIED` con nota `(check_existence: citazione non trovata in <fonte>)`. Non insistere con tentativi di recupero della citazione.
+- Errore `SOURCE_UNAVAILABLE` (cookie ItalGiure assente/scaduto, Normattiva irraggiungibile) → `UNVERIFIED` con nota `(fonte non raggiungibile)`, senza bloccare il flusso: decide il gate di consegna del Passo 6.
+- Il server e **rate-limited (30 req/15min per IP)**: una sola chiamata per citazione, niente chiamate a raffica.
 
 Per ogni citazione, con **esattamente un retry** su timeout/errore MCP transitorio prima di dichiarare `UNVERIFIED`:
 

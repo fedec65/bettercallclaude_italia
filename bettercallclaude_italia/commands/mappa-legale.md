@@ -16,6 +16,8 @@ tools:
   - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_search
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
 ---
 
 # /mappa-legale — Traccia una Mappa Decisionale Legale

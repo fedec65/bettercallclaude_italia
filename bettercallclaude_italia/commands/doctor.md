@@ -14,6 +14,18 @@ tools:
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search_advanced
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
+  - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
 ---
 
 # BetterCallClaude Italia — Diagnostica
@@ -30,7 +42,7 @@ Verifica il gateway HTTP MCP:
 
 ## Passo 2: Verifica Ogni Server
 
-Per ciascuno dei 7 server MCP, usa un **approccio a due stadi**:
+Per ciascuno degli 8 server MCP, usa un **approccio a due stadi**:
 
 **Stadio A — Disponibilita tool**: Controlla se i tool del server appaiono nella lista dei tool disponibili. Se non appaiono, segna il server come "non connesso" immediatamente.
 
@@ -44,7 +56,8 @@ Per ciascuno dei 7 server MCP, usa un **approccio a due stadi**:
 | cassazione | Giurisprudenza Cassazione (ItalGiure) | `cassazione_search_massime` (minima) |
 | eur-lex-ita | Diritto UE in italiano | `eur-lex-ita_search` (minima) |
 | legal-citations-ita | Validazione e formattazione citazioni | `legal-citations-ita_validate` (minima) |
-| legal-persona-ita | Generazione documenti legali | `legal-persona-ita_draft_document` (minima) |
+| legal-persona-ita | Generazione documenti + calcolo termini | `legal-persona-ita_draft_document` (minima) |
+| citation-verify-ita | Verifica esistenza citazioni | `citation-verify-ita_check_existence` (minima) |
 
 ## Passo 3: Mostra Risultati
 

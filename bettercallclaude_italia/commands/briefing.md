@@ -7,6 +7,8 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:briefing`. Applica la metodologia della skill legal-intake in **modalita Briefing** alla richiesta dell'utente.

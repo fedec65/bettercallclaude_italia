@@ -12,6 +12,8 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:strategia`. Applica la metodologia della skill italian-legal-strategy in modo completo alla richiesta dell'utente.
