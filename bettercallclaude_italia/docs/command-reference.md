@@ -79,10 +79,29 @@ Questi flag possono essere aggiunti alla maggior parte dei comandi:
 ### `/bettercallclaude-italia:briefing`
 **Scopo**: Intake strutturato prima dell'esecuzione.
 **Argomenti**: Descrizione della causa.
-**Flag**: `--resume [id]`
+**Flag**: `--resume [id]`, `--chart` (rotta diretta a `/mappa-legale`)
 **Esempi**:
 ```
 /bettercallclaude-italia:briefing Prepara lite completa art. 1218 CC, EUR 500K
+```
+
+### `/bettercallclaude-italia:mappa-legale`
+**Scopo**: Traccia una pratica grande o nebbiosa come mappa decisionale wayfinder (destinazione, ticket, nebbia) — solo pianificazione, nessuna decisione risolta.
+**Argomenti**: Descrizione della pratica.
+**Flag**: `--privacy=<strict|balanced|cloud>`, `--lang=<IT|EN>`, `--regione=<XX>`
+**Esempi**:
+```
+/bettercallclaude-italia:mappa-legale Contenzioso pluriparte da ristrutturazione societaria, EUR 8M, tre regioni
+```
+
+### `/bettercallclaude-italia:percorso-legale`
+**Scopo**: Lavora un ticket decisionale da una mappa wayfinder — claim, risoluzione per tipo (research/grilling/prototype/task), mantenimento mappa, handoff pack.
+**Argomenti**: id o titolo ticket (opzionale — default: ticket di frontiera col numero più basso).
+**Flag**: `--map=<slug>`, `--gate`, `--list`
+**Esempi**:
+```
+/bettercallclaude-italia:percorso-legale
+/bettercallclaude-italia:percorso-legale --list
 ```
 
 ### `/bettercallclaude-italia:regionale`
