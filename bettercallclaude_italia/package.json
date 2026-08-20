@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude_italia",
-  "version": "1.9.4",
+  "version": "2.0.0",
   "private": true,
   "description": "Plugin di Intelligenza Legale Italiana per Claude",
   "scripts": {

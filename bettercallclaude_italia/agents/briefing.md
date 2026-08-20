@@ -137,6 +137,8 @@ Persisti stato dopo ogni round.
 
 ### Passo 6: COSTRUZIONE PIANO DI ESECUZIONE
 
+**Fog check**: se la pratica è troppo nebbiosa per un piano statico (complessità 8+, o decisioni aperte che dipendono da altre decisioni aperte), fermati prima della costruzione del piano e offri all'utente: *"Questa pratica è troppo nebbiosa per un piano statico — tracciamo invece la mappa decisionale?"* → `/bettercallclaude-italia:mappa-legale`. Non costruire un piano che finge chiarezza che non c'è.
+
 Usando la classificazione e tutte le risposte raccolte, costruisci il piano di esecuzione.
 
 **Tabella user-facing** (sempre presentata):

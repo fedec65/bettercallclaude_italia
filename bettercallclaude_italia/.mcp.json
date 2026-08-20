@@ -27,6 +27,10 @@
     "legal-persona-ita": {
       "type": "http",
       "url": "https://mcp-italia.bettercallclaude.ch/legal-persona-ita/mcp"
+    },
+    "citation-verify-ita": {
+      "type": "http",
+      "url": "https://mcp-italia.bettercallclaude.ch/citation-verify-ita/mcp"
     }
   }
 }

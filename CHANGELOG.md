@@ -4,6 +4,27 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.0.0] - 2026-08-20
+
+Porting della release svizzera **v4.10.1** (legal-wayfinder + scheduling monitoraggio-normativo) e integrazione delle nuove capability MCP del backend italiano.
+
+### Added
+- **`legal-persona-ita_compute_deadlines`** — Calcolo deterministico dei termini processuali italiani (CPC/CPP/CPA, zero-LLM lato server): art. 155 c.p.c. (dies a quo escluso), proroga a festivi, sospensione feriale 1°–31 agosto (L. 742/1969), festività nazionali + Pasqua/Pasquetta mobili, termini a giorni liberi. La skill `legal-chronology` (e `/cronologia-legale`) ora calcola i termini coperti con il tool (`basis: compute_deadlines (tool)`); `references/deadline-mapping.md` mappa ogni termine alla colonna `tipo_termine`.
+- **Server `citation-verify-ita`** (8° server MCP, `.mcp.json` aggiornato) — Tool `citation-verify-ita_check_existence`: verifica di esistenza delle citazioni (Cassazione via ItalGiure con cookie, atti normativi via Normattiva, codici abbreviati risolti all'atto istitutivo), zero-LLM, errore `SOURCE_UNAVAILABLE` senza mai inventare contenuto. Cablato come gate pre-delivery in `citation-content-verify`: `exists: false` o fonte non raggiungibile → declassa a `UNVERIFIED` con nota.
+- **Legal wayfinder — mappe decisionali** — Pratiche troppo grandi o troppo nebbiose per un piano di esecuzione statico vengono tracciate come mappa decisionale (destinazione, decisioni, nebbia, fuori ambito) con ticket decisionali (`research` / `grilling` / `prototype` / `task`) in `bcc-output/YYYY-MM-DD-<slug>/wayfinder/`:
+  - Nuova skill `legal-wayfinder` (metodologia completa: frontiera e claiming, fog of war, casi limite, handoff pack verso `/legale-5step` o orchestratore, opzione `--gate` verso `/legale-obiettivo`).
+  - Nuovo comando `/mappa-legale` (charting: interrogazione breadth-first dell'avvocato, uscita anticipata senza nebbia, lancio dei ticket research in parallelo; flag `--privacy`, `--lang`, `--regione`).
+  - Nuovo comando `/percorso-legale` (lavora un ticket per invocazione per tipo, mantiene la mappa, promuove la nebbia, emette l'handoff pack; flag `--map`, `--gate`, `--list`).
+  - **Fog check** nel briefing: complessità 8+ o decisioni aperte interdipendenti → il coordinatore si ferma e offre la mappa (`/briefing --chart`, `/legale`, agente `briefing`).
+- **Scheduling `monitoraggio-normativo`** — Nuovo reference `legal-evaluator/references/scheduling-monitoraggio-normativo.md`: schedulazione del profilo reg-watch (Cowork Scheduled Tasks, cron esterno, sessioni schedulate), formato del file dei temi sorvegliati (fonti italiane: Normattiva, Gazzetta Ufficiale, Bollettini Regionali, Cassazione, CONSOB/Banca d'Italia/Garante) e comportamento per esecuzione.
+
+### Fixed
+- **Conteggi in `/aiuto`** — Aggiunti ai riferimenti i comandi/agenti/skill mancanti (`/cronologia-legale`, agente `chronology-builder`, skill `citation-content-verify` e `legal-chronology`); conteggi allineati alla realta' (21 agenti, 29 comandi, 16 skill attivabili + shared).
+- Conteggi e tabella comandi aggiornati nel README del plugin e in `docs/command-reference.md` (nuove voci `/mappa-legale`, `/percorso-legale`; flag `--chart` in `/briefing`).
+- `scripts/generate-tool-frontmatter.js` reso idempotente e a unione: la rigenerazione non duplica piu' i blocchi `tools:` e non rimuove mai grant esistenti (set completi per server toccato); conteggi server 7→8 in README, `/aiuto`, `/doctor` e `docs/INSTALLAZIONE.md`.
+
+---
+
 ## [1.9.4] - 2026-08-15
 
 ### Security

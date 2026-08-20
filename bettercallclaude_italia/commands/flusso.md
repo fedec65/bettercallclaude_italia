@@ -23,6 +23,8 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:flusso`. Applica le metodologie delle skill italian-legal-strategy e italian-legal-research per definire ed eseguire il workflow richiesto.

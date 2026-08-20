@@ -7,6 +7,8 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 # /cronologia-legale — Cronologia Legale Documentata
@@ -43,9 +45,9 @@ Per la skill `legal-chronology`: fondi i candidati dello stesso evento tra docum
 
 ### Passo 4: TERMINI (solo con `--deadlines`)
 Mappa gli eventi per `references/deadline-mapping.md`:
-- Eventi di notifica/deposito → tabella dei termini processuali CPC (es. appello 30 giorni dalla notifica, art. 325 CPC). Marcatore etichettato con la base normativa.
-- Prescrizione sostanziale → tabella di mapping (artt. 2934-2969 CC).
-- **Tutti i marcatori sono etichettati indicativo — verificare**: in Italia non esiste un tool MCP di calcolo automatico dei termini; non presentare mai un marcatore come calcolato autorevolmente.
+- Eventi di notifica/deposito → se il termine ha un `tipo_termine` coperto dal catalogo, calcolalo con `legal-persona-ita_compute_deadlines` (deterministico: art. 155 CPC, proroga a festivi, sospensione feriale) con `basis: compute_deadlines (tool)`; altrimenti tabella dei termini processuali CPC (es. appello 30 giorni dalla notifica, art. 325 CPC) con `basis: tabella-mapping (indicativo)`. Marcatore etichettato con la base normativa.
+- Prescrizione sostanziale → tabella di mapping (artt. 2934-2969 CC); nessun tool la copre.
+- **Tutti i marcatori sono etichettati indicativo — verificare**: anche il tool emette un disclaimer di computazione ausiliaria; non presentare mai un marcatore come calcolato autorevolmente.
 
 ### Passo 5: RENDER
 Scrivi `bcc-output/cronologia/events.json`, poi:

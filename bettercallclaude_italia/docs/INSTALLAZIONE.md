@@ -53,7 +53,7 @@ Una volta installato, clicca sull'icona della **ruota dentata** per accedere all
 
 ## Passo 6: Attiva i Connectors
 
-Nella pagina del plugin, clicca su **Connectors** nella barra laterale. Vedrai i 7 server MCP disponibili:
+Nella pagina del plugin, clicca su **Connectors** nella barra laterale. Vedrai i 8 server MCP disponibili:
 
 - **normattiva** -- Banca dati normativa italiana
 - **corte-costituzionale** -- Sentenze della Corte Costituzionale
@@ -61,7 +61,8 @@ Nella pagina del plugin, clicca su **Connectors** nella barra laterale. Vedrai i
 - **cassazione** -- Massime e sentenze della Corte di Cassazione
 - **eur-lex-ita** -- Atti UE in italiano
 - **legal-citations-ita** -- Validazione citazioni giuridiche
-- **legal-persona-ita** -- Redazione documenti legali
+- **legal-persona-ita** -- Redazione documenti e calcolo termini processuali
+- **citation-verify-ita** -- Verifica esistenza citazioni giuridiche
 
 ![Passo 6 - Connectors](images/installazione/06-connectors.png)
 

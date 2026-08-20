@@ -24,6 +24,7 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 # Assistente Legale Intelligente
@@ -179,8 +180,9 @@ Il coordinatore di briefing:
 1. Seleziona un panel di 3-5 agenti specialistici.
 2. Raccoglie domande dominio-specifiche da ogni panelista.
 3. Pone all'utente in 1-3 round adattivi.
-4. Costruisce e presenta un piano di esecuzione strutturato.
-5. Dopo approvazione utente, affida all'orchestrator per esecuzione passo-passo.
+4. **Fog check**: se la pratica è troppo nebbiosa per un piano statico (complessità 8+, o decisioni aperte che dipendono da altre decisioni aperte), il coordinatore si ferma e offre la mappa decisionale: `/bettercallclaude-italia:mappa-legale`.
+5. Costruisce e presenta un piano di esecuzione strutturato.
+6. Dopo approvazione utente, affida all'orchestrator per esecuzione passo-passo.
 
 Vedi `/bettercallclaude-italia:briefing` per il comando briefing esplicito e capacità di ripresa.
 

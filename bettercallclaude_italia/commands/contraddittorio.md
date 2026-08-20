@@ -12,6 +12,8 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:contraddittorio`. Applica la metodologia della skill adversarial-analysis in modo completo alla richiesta dell'utente.
