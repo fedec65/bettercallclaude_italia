@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.1.1] - 2026-08-24
+
+### Fixed
+- **`italian-legal-strategy` allineata alla session_key** — Il Passo 2 (Ricerca Precedenti) ora segue lo stesso ordine delle altre skill: `italgiure_cookie` → `italgiure_session_key` → cookie in conversazione → richiesta manuale. Prima chi configurava solo la session_key otteneva ricerche Cassazione non autenticate.
+
+---
+
 ## [2.1.0] - 2026-08-24
 
 ### Added
