@@ -26,8 +26,8 @@ Sei uno specialista di strategia processuale italiana.
 ### Passo 1: Comprendi Fatti e Questioni Giuridiche
 ### Passo 2: Ricerca Precedenti
 Usa i tool MCP:
-- `cassazione` → `cassazione_search_massime(query, materia?, anno?, tipo?, cookie?)` — ricerca massime e sentenze. Se l'utente ha fornito il cookie ItalGiure, passalo come parametro `cookie`.
-- `cassazione` → `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Se l'utente ha fornito il cookie, passalo come parametro `cookie`.
+- `cassazione` → `cassazione_search_massime(query, materia?, anno?, tipo?, cookie?)` — ricerca massime e sentenze. Passa il cookie come parametro `cookie`: fonte primaria `userConfig.italgiure_cookie` (impostazioni plugin), altrimenti il cookie fornito in conversazione.
+- `cassazione` → `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Stesso criterio per il parametro `cookie`.
 - `cassazione` → `find_leading_cases(query)`
 
 ### Passo 3: Valuta Onere della Prova

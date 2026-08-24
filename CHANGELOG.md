@@ -4,6 +4,17 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.1.0] - 2026-08-24
+
+### Added
+- **`userConfig.italgiure_session_key`** — Nuova impostazione (sensibile): passphrase di una sessione ItalGiure registrata sul server via `cassazione_session_set`. Se configurata, le skill la passano come parametro `session_key` ai tool `cassazione_*` al posto del cookie (cookie cifrato sul server + keep-alive automatico).
+- **Troubleshooting connettori** in `CONNECTORS.md` — Errore `ofid_...` (429 del gateway durante l'handshake: workaround e limiti attuali) e guida al rinnovo del cookie su `cookieValido: false`.
+
+### Changed
+- **Cookie ItalGiure persistente** — Le skill e l'agente `researcher` ora leggono il cookie da `userConfig.italgiure_cookie` (impostazioni plugin) come fonte primaria invece di chiederlo a ogni conversazione; la richiesta manuale resta solo come fallback. Aggiornati `docs/cassazione-cookie.md` (flusso "salva una volta nelle impostazioni", FAQ su perché SPID non è automatizzabile), `README.md` e `CONNECTORS.md`.
+
+---
+
 ## [2.0.0] - 2026-08-20
 
 Porting della release svizzera **v4.10.1** (legal-wayfinder + scheduling monitoraggio-normativo) e integrazione delle nuove capability MCP del backend italiano.

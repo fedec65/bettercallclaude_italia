@@ -75,12 +75,12 @@ Usa `legal-citations-ita_validate` / `legal-citations-ita_parse` per ottenere la
 
 ### Passo 3: ROTTA E VERIFICA
 
-**Gate di esistenza (sempre per primo)**: prima di ogni verifica di implicazione, chiama `citation-verify-ita_check_existence` con la citazione normalizzata. Se l'utente ha configurato il cookie ItalGiure, passalo come parametro `italgiure_cookie` (stesso pattern dei tool `cassazione_*`). Il tool NON verifica l'implicazione — solo l'esistenza della fonte.
+**Gate di esistenza (sempre per primo)**: prima di ogni verifica di implicazione, chiama `citation-verify-ita_check_existence` con la citazione normalizzata. Se l'utente ha configurato il cookie ItalGiure (fonte primaria: `userConfig.italgiure_cookie` nelle impostazioni del plugin, altrimenti cookie fornito in conversazione), passalo come parametro `italgiure_cookie` (stesso pattern dei tool `cassazione_*`). Il tool NON verifica l'implicazione — solo l'esistenza della fonte.
 
 - `exists: true` → prosegui con la verifica di implicazione lato LLM tramite la route specifica qui sotto.
 - `exists: false` con `fonte` valorizzata → la fonte esiste ma la citazione specifica non risulta in banca dati → `UNVERIFIED` con nota `(check_existence: citazione non trovata in <fonte>)`. Non insistere con tentativi di recupero della citazione.
 - Errore `SOURCE_UNAVAILABLE` (cookie ItalGiure assente/scaduto, Normattiva irraggiungibile) → `UNVERIFIED` con nota `(fonte non raggiungibile)`, senza bloccare il flusso: decide il gate di consegna del Passo 6.
-- Il server e **rate-limited (30 req/15min per IP)**: una sola chiamata per citazione, niente chiamate a raffica.
+- Il server e **rate-limited (300 req/15min per IP sulle chiamate tool)**: una sola chiamata per citazione, niente chiamate a raffica.
 
 Per ogni citazione, con **esattamente un retry** su timeout/errore MCP transitorio prima di dichiarare `UNVERIFIED`:
 
@@ -92,7 +92,7 @@ Per ogni citazione, con **esattamente un retry** su timeout/errore MCP transitor
 **`diritto-ue`** → `eur-lex-ita_get_atto_celex` / `eur-lex-ita_search`.
 - Non trovata → `UNVERIFIED`. Trovata → tuo giudizio di entailment sull'affermazione vs testo/metadati restituiti.
 
-**`cassazione`** → `cassazione_get_sentenza(id, cookie?)`. Se l'utente ha fornito il cookie ItalGiure, passalo come parametro `cookie`.
+**`cassazione`** → `cassazione_get_sentenza(id, cookie?)`. Passa il cookie ItalGiure come parametro `cookie` (fonte primaria: `userConfig.italgiure_cookie`; altrimenti cookie fornito in conversazione).
 - Non trovata → fallback `cassazione_search_massime`; ancora non trovata → `UNVERIFIED`.
 - Trovata → tuo giudizio di entailment sull'affermazione vs massima/testo restituito → `MATCH` / `PARTIAL` / `MISMATCH`. `matched_snippet` = il passaggio verbatim della massima.
 - Se il server restituisce solo link di fallback (SentenzeWeb, ECLI) senza testo → `UNVERIFIED (solo fallback link)`.

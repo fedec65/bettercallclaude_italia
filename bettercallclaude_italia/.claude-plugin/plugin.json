@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "2.0.0",
+  "version": "2.1.0",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con assistenza al rilevamento del segreto professionale (Art. 622 CP).",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
@@ -36,6 +36,13 @@
       "type": "string",
       "title": "Cookie sessione ItalGiure (opzionale)",
       "description": "Cookie di sessione ItalGiure per accesso avanzato alla Cassazione (massime complete). Ottenere il cookie: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID/credenziali, poi esegui document.cookie nel browser. Lasciare vuoto per usare solo SentenzeWeb (gratuito, senza login).",
+      "default": "",
+      "sensitive": true
+    },
+    "italgiure_session_key": {
+      "type": "string",
+      "title": "Chiave sessione ItalGiure (opzionale)",
+      "description": "Passphrase (min 8 caratteri) di una sessione ItalGiure registrata sul server via cassazione_session_set. Se configurata, il plugin la usa al posto del cookie: il cookie resta cifrato sul server e il keep-alive ne segnala la scadenza.",
       "default": "",
       "sensitive": true
     }
