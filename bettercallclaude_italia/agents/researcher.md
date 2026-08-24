@@ -45,16 +45,20 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 
 ### Passo 3: RICERCA
 - Cerca Cassazione tramite MCP cassazione:
-  - `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Se l'utente ha fornito il cookie ItalGiure nella conversazione, passalo come parametro `cookie`.
-  - `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Se l'utente ha fornito il cookie, passalo come parametro `cookie`.
+  - `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Passa il cookie ItalGiure come parametro `cookie` (fonte: vedi sotto).
+  - `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Passa il cookie come parametro `cookie`.
 - Cerca cortedicassazione.it per decisioni recenti non pubblicate (solo se necessario).
 - Accedi a banche dati dei tribunali regionali e Gazzetta Ufficiale.
 
-**Cookie ItalGiure**: Quando usi i tool Cassazione, se l'utente non ha ancora fornito il cookie ItalGiure nella conversazione, chiedilo esplicitamente:
+**Cookie ItalGiure — ordine di ricerca (NON chiedere se già configurato):**
+1. **Impostazioni del plugin** (fonte primaria): se l'utente ha configurato `italgiure_cookie` nelle impostazioni del plugin (userConfig), usa quel valore come parametro `cookie` in tutte le chiamate, senza chiedere nulla. Il valore persiste tra le conversazioni.
+2. **Sessione registrata sul server**: se l'utente ha configurato `italgiure_session_key` (userConfig), passala come parametro `session_key` al posto del cookie — il cookie è registrato sul server (tool `cassazione_session_set`) e non va richiesto.
+3. **Conversazione corrente**: se non configurato nelle impostazioni ma l'utente lo ha fornito nella conversazione, usa quello.
+4. **Solo se assente in tutti i casi**, chiedilo una sola volta:
 
-> "Per accedere alle massime complete della Cassazione ho bisogno del tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e incolla qui il risultato. Il cookie dura 30 giorni."
+> "Per accedere alle massime complete della Cassazione serve il tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e incolla qui il risultato. Per non ripetere questa operazione a ogni conversazione, salvalo nelle impostazioni del plugin alla voce 'Cookie sessione ItalGiure': resta valido fino a 30 giorni."
 
-Una volta che l'utente fornisce il cookie, passalo come parametro `cookie` in tutte le chiamate ai tool Cassazione per la durata della conversazione. Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI).
+Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo (stessa procedura).
 
 ### Passo 4: VERIFICA
 - Valida ogni citazione tramite MCP legal-citations-ita `legal-citations-ita_validate`.

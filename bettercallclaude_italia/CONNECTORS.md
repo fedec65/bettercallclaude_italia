@@ -34,6 +34,18 @@ I server si connettono automaticamente all'installazione del plugin dal marketpl
 
 Se un server e irraggiungibile, le skill degradano in **Reduced Mode**: ogni skill MCP-dipendente dichiara cosa funziona e cosa no senza il server. I server scraper (corte-costituzionale, giustizia-amministrativa, cassazione) possono restituire URL di fallback anziche dati strutturati: in tal caso il plugin fornisce link per la consultazione diretta (ECLI, portale istituzionale, motore di ricerca).
 
+### Troubleshooting
+
+**Errore `ofid_...` alla connessione/riconnessione del connettore (Claude.ai)**
+Il codice `ofid_` identifica un flusso di connessione fallito lato client. Causa più frequente: il gateway ha risposto `429 Too Many Requests` durante l'handshake per rate limiting. Cosa fare:
+
+1. Attendi 15 minuti senza riconnettere (la finestra del rate limiter si azzera).
+2. Rimuovi e ricollega il connettore.
+3. Se il problema persiste, segnalalo: i limiti attuali sono 300 chiamate tool / 15 min per IP (i metodi di handshake non contano), configurabili lato server via `MCP_RATE_LIMIT_MAX`.
+
+**Il server `cassazione` risponde `cookieValido: false`**
+Il cookie ItalGiure è assente o scaduto. Procedura di rinnovo: `docs/cassazione-cookie.md`.
+
 ---
 
 ## normattiva
@@ -75,7 +87,7 @@ Massime e sentenze della Corte di Cassazione. Fonte pubblica: SentenzeWeb (`http
 | `cassazione_search_massime` | Ricerca massime (porzione pubblica, ultimi 5 anni). Parametro opzionale `cookie` per accesso ItalGiure completo |
 | `cassazione_get_sentenza` | Recupero sentenza per ID (porzione pubblica). Parametro opzionale `cookie` |
 
-**Cookie ItalGiure**: l'accesso completo a massime e sentenze storiche richiede un cookie di sessione ItalGiure, da fornire all'agente quando richiesto. Guida completa: `docs/cassazione-cookie.md`.
+**Cookie ItalGiure**: l'accesso completo a massime e sentenze storiche richiede un cookie di sessione ItalGiure. Si configura **una volta sola** nelle impostazioni del plugin (voce "Cookie sessione ItalGiure", `userConfig.italgiure_cookie`); il plugin lo passa automaticamente a ogni chiamata. Guida completa: `docs/cassazione-cookie.md`.
 
 ## eur-lex-ita
 

@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.0.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.1.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -148,12 +148,12 @@ Per accedere alle **massime complete** della Cassazione (banca dati ItalGiure), 
 
 **Come funziona:**
 1. **Ottieni il cookie**: Accedi all'area riservata [ItalGiure](https://www.italgiure.giustizia.it/new/archives) con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e copia il risultato.
-2. **Fornisci il cookie quando richiesto**: L'agente ti chiederà esplicitamente il cookie quando usi comandi che accedono alla Cassazione (es. `/bettercallclaude-italia:precedente`, `/bettercallclaude-italia:ricerca`).
-3. **Il cookie viene passato come parametro MCP** al server remoto per la durata della conversazione.
+2. **Salvalo una volta sola**: inseriscilo nelle impostazioni del plugin alla voce **"Cookie sessione ItalGiure"** (`userConfig.italgiure_cookie`). Il plugin lo passerà automaticamente a ogni chiamata Cassazione, in tutte le conversazioni.
+3. **Rinnovo**: il cookie dura fino a 30 giorni; a scadenza il server segnala `cookieValido: false` e l'agente ti guida al rinnovo.
 
 **Senza cookie**: I tool restituiscono link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI) e istruzioni per configurarlo.
 
-> **Nota**: Il cookie dura 30 giorni e non viene salvato permanentemente — l'agente lo chiede quando necessario.
+> **Nota**: L'automazione del login SPID non è possibile (richiede la presenza dell'utente e il secondo fattore, per regole AGID): il cookie salvato nelle impostazioni è la modalità persistente supportata.
 
 Per istruzioni dettagliate: [docs/cassazione-cookie.md](docs/cassazione-cookie.md)
 
