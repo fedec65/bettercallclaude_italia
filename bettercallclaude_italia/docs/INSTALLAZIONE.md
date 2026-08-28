@@ -113,7 +113,7 @@ Per ricevere gli aggiornamenti del plugin in modo automatico, vai in **Customize
 
 ## Comandi Disponibili
 
-Dopo l'installazione, puoi usare tutti i 19 comandi italiani. Digita `/bettercallclaude-italia:aiuto` per la lista completa.
+Dopo l'installazione, puoi usare tutti i 30 comandi italiani. Digita `/bettercallclaude-italia:aiuto` per la lista completa.
 
 ---
 
