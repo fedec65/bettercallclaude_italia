@@ -21,6 +21,50 @@ BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la 
 
 ---
 
+## User ID per i flussi personalizzati
+
+I flussi che crei con `/crea-flusso` sono salvati sul server `workflows-ita` sotto un **User ID personale**: è quell'ID a determinare quali flussi vedi in `/flusso`. Non serve configurarlo per iniziare — ma va reso permanente per non perdere l'accesso ai flussi.
+
+### Come funziona senza configurazione
+
+Al primo uso di `/crea-flusso` o `/flusso`, se non trova nessun ID configurato, il plugin:
+
+1. Genera un ID casuale della forma `bcc-<16 caratteri esadecimali>`
+2. Ne verifica l'univocità sul server (`claim_user_id`)
+3. Lo salva in `~/.betterask/config.yaml` e te lo comunica una sola volta
+
+**Attenzione**: Cowork Desktop svuota la home della sandbox a ogni riavvio, quindi il file di config viene cancellato. Senza una configurazione permanente, al riavvio verrebbe generato un **nuovo** ID — e i flussi salvati sotto il vecchio ID non apparirebbero più (non sono persi: restano sul server, ma sotto l'ID precedente).
+
+### Configurazione permanente (consigliata)
+
+Scegli **una** di queste due opzioni:
+
+- **Cowork Desktop** — Vai in **Impostazioni → Generali → Istruzioni per Claude** e aggiungi una riga:
+  ```
+  BetterCallClaude workflow user ID: bcc-il-tuo-id
+  ```
+  Se hai già usato i flussi, riusa l'ID generato (te lo ha comunicato il plugin alla prima creazione) per ritrovare i tuoi flussi esistenti.
+- **Claude CLI** — Apri le impostazioni del plugin e valorizza **"User ID per i flussi personalizzati"** (`userConfig.user_id`) con lo stesso ID.
+
+### Ordine di risoluzione
+
+Quando servono i tool dei flussi, il plugin cerca l'ID in quest'ordine e usa il primo che trova:
+
+1. Impostazione del plugin (`userConfig.user_id`)
+2. Riga `BetterCallClaude workflow user ID: …` nelle istruzioni personalizzate Cowork
+3. File `~/.betterask/config.yaml` (cache di comodo, cancellata al riavvio di Cowork)
+4. Generazione automatica di un nuovo ID (con claim di univocità lato server)
+
+### Stesso ID su più macchine
+
+Per usare gli stessi flussi su due computer, configura **lo stesso ID** su entrambi. Alla prima operazione sul secondo computer potresti vedere l'avviso "Questo User ID è già registrato sul server": è normale — significa che il namespace esiste già (l'hai creato tu dall'altra macchina) e puoi ignorarlo.
+
+### Privacy dell'ID
+
+L'ID è self-asserted: il server non verifica l'identità, quindi **chiunque conosca il tuo ID può leggere i tuoi flussi**. Trattalo come un segreto leggero: non pubblicarlo. I flussi contengono definizioni di pipeline (agenti, passi, formato dell'output), non dati delle tue cause. Se sospetti che l'ID sia stato esposto, cambialo nelle impostazioni e ricrea i flussi sotto il nuovo ID.
+
+---
+
 ## Panoramica
 
 BetterCallClaude Italia fornisce una metodologia strutturata per gestire il lavoro legale con assistenza AI. Il framework è costituito da cinque fasi interconnesse.
