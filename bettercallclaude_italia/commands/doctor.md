@@ -82,7 +82,7 @@ Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
   Verifica citazioni             ✓ attivo        —
   Flussi personalizzati          ✓ attivo        —
 
-  Servizi attivi: 7/9
+  Servizi attivi: 8/9
 
 ╚══════════════════════════════════════════════════════════╝
 ```
