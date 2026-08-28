@@ -31,6 +31,10 @@
     "citation-verify-ita": {
       "type": "http",
       "url": "https://mcp-italia.bettercallclaude.ch/citation-verify-ita/mcp"
+    },
+    "workflows-ita": {
+      "type": "http",
+      "url": "https://mcp-italia.bettercallclaude.ch/workflows-ita/mcp"
     }
   }
 }

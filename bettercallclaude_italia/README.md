@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.1.1-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.2.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -9,7 +9,15 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 29 comandi, 17 skill e 8 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 30 comandi, 17 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane.
+
+---
+
+## Novità della v2.2.0
+
+- **Flussi di lavoro personalizzati** — Nuovo comando `/crea-flusso`: progetta via intervista una pipeline riutilizzabile combinando gli agenti del plugin, la valida lato server e la salva. `/flusso` elenca ed esegue anche i tuoi flussi salvati accanto ai template predefiniti.
+- **Nuovo server MCP `workflows-ita`** (9° server) — 8 tool: `list_agents`, `validate_pipeline`, `save_workflow`, `list_workflows`, `get_workflow`, `delete_workflow`, `claim_user_id`, `log_run`. Se il server non è raggiungibile, il plugin degrada con grazia: i flussi salvati vengono semplicemente omessi.
+- **User ID personale** — Nuova impostazione `userConfig.user_id`: ogni utente ha un namespace univoco per i propri flussi, senza fallback su un `default` condiviso. Se non configurato, il plugin genera un ID `bcc-…` con claim di univocità lato server e lo rende durevole via istruzioni personalizzate Cowork.
 
 ---
 
@@ -56,7 +64,8 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:regionale` | Analizza secondo il diritto regionale per una regione specifica |
 | `/bettercallclaude-italia:contraddittorio` | Esegue analisi avversariale a tre agenti |
 | `/bettercallclaude-italia:briefing` | Briefing strutturato pre-esecuzione |
-| `/bettercallclaude-italia:flusso` | Definisce ed esegue workflow legali multi-agente |
+| `/bettercallclaude-italia:flusso` | Definisce ed esegue workflow legali multi-agente (inclusi i flussi salvati) |
+| `/bettercallclaude-italia:crea-flusso` | Crea un flusso di lavoro personalizzato riutilizzabile combinando gli agenti del plugin |
 | `/bettercallclaude-italia:traduci` | Traduce documenti legali IT/EN |
 | `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
 | `/bettercallclaude-italia:triage-nda` | Triage NDA: classifica GREEN/YELLOW/RED secondo diritto italiano |
@@ -85,6 +94,8 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 
 /bettercallclaude-italia:flusso litigation-prep Risarcimento danni contro produttore
 
+/bettercallclaude-italia:crea-flusso Pipeline personalizzata: ricerca → strategia → redazione
+
 /bettercallclaude-italia:briefing Prepara lite completa per inadempimento art. 1218 CC, EUR 500K
 
 /bettercallclaude-italia:regionale LOM Giurisdizione Tribunale delle Imprese
@@ -101,7 +112,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 - **Sessioni di briefing** — Query complesse attivano intake collaborativo con panel di specialisti.
 - **Mappe decisionali (wayfinder)** — Pratiche troppo grandi o troppo nebbiose per un piano statico vengono tracciate come mappa decisionale (`/mappa-legale`) e lavorate un ticket alla volta (`/percorso-legale`) fino all'handoff all'esecuzione.
 - **Analisi avversariale** — Workflow a tre agenti: l'avvocato costruisce, l'avversario sfida, l'analista giudiziario sintetizza.
-- **Workflow multi-agente** — Pipeline predefinite per due diligence, preparazione contenzioso, ciclo contrattuale, closing immobiliare.
+- **Workflow multi-agente** — Pipeline predefinite per due diligence, preparazione contenzioso, ciclo contrattuale, closing immobiliare, più flussi personalizzati creati con `/crea-flusso` ed eseguiti con `/flusso`.
 - **Tutte le 20 regioni** — Copertura regionale completa con sistemi giudiziari, formati di citazione e ricerca MCP.
 - **Bilingue** — Rilevamento automatico della lingua per IT/EN con corretta terminologia legale.
 - **Onboarding guidato** — `/start` verifica la connettivita MCP e guida la creazione del playbook locale.
@@ -126,6 +137,7 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | `legal-citations-ita` | Validazione citazioni normative italiane | HTTP |
 | `legal-persona-ita` | Drafting documenti + calcolo termini processuali (CPC/CPP/CPA) | HTTP |
 | `citation-verify-ita` | Verifica esistenza citazioni giuridiche | HTTP |
+| `workflows-ita` | Flussi di lavoro personalizzati (salvataggio ed esecuzione) | HTTP |
 
 ### Affidabilita Server
 
@@ -136,6 +148,7 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | legal-citations-ita | Alta | Funziona localmente |
 | legal-persona-ita | Alta | Funziona localmente (calcolo termini deterministico) |
 | citation-verify-ita | Media | Dipende da ItalGiure (cookie) e Normattiva |
+| workflows-ita | Alta | Se assente, i flussi salvati sono omessi senza errori |
 | corte-costituzionale | Bassa | Protezione anti-bot (DataDome) |
 | giustizia-amministrativa | Bassa | Portale instabile, timeout frequenti |
 | cassazione | Molto bassa | HTTP 403 sistematico |

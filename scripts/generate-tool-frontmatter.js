@@ -41,6 +41,7 @@ const COMMAND_SKILL_MAP = {
   'citazione.md': ['italian-citation-formats'],
   'contraddittorio.md': ['adversarial-analysis'],
   'flusso.md': ['italian-legal-strategy', 'italian-legal-research'],
+  'crea-flusso.md': ['italian-legal-strategy'],
   'legale-5step.md': ['legal-5step-framework', 'italian-legal-research', 'italian-legal-strategy', 'adversarial-analysis', 'italian-legal-drafting', 'italian-citation-formats'],
   'legale.md': ['italian-legal-research', 'legal-intake'],
   'legale-loop.md': ['legal-evaluator', 'citation-content-verify'],

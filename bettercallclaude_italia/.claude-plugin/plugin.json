@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "2.1.1",
+  "version": "2.2.0",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con assistenza al rilevamento del segreto professionale (Art. 622 CP).",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
@@ -45,6 +45,13 @@
       "description": "Passphrase (min 8 caratteri) di una sessione ItalGiure registrata sul server via cassazione_session_set. Se configurata, il plugin la usa al posto del cookie: il cookie resta cifrato sul server e il keep-alive ne segnala la scadenza.",
       "default": "",
       "sensitive": true
+    },
+    "user_id": {
+      "type": "string",
+      "title": "User ID per i flussi personalizzati",
+      "description": "Identificativo che possiede i tuoi flussi salvati. Se vuoto, il plugin genera un ID personale (bcc-…) e lo salva in ~/.betterask/config.yaml. Chi conosce l'ID può leggere i tuoi flussi: tienilo privato.",
+      "default": "",
+      "sensitive": false
     }
   }
 }

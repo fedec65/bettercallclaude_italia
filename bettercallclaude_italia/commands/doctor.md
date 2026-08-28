@@ -26,6 +26,7 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
   - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__list_workflows
 ---
 
 # BetterCallClaude Italia — Diagnostica
@@ -42,7 +43,7 @@ Verifica il gateway HTTP MCP:
 
 ## Passo 2: Verifica Ogni Server
 
-Per ciascuno degli 8 server MCP, usa un **approccio a due stadi**:
+Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 
 **Stadio A — Disponibilita tool**: Controlla se i tool del server appaiono nella lista dei tool disponibili. Se non appaiono, segna il server come "non connesso" immediatamente.
 
@@ -58,6 +59,7 @@ Per ciascuno degli 8 server MCP, usa un **approccio a due stadi**:
 | legal-citations-ita | Validazione e formattazione citazioni | `legal-citations-ita_validate` (minima) |
 | legal-persona-ita | Generazione documenti + calcolo termini | `legal-persona-ita_draft_document` (minima) |
 | citation-verify-ita | Verifica esistenza citazioni | `citation-verify-ita_check_existence` (minima) |
+| workflows-ita | Flussi di lavoro personalizzati | `list_workflows` (minima) |
 
 ## Passo 3: Mostra Risultati
 
@@ -77,8 +79,10 @@ Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
   EUR-Lex Italia                 ✓ attivo        —
   Validazione citazioni          ✓ attivo        —
   Legal Persona (documenti)      ✓ attivo        —
+  Verifica citazioni             ✓ attivo        —
+  Flussi personalizzati          ✓ attivo        —
 
-  Servizi attivi: 6/7
+  Servizi attivi: 7/9
 
 ╚══════════════════════════════════════════════════════════╝
 ```
@@ -102,6 +106,8 @@ Per ogni server non disponibile, spiega in linguaggio semplice:
 | eur-lex-ita | Il diritto UE in italiano non e accessibile automaticamente. Consultare: eur-lex.europa.eu |
 | legal-citations-ita | Le citazioni non vengono verificate automaticamente — controllare manualmente. |
 | legal-persona-ita | La generazione automatica di documenti legali non e disponibile via MCP. |
+| citation-verify-ita | L'esistenza delle citazioni non viene verificata lato server — le citazioni sono solo formattate, non validate. |
+| workflows-ita | I flussi personalizzati non sono accessibili: `/crea-flusso` non puo salvare e `/flusso` mostra solo i template predefiniti. Il resto del plugin funziona normalmente. |
 
 ### Fix suggeriti:
 > Se un servizio risulta non disponibile:
