@@ -11,7 +11,17 @@
 
 Marketplace per l'installazione del plugin **BetterCallClaude Italia** su Cowork Desktop.
 
-Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane, con protezione integrata del segreto professionale (Art. 622 CP + L. 247/2012).
+Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Cassazione, strategia di causa, redazione legale, verifica delle citazioni e flussi di lavoro personalizzati in tutte le 20 regioni italiane, con protezione integrata del segreto professionale (Art. 622 CP + L. 247/2012).
+
+**21 agenti · 30 comandi · 17 skill · 9 server MCP**
+
+---
+
+## Novità della v2.2.0
+
+- **Flussi di lavoro personalizzati** — `/crea-flusso` progetta via intervista una pipeline riutilizzabile combinando gli agenti del plugin; `/flusso` elenca ed esegue anche i tuoi flussi salvati accanto ai template predefiniti.
+- **Nuovo server MCP `workflows-ita`** (9° server) — salvataggio ed esecuzione dei flussi personalizzati; se non raggiungibile, il plugin degrada con grazia omettendo i flussi salvati.
+- **User ID personale** — ogni utente ha un namespace univoco per i propri flussi (`userConfig.user_id`), senza fallback condivisi.
 
 ---
 
