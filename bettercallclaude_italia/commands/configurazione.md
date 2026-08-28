@@ -14,6 +14,7 @@ tools:
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__list_workflows
 ---
 
 # Configurazione BetterCallClaude Italia
@@ -33,6 +34,12 @@ Per ogni server MCP in `.mcp.json`, verifica la connettivita:
 5. **eur-lex-ita** -- Diritto UE in lingua italiana. Altamente affidabile.
 6. **legal-citations-ita** -- Validazione citazioni normative italiane. Funziona localmente.
 7. **legal-persona-ita** -- Drafting documenti giuridici italiani. Funziona localmente.
+8. **citation-verify-ita** -- Verifica esistenza citazioni giuridiche. Dipende da ItalGiure e Normattiva.
+9. **workflows-ita** -- Flussi di lavoro personalizzati (salvataggio ed esecuzione). Se non raggiungibile, il plugin funziona normalmente senza i flussi salvati.
+
+## Impostazione User ID (flussi personalizzati)
+
+L'impostazione **User ID per i flussi personalizzati** (`userConfig.user_id`) identifica il proprietario dei flussi salvati su `workflows-ita`. Se vuota, il plugin genera un ID personale (`bcc-…`) al primo uso di `/crea-flusso` o `/flusso` e lo salva in `~/.betterask/config.yaml`. Chi conosce l'ID puo leggere i flussi: va tenuto privato. Su Cowork, per renderlo durevole, aggiungere la riga `BetterCallClaude workflow user ID: <id>` in Impostazioni → Generali → Istruzioni per Claude.
 
 ## Strategia Fallback per Server Scraper
 
@@ -67,10 +74,12 @@ Ordine di priorita:
 | eur-lex-ita | [OK/FAIL] | HTTP | Alta | [ms] |
 | legal-citations-ita | [OK/FAIL] | HTTP | Alta | [ms] |
 | legal-persona-ita | [OK/FAIL] | HTTP | Alta | [ms] |
+| citation-verify-ita | [OK/FAIL] | HTTP | Media | [ms] |
+| workflows-ita | [OK/FAIL] | HTTP | Alta | [ms] |
 
 ### Sintesi
-- Connessi: [N]/7
-- Falliti: [N]/7
+- Connessi: [N]/9
+- Falliti: [N]/9
 - Azione raccomandata: [istruzione]
 ```
 

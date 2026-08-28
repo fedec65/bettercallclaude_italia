@@ -13,7 +13,7 @@ tools:
 
 Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento completo dei comandi.
 
-## Comandi (29)
+## Comandi (30)
 
 | Comando | Descrizione |
 |---------|-------------|
@@ -34,7 +34,8 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:regionale` | Analizza secondo il diritto regionale per una regione specifica |
 | `/bettercallclaude-italia:contraddittorio` | Esegue analisi avversariale a tre agenti |
 | `/bettercallclaude-italia:briefing` | Briefing strutturato pre-esecuzione |
-| `/bettercallclaude-italia:flusso` | Definisce ed esegue workflow legali multi-agente |
+| `/bettercallclaude-italia:flusso` | Definisce ed esegue workflow legali multi-agente (inclusi i flussi salvati) |
+| `/bettercallclaude-italia:crea-flusso` | Crea un flusso di lavoro personalizzato riutilizzabile combinando gli agenti del plugin |
 | `/bettercallclaude-italia:traduci` | Traduce documenti legali IT/EN |
 | `/bettercallclaude-italia:analisi-doc` | Analizza documenti legali |
 | `/bettercallclaude-italia:triage-nda` | Triage NDA: classifica GREEN/YELLOW/RED secondo diritto italiano |
@@ -116,6 +117,8 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 /bettercallclaude-italia:contraddittorio La clausola di non concorrenza in questo contratto di lavoro e valida?
 
 /bettercallclaude-italia:flusso litigation-prep Risarcimento danni contro produttore
+
+/bettercallclaude-italia:crea-flusso Pipeline personalizzata: ricerca → strategia → redazione con checkpoint
 
 /bettercallclaude-italia:briefing Prepara lite completa per inadempimento art. 1218 CC, EUR 500K, Milano
 

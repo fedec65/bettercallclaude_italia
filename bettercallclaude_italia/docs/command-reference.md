@@ -68,12 +68,22 @@ Questi flag possono essere aggiunti alla maggior parte dei comandi:
 ```
 
 ### `/bettercallclaude-italia:flusso`
-**Scopo**: Esegue pipeline multi-agente predefinite.
-**Argomenti**: Nome workflow + descrizione della causa.
+**Scopo**: Esegue pipeline multi-agente predefinite e flussi personalizzati salvati.
+**Argomenti**: Nome workflow (template o slug salvato) + descrizione della causa.
 **Workflow**: `due-diligence`, `litigation-prep`, `contract-lifecycle`, `real-estate-closing`, `compliance-check`, `cross-border-ma`, `adversarial-review`
+**Flussi salvati**: elenca anche i flussi personalizzati dell'utente (server `workflows-ita`, creati con `/crea-flusso`), numerati in continuazione ai template; se il server non è raggiungibile o la lista è vuota, la sezione è omessa senza segnalazioni.
 **Esempi**:
 ```
 /bettercallclaude-italia:flusso litigation-prep Risarcimento danni produttore
+```
+
+### `/bettercallclaude-italia:crea-flusso`
+**Scopo**: Crea un flusso di lavoro personalizzato riutilizzabile combinando gli agenti del plugin — intervista (agenti, ordine, checkpoint, output), validazione server-side e salvataggio.
+**Argomenti**: Descrizione dello scopo del flusso (opzionale).
+**Note**: i flussi sono salvati sotto uno `user_id` personale (impostazione `userConfig.user_id` o ID `bcc-…` generato e salvato in `~/.betterask/config.yaml`). Mai un ID condiviso `default`.
+**Esempi**:
+```
+/bettercallclaude-italia:crea-flusso Pipeline ricerca → strategia → redazione con checkpoint
 ```
 
 ### `/bettercallclaude-italia:briefing`

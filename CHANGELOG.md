@@ -4,6 +4,22 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.2.0] - 2026-08-28
+
+Porting della feature **custom workflows** dalle release svizzere v4.11.0–4.11.3.
+
+### Added
+- **Flussi di lavoro personalizzati + server `workflows-ita`** (9° server MCP, `.mcp.json` aggiornato) — 8 tool: `list_agents`, `validate_pipeline`, `save_workflow`, `list_workflows`, `get_workflow`, `delete_workflow`, `claim_user_id`, `log_run`. Nuovo comando `/crea-flusso`: intervista guidata (agenti, ordine, checkpoint, output), validazione della pipeline lato server con errori in linguaggio naturale, salvataggio ed esecuzione via `/flusso <slug>`. `/flusso` presenta i flussi salvati in numerazione continua dopo i template fissi; se il server non è raggiungibile o la lista è vuota, la sezione è omessa in silenzio (degrado graceful — il deploy del server è separato).
+- **Namespace univoco per utente** — Ogni flusso è salvato sotto uno `user_id` personale risolto in 5 passi (impostazione `userConfig.user_id` → riga `BetterCallClaude workflow user ID:` nelle istruzioni personalizzate Cowork → `user_id:` in `~/.betterask/config.yaml` → generazione `bcc-<hex>` con claim → stop senza fallback). Mai un ID condiviso `default`.
+- **`claim_user_id` con univocità enforced dal DB** — Il server garantisce l'unicità degli ID; il plugin gestisce le collisioni con retry (max 3) e mostra una nota una tantum se un ID preesistente risulta già registrato.
+- **ID durevole via custom instructions Cowork** — Poiché Cowork svuota la home della sandbox al riavvio, l'ID generato viene reso permanente aggiungendo la riga `BetterCallClaude workflow user ID: bcc-…` in Impostazioni → Generali → Istruzioni per Claude; `~/.betterask/config.yaml` resta solo cache di comodo (scrittura sempre in append: il file può contenere privacy mode e `italgiure_session_key`).
+- **`userConfig.user_id`** — Nuova impostazione in `plugin.json`: User ID proprietario dei flussi salvati (vuoto = generazione automatica).
+
+### Changed
+- Conteggi aggiornati (30 comandi, 9 server MCP) in `/aiuto`, `/doctor`, `/configurazione`, `/versione`, README del plugin, `docs/command-reference.md` e `docs/INSTALLAZIONE.md`; `/doctor` e `/configurazione` includono il probe di `workflows-ita`.
+
+---
+
 ## [2.1.1] - 2026-08-24
 
 ### Fixed
