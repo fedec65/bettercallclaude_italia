@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.2.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -17,12 +17,12 @@ Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Ca
 
 ---
 
-## Novità della v2.2.0
+## Novità della v2.3.0
 
-- **Flussi di lavoro personalizzati** — `/crea-flusso` progetta via intervista una pipeline riutilizzabile combinando gli agenti del plugin; `/flusso` elenca ed esegue anche i tuoi flussi salvati accanto ai template predefiniti.
-- **Nuovo server MCP `workflows-ita`** (9° server) — salvataggio ed esecuzione dei flussi personalizzati; se non raggiungibile, il plugin degrada con grazia omettendo i flussi salvati.
-- **User ID personale** — ogni utente ha un namespace univoco per i propri flussi (`userConfig.user_id`), senza fallback condivisi.
-
+- **Agenti operativi su ogni installazione** — le whitelist `tools:` di tutti i 68 file (21 agenti, 30 comandi, 17 skill) ora includono ogni tool MCP sotto **entrambe** le convenzioni di denominazione (`mcp__plugin_bettercallclaude-italia_<server>__<tool>` e `mcp__<server>__<tool>`): sulle installazioni Cowork che registrano i connettori senza prefisso plugin, gli agenti prima fallivano ogni chiamata ai database legali ("No such tool available").
+- **I panel del briefing girano davvero** — `/briefing` ora possiede il dispatch del panel via `Task` nella sessione top-level (dove funziona su ogni host); il coordinatore diventa un planner puro (classificazione + roster in Fase A, piano in Fase D). Prima il dispatch annidato degradava silenziosamente in modalità single-agente.
+- **`/doctor` rileva la route agent** — nuovo Passo 3: dispatcha lo specialista citazioni via `Task` per una chiamata one-shot a `legal-citations-ita_validate`; se la route agent è rotta lo dice chiaramente invece di riportare tutto verde.
+- **Guard CI di parity** — nuovo `scripts/check-tool-names.js` + step CI: ogni voce MCP nei frontmatter deve esistere in entrambe le convenzioni, perché questa classe di regressione non torni in silenzio.
 ---
 
 ## Installazione

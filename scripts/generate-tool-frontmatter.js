@@ -1,6 +1,12 @@
 #!/usr/bin/env node
 /**
- * Generate and apply `tools:` YAML frontmatter for skills and commands.
+ * Generate and apply `tools:` YAML frontmatter for agents, skills, and commands.
+ *
+ * Every MCP tool is whitelisted under BOTH naming conventions, because hosts
+ * differ (scoped names on Claude Code CLI and current Cowork builds, bare
+ * server names on older Cowork builds):
+ *   scoped: mcp__plugin_bettercallclaude-italia_<server>__<tool>
+ *   bare:   mcp__<server>__<tool>
  *
  * Usage:
  *   node scripts/generate-tool-frontmatter.js          # dry-run (print only)
@@ -11,6 +17,7 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
+const agentsDir = path.join(root, 'bettercallclaude_italia', 'agents');
 const skillsDir = path.join(root, 'bettercallclaude_italia', 'skills');
 const commandsDir = path.join(root, 'bettercallclaude_italia', 'commands');
 const apply = process.argv.includes('--apply');
@@ -98,8 +105,27 @@ function resolveServer(tool, text) {
   return candidates[0];
 }
 
+const SCOPED_PREFIX = 'mcp__plugin_bettercallclaude-italia_';
+const BARE_PREFIX = 'mcp__';
+
 function fullyQualified(tool, server) {
-  return `mcp__plugin_bettercallclaude-italia_${server}__${tool}`;
+  return `${SCOPED_PREFIX}${server}__${tool}`;
+}
+
+// Every MCP entry whitelisted under one naming convention must also be
+// whitelisted under the other — hosts differ (scoped vs bare server names).
+// Applied to the merged list so both computed and pre-existing entries get
+// their twin (agents carry curated lists the text analysis cannot recompute).
+function twinExpand(entries) {
+  const out = new Set(entries);
+  for (const e of entries) {
+    if (e.startsWith(SCOPED_PREFIX)) {
+      out.add(BARE_PREFIX + e.slice(SCOPED_PREFIX.length));
+    } else if (e.startsWith(BARE_PREFIX)) {
+      out.add(SCOPED_PREFIX + e.slice(BARE_PREFIX.length));
+    }
+  }
+  return [...out];
 }
 
 // When a file references any tool of a server, grant the full toolset of that server
@@ -182,7 +208,7 @@ function insertToolsIntoFrontmatter(content, tools) {
     lines.push(line);
   }
 
-  const merged = [...new Set([...existing, ...tools])];
+  const merged = twinExpand([...new Set([...existing, ...tools])]);
   const toolsYaml = 'tools:\n' + merged.map(t => `  - ${t}`).join('\n');
 
   // Insert after description line, or append at end of frontmatter
@@ -225,6 +251,14 @@ console.log(`Mode: ${apply ? 'APPLY' : 'DRY RUN'}\n`);
 
 let ok = 0;
 let fail = 0;
+
+// Agents: whitelists are curated per agent — keep the existing entries and
+// only add the missing naming-convention twins (no text-analysis additions).
+for (const agentFile of fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'))) {
+  const agentPath = path.join(agentsDir, agentFile);
+  if (processFile(agentPath, [])) ok++;
+  else fail++;
+}
 
 for (const skillDir of fs.readdirSync(skillsDir)) {
   const skillPath = path.join(skillsDir, skillDir, 'SKILL.md');

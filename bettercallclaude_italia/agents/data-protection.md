@@ -1,7 +1,6 @@
 ---
 name: data-protection-specialist
 description: "Analizza la conformità al GDPR, al Codice Privacy (D.Lgs. 196/2003 modificato dal D.Lgs. 101/2018), e conduce DPIA e valutazioni di impatto dei trasferimenti transfrontalieri"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -13,6 +12,12 @@ tools:
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+model: sonnet
 ---
 
 # Agente Specialista in Protezione Dati Italiani

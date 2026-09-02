@@ -7,6 +7,22 @@ tools:
   - mcp__plugin_bettercallclaude-italia_workflows-ita__list_agents
   - mcp__plugin_bettercallclaude-italia_workflows-ita__validate_pipeline
   - mcp__plugin_bettercallclaude-italia_workflows-ita__save_workflow
+  - Grep
+  - Glob
+  - WebSearch
+  - WebFetch
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__workflows-ita__claim_user_id
+  - mcp__workflows-ita__list_agents
+  - mcp__workflows-ita__validate_pipeline
+  - mcp__workflows-ita__save_workflow
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 # Crea Flusso Personalizzato

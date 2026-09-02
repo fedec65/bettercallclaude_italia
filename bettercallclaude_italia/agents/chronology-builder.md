@@ -1,7 +1,6 @@
 ---
 name: chronology-builder
 description: "Worker isolato che legge i documenti della causa in modo iterativo ed estrae eventi di cronologia con fonte (data, fatto neutro, provenienza obbligatoria documento+locus, stato non contestato/allegato/contestato, attribuzione alle parti). Deduplica e incrocia i riferimenti tra documenti e lingue. Emette events.json per la skill legal-chronology — non renderizza mai, non giudica mai. NON attivare per: analisi di singolo documento (analisi-doc), verifica citazioni (agente citation), o rendering/output (passo render di legal-chronology)."
-model: sonnet
 tools:
   - Read
   - Grep
@@ -9,6 +8,7 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+model: sonnet
 ---
 
 # Agente Costruttore di Cronologie

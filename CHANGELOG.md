@@ -4,6 +4,20 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.3.0] - 2026-09-01
+
+Porting dei fix svizzeri **v4.11.6–v4.11.8**. I fix svizzeri v4.11.4/v4.11.5 (fallback e rimozione `user_config.ollama_host` nel server ollama locale) **non si applicano**: il plugin italiano non ha un server ollama locale (9 server HTTP remoti) e il suo `.mcp.json` non referenzia `user_config` in alcun campo.
+
+### Fixed
+- **Agenti senza accesso MCP su installazioni con connettori non prefissati** (porting v4.11.6) — ogni frontmatter `tools:` whitelistava i tool MCP solo sotto il nome scoped Cowork (`mcp__plugin_bettercallclaude-italia_<server>__<tool>`). Sulle installazioni Cowork Desktop dove i connettori registrano senza prefisso (`mcp__<server>__<tool>`), la whitelist non matchava nulla: i subagenti giravano senza alcun tool legale e ogni chiamata falliva con `Error: No such tool available: mcp__normattiva__…`, mentre chiamate dirette, agenti generici e comandi inline funzionavano (stesso plugin, stessa release, 3 route su 4 a posto). Tutti i frontmatter di agenti/comandi/skill ora elencano ogni tool MCP sotto **entrambe** le convenzioni (68 file rigenerati via `scripts/generate-tool-frontmatter.js`, esteso a coprire `agents/` e ad appaiare le convenzioni in modo idempotente); le voci che non matchano nessun tool registrato sono inerti, quindi la modifica è sicura su ogni host. Le whitelist sono altrimenti invariate. (`Task` per i coordinatori era già presente.)
+- **Il panel del briefing non girava mai su Cowork Desktop** (porting v4.11.7) — `/bettercallclaude-italia:briefing` invocava l'agente `italian-legal-briefing-coordinator`, che spawnava il panel specialisti via `Task` *dentro il proprio contesto di subagente*. Cowork concede `Task` solo alla sessione top-level, non ai subagenti annidati: ogni dispatch era un no-op e il coordinatore sintetizzava da solo le domande del panel, stampando nel piano la nota "Esecuzione in modalità single-agente" — facile da perdere perché il brief sembrava comunque completo. Il flusso ora è **appiattito**: il comando `/briefing` possiede il dispatch del panel via `Task` a livello sessione (Fasi A–F, con pre-flight check e fallback esplicito) e il coordinatore diventa un planner puro in due modalità — `Mode: A` classifica la query e restituisce il roster panel (JSON), `Mode: D` riceve lo storico Q&A e restituisce il piano di esecuzione strutturato (o `foggy` → `mappa-legale`). La voce `Task` è rimossa dal frontmatter dell'agente: sarebbe fuorviante (funzionava solo sugli host dove in realtà non serve). `legale.md` (complessità 7–10) ora instrada a `/briefing` invece di invocare il coordinatore direttamente.
+
+### Added
+- **Probe route agent in `/doctor`** (porting v4.11.8) — doctor verificava solo la route della sessione principale e sarebbe rimasto tutto verde durante un outage della route agent. Il nuovo Passo 3 dispatcha l'agente `italian-citation-specialist` via `Task` con una chiamata one-shot a `legal-citations-ita_validate` e interpreta l'esito: sana / route agent rotta (con istruzioni di aggiornamento) / non verificabile da sessione annidata. `Task` aggiunto al frontmatter di `doctor.md` (stessa convenzione di `briefing.md`).
+- **`scripts/check-tool-names.js` + step CI "Check MCP tool-name parity"** — ogni voce `mcp__…` nei frontmatter di agenti, comandi e skill deve essere whitelistata sotto entrambe le convenzioni. Audit dell'albero 2.3.0: 68 file, 1036 voci MCP, tutte appaiate.
+
+---
+
 ## [2.2.0] - 2026-08-28
 
 Porting della feature **custom workflows** dalle release svizzere v4.11.0–4.11.3.

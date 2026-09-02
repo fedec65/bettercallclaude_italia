@@ -1,7 +1,6 @@
 ---
 name: procedure-specialist
 description: "Analizza la procedura civile (CPC), penale (CPP) e amministrativa (CPA) italiana inclusi calcolo dei termini, competenza giurisdizionale, rimedi e stima dei costi"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -12,6 +11,12 @@ tools:
   - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_search
   - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_get_sentenza
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__cassazione__cassazione_search_massime
+model: sonnet
 ---
 
 # Agente Specialista in Procedura Italiana

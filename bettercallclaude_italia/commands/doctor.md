@@ -7,6 +7,7 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - Task
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
   - mcp__plugin_bettercallclaude-italia_corte-costituzionale__corte-costituzionale_search
   - mcp__plugin_bettercallclaude-italia_giustizia-amministrativa__giustizia-amministrativa_search
@@ -27,6 +28,26 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
   - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
   - mcp__plugin_bettercallclaude-italia_workflows-ita__list_workflows
+  - mcp__normattiva__normattiva_search
+  - mcp__corte-costituzionale__corte-costituzionale_search
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__normattiva__normattiva_elenco_tipi
+  - mcp__corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__workflows-ita__list_workflows
 ---
 
 # BetterCallClaude Italia — Diagnostica
@@ -61,7 +82,21 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 | citation-verify-ita | Verifica esistenza citazioni | `citation-verify-ita_check_existence` (minima) |
 | workflows-ita | Flussi di lavoro personalizzati | `list_workflows` (minima) |
 
-## Passo 3: Mostra Risultati
+## Passo 3: Probe Route Agent
+
+I Passi 1–2 verificano i connettori dalla **sessione principale**. Questo passo verifica la **route agent** — il percorso che si è rotto nella release svizzera v4.11.5, quando gli agenti del plugin non vedevano alcun tool MCP ("No such tool available: mcp__normattiva__…") mentre la sessione principale funzionava regolarmente.
+
+Dispatcha l'agente specialista citazioni del plugin via Task (usa il nome scoped, es. `bettercallclaude-italia:italian-citation-specialist`) con esattamente questo prompt:
+
+> Chiama il tool MCP del server legal-citations-ita il cui nome termina con `validate` con la citazione "Cass. Sez. III, n. 12345/2020". Non usare nessun altro tool. Riporta SOLO: (1) il nome esatto del tool chiamato, (2) "OK" più la citazione restituita, oppure il messaggio di errore verbatim.
+
+Interpreta il risultato:
+
+- L'agente riporta un nome tool + "OK" → route agent sana; annota "Route agent: OK".
+- L'agente riporta "No such tool available" (o non trova alcun tool MCP del server legal-citations-ita) → **route agent rotta**: gli agenti del plugin non raggiungono i connettori anche se la sessione principale può. Dì all'utente di aggiornare BetterCallClaude Italia all'ultima versione e rieseguire `/bettercallclaude-italia:doctor`; se il problema persiste, segnalarlo su https://github.com/fedec65/bettercallclaude_italia/issues includendo questo output.
+- Il tool Task non è disponibile nel contesto corrente (es. dentro una sessione annidata) → segna la route come "non verificabile" e suggerisci di rieseguire `/bettercallclaude-italia:doctor` in una sessione top-level pulita.
+
+## Passo 4: Mostra Risultati
 
 Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
 
@@ -83,13 +118,14 @@ Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
   Flussi personalizzati          ✓ attivo        —
 
   Servizi attivi: 8/9
+  Route agent (MCP via subagent): ✓ operativa
 
 ╚══════════════════════════════════════════════════════════╝
 ```
 
 Usa simboli chiari: ✓ attivo, ⚠ degradato, ✗ non connesso.
 
-## Passo 4: Guida
+## Passo 5: Guida
 
 ### Tutti i server attivi:
 > Tutti i servizi sono operativi. BetterCallClaude Italia funziona a piena capacita.

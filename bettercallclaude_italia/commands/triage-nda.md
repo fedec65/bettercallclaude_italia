@@ -15,6 +15,14 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
 ---
 
 # Triage NDA — Diritto Italiano

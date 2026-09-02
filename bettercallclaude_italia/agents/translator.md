@@ -1,7 +1,6 @@
 ---
 name: legal-translator
 description: "Traduce testi legali italiani tra IT e EN con terminologia ufficiale dalla Gazzetta Ufficiale e dagli standard giuridici italiani"
-model: sonnet
 tools:
   - Read
   - Write
@@ -11,6 +10,10 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__legal-citations-ita__legal-citations-ita_format
+model: sonnet
 ---
 
 # Agente Traduttore Legale Italiano

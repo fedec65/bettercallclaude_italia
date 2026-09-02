@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.2.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.3.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -13,12 +13,12 @@ BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la 
 
 ---
 
-## Novità della v2.2.0
+## Novità della v2.3.0
 
-- **Flussi di lavoro personalizzati** — Nuovo comando `/crea-flusso`: progetta via intervista una pipeline riutilizzabile combinando gli agenti del plugin, la valida lato server e la salva. `/flusso` elenca ed esegue anche i tuoi flussi salvati accanto ai template predefiniti.
-- **Nuovo server MCP `workflows-ita`** (9° server) — 8 tool: `list_agents`, `validate_pipeline`, `save_workflow`, `list_workflows`, `get_workflow`, `delete_workflow`, `claim_user_id`, `log_run`. Se il server non è raggiungibile, il plugin degrada con grazia: i flussi salvati vengono semplicemente omessi.
-- **User ID personale** — Nuova impostazione `userConfig.user_id`: ogni utente ha un namespace univoco per i propri flussi, senza fallback su un `default` condiviso. Se non configurato, il plugin genera un ID `bcc-…` con claim di univocità lato server e lo rende durevole via istruzioni personalizzate Cowork.
-
+- **Whitelist MCP in doppia convenzione** — ogni tool di ogni server è ora whitelistato come `mcp__plugin_bettercallclaude-italia_<server>__<tool>` **e** `mcp__<server>__<tool>` (68 file rigenerati): sulle installazioni Cowork che registrano i connettori senza prefisso plugin, prima ogni agente falliva con "No such tool available" mentre sessione principale e comandi inline funzionavano.
+- **Flusso briefing appiattito** — `/briefing` orchestra il panel specialisti via `Task` nella sessione top-level e conduce la Q&A (Fasi A–F); l'agente coordinatore è un planner puro: Fase A (classificazione + roster panel, JSON) e Fase D (piano di esecuzione o `foggy`). Cowork non concede `Task` ai subagenti annidati: prima il panel degradava silenziosamente in sintesi single-agente.
+- **Probe route agent in `/doctor`** — il nuovo Passo 3 verifica che anche gli agenti (non solo la sessione principale) raggiungano i connettori, con diagnosi chiara e istruzioni di aggiornamento.
+- **Guard CI** — `scripts/check-tool-names.js` impone la parity delle due convenzioni in CI (1036 voci MCP, tutte appaiate).
 ---
 
 ## User ID per i flussi personalizzati

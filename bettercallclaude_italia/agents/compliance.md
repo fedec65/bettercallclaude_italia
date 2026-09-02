@@ -1,7 +1,6 @@
 ---
 name: compliance-officer
 description: "Valuta la conformità regolamentare su CONSOB, Banca d'Italia, AGCM, IVASS e normativa finanziaria italiana con analisi delle lacune e pianificazione della remediation"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -13,6 +12,12 @@ tools:
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+model: sonnet
 ---
 
 # Agente Ufficiale di Conformità Italiano

@@ -25,6 +25,24 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__normattiva__normattiva_elenco_tipi
+  - mcp__corte-costituzionale__corte-costituzionale_search
+  - mcp__corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 # Assistente Legale Intelligente
@@ -166,25 +184,15 @@ Dopo la risposta dell'utente, indirizza all'agente appropriato con contesto arri
 
 ### Complessità 7-10 (Complessa): Sessione Briefing Completa
 
-Attiva la skill `legal-intake` in modalita Briefing e reindirizza all'**agente coordinatore briefing**:
+Instrada verso il comando `/bettercallclaude-italia:briefing`, che possiede il flusso briefing completo (panel dispatch + Q&A + piano) nella sessione top-level, dove il dispatch Task funziona effettivamente su ogni host (Cowork Desktop, Claude Code CLI). Il comando chiama il coordinatore come planner puro per classificazione e costruzione del piano, e gestisce direttamente il dispatch Task del panel — non invocare tu stesso il coordinatore da qui, il dispatch annidato non è supportato.
 
 ```
 💡 Questa query coinvolge multipli domini giuridici e beneficerà di una sessione di briefing
-strutturata. Assemblo un panel di specialisti per porre domande mirate prima di costruire
-il piano di esecuzione.
-
-Avvio sessione briefing...
+Strutturata. Avvio il comando briefing per assemblare il panel e raccogliere il contesto
+Prima di costruire il piano di esecuzione.
 ```
 
-Il coordinatore di briefing:
-1. Seleziona un panel di 3-5 agenti specialistici.
-2. Raccoglie domande dominio-specifiche da ogni panelista.
-3. Pone all'utente in 1-3 round adattivi.
-4. **Fog check**: se la pratica è troppo nebbiosa per un piano statico (complessità 8+, o decisioni aperte che dipendono da altre decisioni aperte), il coordinatore si ferma e offre la mappa decisionale: `/bettercallclaude-italia:mappa-legale`.
-5. Costruisce e presenta un piano di esecuzione strutturato.
-6. Dopo approvazione utente, affida all'orchestrator per esecuzione passo-passo.
-
-Vedi `/bettercallclaude-italia:briefing` per il comando briefing esplicito e capacità di ripresa.
+Vedi `/bettercallclaude-italia:briefing` per il comando briefing esplicito, le Fasi A–F e la capacità di ripresa (`--resume [id]`).
 
 ## Regole di Indirizzo
 

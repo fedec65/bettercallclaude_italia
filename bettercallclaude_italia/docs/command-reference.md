@@ -89,7 +89,7 @@ Questi flag possono essere aggiunti alla maggior parte dei comandi:
 ### `/bettercallclaude-italia:briefing`
 **Scopo**: Intake strutturato prima dell'esecuzione.
 **Argomenti**: Descrizione della causa.
-**Flag**: `--resume [id]`, `--chart` (rotta diretta a `/mappa-legale`)
+**Flag**: `--resume [id]`, `--chart` (rotta diretta a `/mappa-legale`), `--depth quick` (salta il panel), `--agents lista` (forza il roster panel)
 **Esempi**:
 ```
 /bettercallclaude-italia:briefing Prepara lite completa art. 1218 CC, EUR 500K

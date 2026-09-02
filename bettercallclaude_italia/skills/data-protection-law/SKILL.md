@@ -13,6 +13,11 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
 ---
 
 # Diritto della Protezione dei Dati
