@@ -1,7 +1,6 @@
 ---
 name: regional-law-expert
 description: "Analizza il diritto in tutte le 20 regioni italiane includendo statuti regionali, sistemi giudiziari, differenze interregionali, varianti procedurali e confronti multi-regione"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -23,6 +22,22 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__corte-costituzionale__corte-costituzionale_search
+  - mcp__corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+model: sonnet
 ---
 
 # Agente Esperto in Diritto Regionale Italiano

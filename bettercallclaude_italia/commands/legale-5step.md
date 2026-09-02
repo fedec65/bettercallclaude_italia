@@ -25,6 +25,24 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__normattiva__normattiva_elenco_tipi
+  - mcp__corte-costituzionale__corte-costituzionale_search
+  - mcp__corte-costituzionale__corte-costituzionale_get_sentenza
+  - mcp__corte-costituzionale__corte-costituzionale_norme_incostituzionali
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_get_sentenza
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
 ---
 
 # Framework Legale BetterCallClaude a 5 Fasi

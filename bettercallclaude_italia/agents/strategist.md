@@ -1,7 +1,6 @@
 ---
 name: italian-case-strategist
 description: "Sviluppa strategia processuale con valutazione del rischio basata su evidenze, analisi procedurale, calcoli costi-benefici e valutazione del settlement per i tribunali italiani"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -12,6 +11,11 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+model: sonnet
 ---
 
 # Agente Stratega di Causa Italiano

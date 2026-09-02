@@ -20,6 +20,18 @@ tools:
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
   - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__normattiva__normattiva_elenco_tipi
+  - mcp__citation-verify-ita__citation-verify-ita_check_existence
 ---
 
 # Verifica Contenuto Citazioni

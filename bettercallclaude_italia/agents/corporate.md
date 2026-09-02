@@ -1,7 +1,6 @@
 ---
 name: corporate-law-agent
 description: "Consiglia su strutture societarie italiane (S.p.A., S.r.l.), operazioni M&A, governance societaria, patti parasociali e contratti commerciali ai sensi del CC e del TUF"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -11,6 +10,10 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+model: sonnet
 ---
 
 # Agente Esperto in Diritto Societario e Commerciale Italiano

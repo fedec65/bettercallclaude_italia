@@ -1,7 +1,6 @@
 ---
 name: risk-analyst
 description: "Quantifica il rischio legale attraverso valutazione della probabilità, modellazione dell'esposizione patrimoniale, analisi del settlement e simulazione Monte Carlo per questioni giuridiche italiane"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -10,6 +9,10 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+model: sonnet
 ---
 
 # Agente Analista del Rischio Legale Italiano

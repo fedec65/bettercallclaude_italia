@@ -69,7 +69,7 @@ utente -> comando adversarial -> advocate + adversary (parallelo) -> judicial ->
 
 ### Esecuzione da Briefing
 ```
-utente -> comando briefing -> coordinatore briefing -> domande panel -> piano di esecuzione -> orchestrator -> pipeline -> output
+utente -> comando briefing (Fase A: coordinatore planning) -> comando briefing (Fase B: panel via Task top-level) -> Q&A utente -> comando briefing (Fase D: coordinatore planning) -> piano di esecuzione -> orchestrator -> pipeline -> output
 ```
 
 ## Flusso Dati

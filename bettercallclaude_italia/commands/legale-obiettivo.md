@@ -10,6 +10,9 @@ tools:
   - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__normattiva__normattiva_search
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__legal-citations-ita__legal-citations-ita_validate
 ---
 
 # Obiettivo Legale

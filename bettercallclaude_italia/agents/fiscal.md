@@ -1,7 +1,6 @@
 ---
 name: fiscal-legal-expert
 description: "Analizza le implicazioni fiscali nazionali e regionali italiane inclusi IRES, IRAP, IRPEF, IVA, convenzioni contro la doppia imposizione, transfer pricing e conformità BEPS"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -13,6 +12,12 @@ tools:
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+model: sonnet
 ---
 
 # Agente Esperto in Diritto Fiscale Italiano

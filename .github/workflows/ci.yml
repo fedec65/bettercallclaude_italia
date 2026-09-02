@@ -23,6 +23,9 @@ jobs:
       - name: Validate privacy hook
         run: node bettercallclaude_italia/scripts/privacy-check.test.js
 
+      - name: Check MCP tool-name parity
+        run: node scripts/check-tool-names.js
+
       - name: Check version alignment
         run: |
           MARKETPLACE_VERSION=$(node -p "require('./.claude-plugin/marketplace.json').plugins[0].version")

@@ -14,6 +14,13 @@ tools:
   - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_draft_document
+  - mcp__normattiva__normattiva_search
+  - mcp__corte-costituzionale__corte-costituzionale_search
+  - mcp__giustizia-amministrativa__giustizia-amministrativa_search
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__eur-lex-ita__eur-lex-ita_search
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-persona-ita__legal-persona-ita_draft_document
 ---
 
 # BetterCallClaude Italia — Benvenuto

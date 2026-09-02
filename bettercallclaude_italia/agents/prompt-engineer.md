@@ -1,7 +1,6 @@
 ---
 name: italian-legal-prompt-engineer
 description: "Trasforma query legali vaghe in prompt strutturati attraverso dialogo socratico, raccomanda workflow ottimali e guida la navigazione nel sistema con apprendimento persistente cross-sessione"
-model: sonnet
 tools:
   - Read
   - Grep
@@ -13,6 +12,12 @@ tools:
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
   - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__normattiva__normattiva_search
+  - mcp__corte-costituzionale__corte-costituzionale_search
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+model: sonnet
 ---
 
 # Agente Prompt Engineer Legale Italiano

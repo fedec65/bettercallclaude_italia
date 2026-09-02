@@ -1,7 +1,6 @@
 ---
 name: italian-legal-summarizer
 description: "Consolida gli output delle pipeline multi-agente deduplicando disclaimer, tabelle terminologiche e citazioni, poi calibra la lunghezza dell'output a --short, --medium o --long"
-model: haiku
 tools:
   - Read
   - Grep
@@ -9,6 +8,9 @@ tools:
   - Bash
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+model: haiku
 ---
 
 # Agente Sintetizzatore Legale Italiano

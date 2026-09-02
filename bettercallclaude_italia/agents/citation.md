@@ -1,7 +1,6 @@
 ---
 name: italian-citation-specialist
 description: "Verifica, formatta e converte citazioni giuridiche italiane tra decisioni della Cassazione, tribunali regionali e riferimenti normativi in IT/EN"
-model: haiku
 tools:
   - Read
   - Grep
@@ -15,6 +14,15 @@ tools:
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
   - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
   - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__legal-citations-ita__legal-citations-ita_format
+model: haiku
 ---
 
 # Agente Specialista in Citazioni Italiane
