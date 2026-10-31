@@ -35,7 +35,7 @@
     "italgiure_cookie": {
       "type": "string",
       "title": "Cookie sessione ItalGiure (opzionale)",
-      "description": "Cookie di sessione ItalGiure per accesso avanzato alla Cassazione (massime complete). Ottenere il cookie: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID/credenziali, poi esegui document.cookie nel browser. Lasciare vuoto per usare solo SentenzeWeb (gratuito, senza login).",
+      "description": "Cookie di sessione ItalGiure per accesso avanzato alla Cassazione (massime complete). Ottenere il cookie: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense), poi in DevTools copia il valore del campo Cookie da Network - Request Headers di una richiesta dati (i cookie sono HttpOnly: document.cookie in Console restituisce stringa vuota). Lasciare vuoto per usare solo SentenzeWeb (gratuito, senza login).",
       "default": "",
       "sensitive": true
     },
