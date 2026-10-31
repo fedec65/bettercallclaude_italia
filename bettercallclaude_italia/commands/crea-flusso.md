@@ -23,6 +23,14 @@ tools:
   - mcp__cassazione__cassazione_get_sentenza
   - mcp__legal-persona-ita__legal-persona-ita_draft_document
   - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__list_workflows
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__get_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__delete_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__log_run
+  - mcp__workflows-ita__list_workflows
+  - mcp__workflows-ita__get_workflow
+  - mcp__workflows-ita__delete_workflow
+  - mcp__workflows-ita__log_run
 ---
 
 # Crea Flusso Personalizzato

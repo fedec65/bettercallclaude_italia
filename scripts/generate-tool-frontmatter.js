@@ -22,7 +22,10 @@ const skillsDir = path.join(root, 'bettercallclaude_italia', 'skills');
 const commandsDir = path.join(root, 'bettercallclaude_italia', 'commands');
 const apply = process.argv.includes('--apply');
 
-// Server → list of tools (from CONNECTORS.md — the 21 real tools on 8 servers)
+// Server → list of tools (real tool names as they appear after mcp__<server>__):
+// 21 remote tools on 8 servers (CONNECTORS.md), 8 workflow tools on workflows-ita
+// (server contract, v2.2.0), and the optional local ollama wrapper — 5 tools
+// shipped with the plugin. 34 tools across 10 servers.
 const SERVER_TOOLS = {
   normattiva: ['normattiva_search', 'normattiva_search_advanced', 'normattiva_get_atto', 'normattiva_elenco_tipi'],
   'corte-costituzionale': ['corte-costituzionale_search', 'corte-costituzionale_get_sentenza', 'corte-costituzionale_norme_incostituzionali'],
@@ -32,6 +35,8 @@ const SERVER_TOOLS = {
   'legal-citations-ita': ['legal-citations-ita_validate', 'legal-citations-ita_parse', 'legal-citations-ita_format'],
   'legal-persona-ita': ['legal-persona-ita_draft_document', 'legal-persona-ita_compute_deadlines'],
   'citation-verify-ita': ['citation-verify-ita_check_existence'],
+  'workflows-ita': ['list_agents', 'validate_pipeline', 'save_workflow', 'list_workflows', 'get_workflow', 'delete_workflow', 'claim_user_id', 'log_run'],
+  ollama: ['ollama_check_status', 'ollama_generate', 'ollama_chat', 'ollama_classify_privacy', 'ollama_list_models'],
 };
 
 const TOOL_TO_SERVERS = {};

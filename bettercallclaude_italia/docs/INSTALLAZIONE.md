@@ -101,6 +101,24 @@ Per ricevere gli aggiornamenti del plugin in modo automatico, vai in **Customize
 
 ---
 
+## Ollama Locale (Opzionale)
+
+Il plugin include un wrapper MCP locale (`ollama`) per elaborare contenuti soggetti a segreto professionale interamente on-premise, senza trasmetterli ai server remoti. È opzionale: senza Ollama installato il plugin funziona regolarmente con i 9 server MCP remoti e i tool `ollama_*` restituiscono solo un errore di connessione.
+
+Per attivarlo:
+
+1. Installa Ollama da [https://ollama.com](https://ollama.com)
+2. Avvia il daemon: `ollama serve` (su macOS l'app desktop lo avvia automaticamente)
+3. Scarica almeno un modello, ad esempio: `ollama pull llama3`
+
+Modelli consigliati: `llama3` (uso generale), `qwen2.5` (bilingue IT/EN), `mixtral` (drafting lungo), `nomic-embed-text` (embedding).
+
+I 5 tool (`ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_classify_privacy`, `ollama_list_models`) sono sempre esenti dall'hook privacy in ogni modalità; `ollama_classify_privacy` funziona anche senza daemon (classificazione offline con gli stessi pattern dell'hook). L'host si configura con la variabile d'ambiente `OLLAMA_HOST` (default `http://localhost:11434`).
+
+**Host remoto**: l'esenzione privacy vale perché l'elaborazione resta locale. Se `OLLAMA_HOST` punta a un host non-loopback (es. un server Ollama sulla LAN dello studio), il wrapper rifiuta di partire a meno di consenso esplicito: imposta `OLLAMA_ALLOW_REMOTE=1`. Senza questa variabile, un host remoto viene trattato come errore di configurazione — il contenuto privilegiato non deve lasciare la macchina per inadempienza.
+
+---
+
 ## Problemi Comuni
 
 | Problema | Soluzione |

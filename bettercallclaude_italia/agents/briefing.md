@@ -185,7 +185,7 @@ Qualsiasi altro input (incluso nessun marcatore, o `Mode:` senza valore) è un e
 }
 ```
 
-Il comando presenterà la tabella all'utente, gestirà le richieste di affinamento richiamandoti con la modifica, persisterà lo stato e affiderà il piano YAML a `italian-legal-workflow-orchestrator`. Tu non gestisci presentazione, affinamento, persistenza o hand-off — li fa il comando.
+Il comando presenterà la tabella all'utente, gestirà le richieste di affinamento richiamandoti con la modifica, persisterà lo stato ed eseguirà gli stadi del piano direttamente nella sessione top-level (dispatch `Task` per stadio, checkpoint dove previsti). Tu non gestisci presentazione, affinamento, persistenza o esecuzione — li fa il comando.
 
 ---
 

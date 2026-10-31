@@ -12,6 +12,30 @@ tools:
   - mcp__legal-persona-ita__legal-persona-ita_draft_document
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
   - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search_advanced
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
+  - mcp__normattiva__normattiva_elenco_tipi
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_search
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:briefing`. Orchestri il flusso completo nella sessione top-level, dove il dispatch Task funziona effettivamente su ogni host (Cowork Desktop, Claude Code CLI). L'agente coordinatore (`italian-legal-briefing-coordinator`) è un planner puro — classifica, seleziona il panel e costruisce il piano; tu gestisci tutto il lavoro che richiede Task o interazione con l'utente.
@@ -93,14 +117,20 @@ Sei invocato tramite `/bettercallclaude-italia:briefing`. Orchestri il flusso co
    ```
 
    Gestisci "Perché è incluso [agente]?" richiamando il roster Mode A. Gestisci "Aggiungi / rimuovi [agente]" o "Cambia ordine" re-invocando Mode D con la richiesta di modifica.
-7. **Fase F — Persisti e affida.** Su approvazione:
+7. **Fase F — Persisti ed esegui.** Su approvazione:
    - Aggiorna lo stato del piano a `"approved"`.
    - Persisti lo stato sotto chiave `briefing_[id]` (schema sotto); aggiorna `briefing_latest` e `briefing_index`.
-   - Affida il piano YAML a `italian-legal-workflow-orchestrator` con istruzioni di eseguire con checkpoint a ogni fase dove `checkpoint: true`.
+   - **Esegui il piano tu stesso, stadio per stadio, nella sessione top-level.** Non affidarlo a un subagente orchestratore: un subagente non può a sua volta dispatchare `Task` su Cowork Desktop e la pipeline perderebbe tutti gli specialisti. Ciclo per ogni stadio del piano YAML, in ordine di `stage`:
+     1. Pre-flight: se il dispatch `Task` non è disponibile nella sessione, non simulare l'esecuzione — emetti il flag visibile *"Esecuzione multi-agente non disponibile su questo host — eseguo single-agente inline"* e svolgi gli stadi tu stesso, segnalando quali specialisti non sono stati consultati.
+     2. Dispatcha lo stadio via `Task` con l'agente indicato in `agent`. Prompt: query originale, classificazione, `task` e `inputs` dello stadio, output degli stadi precedenti (rispetta i riferimenti `output_stage_N`).
+     3. Se il dispatch fallisce o l'agente non produce l'`expected_output`: riprova una volta, poi fermati e presenta all'utente le opzioni (salta lo stadio / arresta) — mai proseguire in silenzio con un output mancante, che diventerebbe input corrotto per gli stadi successivi.
+     4. Dopo ogni stadio completato: aggiorna lo stato a `"executing"`, persisti gli stadi completati con i loro output in `briefing_[id]`.
+     5. Se `checkpoint: true`: metti in pausa (`"paused"`), presenta l'output dello stadio per la revisione dell'utente e riprendi solo sul suo via (procedi / modifica lo stadio successivo / arresta).
+     6. All'ultimo stadio: consegna secondo il piano (fase summarizer se prevista; gate citazioni `citation-content-verify` se il deliverable contiene citazioni giuridiche), aggiorna lo stato a `"completed"` e persisti.
 
    Su "salva per dopo": aggiorna stato a `"saved"`, restituisci il briefing ID, indica `/bettercallclaude-italia:briefing --resume [id]` per riprenderlo.
 
-   Se la persistenza memoria non è disponibile: avvisa l'utente (*"La persistenza cross-sessione non è disponibile. Questo piano andrà perso se la conversazione termina."*) e affida lo stesso nella sessione corrente.
+   Se la persistenza memoria non è disponibile: avvisa l'utente (*"La persistenza cross-sessione non è disponibile. Questo piano andrà perso se la conversazione termina."*) ed esegui comunque gli stadi nella sessione corrente.
 
 **Schema memoria** (usato in Fase F e in Resume/List):
 

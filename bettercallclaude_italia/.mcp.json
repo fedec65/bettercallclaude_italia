@@ -35,6 +35,12 @@
     "workflows-ita": {
       "type": "http",
       "url": "https://mcp-italia.bettercallclaude.ch/workflows-ita/mcp"
+    },
+    "ollama": {
+      "command": "node",
+      "args": [
+        "${CLAUDE_PLUGIN_ROOT}/mcp-servers/ollama/dist/index.js"
+      ]
     }
   }
 }

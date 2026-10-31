@@ -1,6 +1,6 @@
 ---
 name: legal-wayfinder
-description: "Scomposizione a mappa decisionale per pratiche legali troppo grandi o troppo nebbiose per una singola sessione. Traccia una mappa (destinazione, decisioni prese, nebbia, fuori ambito) piu ticket decisionali in bcc-output/YYYY-MM-DD-<slug>/wayfinder/, poi lavora i ticket uno alla volta finche la rotta verso il deliverable e chiara, poi passa il testimone all'esecuzione. Attiva quando: si traccia la mappa di una pratica grande (/mappa-legale), si lavora il prossimo ticket decisionale (/percorso-legale), o un briefing e troppo nebbioso per un piano di esecuzione statico. NON attiva per: pratiche normali che rientrano in /briefing o /legale-5step, loop di qualita (legale-obiettivo / legale-loop), o ricerca a domanda singola."
+description: "Scomposizione a mappa decisionale per pratiche legali troppo grandi o troppo nebbiose per una singola sessione. Traccia una mappa (destinazione, decisioni prese, nebbia, fuori ambito) piu ticket decisionali in bcc-output/YYYY-MM-DD-{slug}/wayfinder/, poi lavora i ticket uno alla volta finche la rotta verso il deliverable e chiara, poi passa il testimone all'esecuzione. Attiva quando: si traccia la mappa di una pratica grande (/mappa-legale), si lavora il prossimo ticket decisionale (/percorso-legale), o un briefing e troppo nebbioso per un piano di esecuzione statico. NON attiva per: pratiche normali che rientrano in /briefing o /legale-5step, loop di qualita (legale-obiettivo / legale-loop), o ricerca a domanda singola."
 tools:
   - Read
   - Grep
@@ -30,6 +30,10 @@ tools:
   - mcp__legal-citations-ita__legal-citations-ita_validate
   - mcp__legal-citations-ita__legal-citations-ita_parse
   - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_check_status
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_classify_privacy
+  - mcp__ollama__ollama_check_status
+  - mcp__ollama__ollama_classify_privacy
 ---
 
 # Legal Wayfinder — Mappe Decisionali per Pratiche Legali Grandi

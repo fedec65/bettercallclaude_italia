@@ -7,6 +7,8 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_check_status
+  - mcp__ollama__ollama_check_status
 ---
 
 # Privacy BetterCallClaude Italia

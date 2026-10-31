@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.3.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -16,6 +16,11 @@ Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Ca
 **21 agenti · 30 comandi · 17 skill · 9 server MCP**
 
 ---
+
+## Novità della v2.4.0
+
+- **Gate ollama locale opzionale** — il plugin ora include il wrapper locale `mllama` (wrapper MCP STDIO con 5 tool: `ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_classify_privacy` offline, `ollama_list_models`); la presenza o assenza del daemon è una scelta dell'avvocato — se non installi Ollama, il wrapper resta esente dall'hook privacy ma i tool restituiscono errore di connessione, il plugin continua a funzionare con i 9 server remoti. Classificatore offline portato dai pattern dell'hook privacy (Art. 622 CP, L. 247/2012, CDF Art. 13 + 28, Art. 200/103 CPP). I tool `mcp__ollama__*` sono sempre esenti in tutte le modalità.
+- **`/doctor` riconosce Ollama** — nuovo step opzionale (non-bloccante): prova `ollama_check_status` e riporta "online (N modelli)" oppure "non attivo — avvia `ollama serve`"; non entra nel conteggio 8/9 dei server remoti.
 
 ## Novità della v2.3.0
 

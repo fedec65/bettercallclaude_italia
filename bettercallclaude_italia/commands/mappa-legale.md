@@ -29,6 +29,10 @@ tools:
   - mcp__legal-citations-ita__legal-citations-ita_validate
   - mcp__legal-citations-ita__legal-citations-ita_parse
   - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_check_status
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_classify_privacy
+  - mcp__ollama__ollama_check_status
+  - mcp__ollama__ollama_classify_privacy
 ---
 
 # /mappa-legale — Traccia una Mappa Decisionale Legale

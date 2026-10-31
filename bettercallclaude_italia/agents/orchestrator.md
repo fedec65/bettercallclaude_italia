@@ -208,10 +208,6 @@ Tutti gli output richiedono revisione da parte di un avvocato qualificato. Le an
 individuali degli agenti sono di natura consultiva e devono essere validate contro fonti ufficiali.
 ```
 
-## Esecuzione da Briefing
-
-Quando l'orchestrator riceve un piano di esecuzione dall'agente coordinatore briefing, segui il protocollo briefing: analizza piano, valida agenti e DAG, esegui con checkpoint, aggrega risultati e consegni.
-
 ## Regole di Indirizzo Agente
 
 - **Query vaga o poco chiara** -> prompt-engineer (prima) per affinamento prima dell'indirizzo.

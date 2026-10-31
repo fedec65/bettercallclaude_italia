@@ -1,5 +1,5 @@
 ---
-description: "Ingresso principale per tutte le richieste BetterCallClaude Italia — classifica intento, risolve giurisdizione (via shared/references/italian-jurisdictions.md), esegue briefing inline per complessita 4-6, attiva sessione briefing completa per complessita ≥ 7 (via skill legal-intake), e indirizza ad agenti specialistici o pipeline di workflow. Supporta flag --refine, --briefing, --skip-briefing/--direct, --no-framework."
+description: "Ingresso principale per tutte le richieste BetterCallClaude Italia — classifica intento, risolve giurisdizione (via shared/references/italian-jurisdictions.md), esegue briefing inline per complessita 4-6, per complessita ≥ 7 chiede all'utente di lanciare /briefing (via skill legal-intake), e indirizza ad agenti specialistici o pipeline di workflow. Supporta flag --refine, --briefing, --skip-briefing/--direct, --no-framework."
 tools:
   - Read
   - Grep
@@ -184,13 +184,17 @@ Dopo la risposta dell'utente, indirizza all'agente appropriato con contesto arri
 
 ### Complessità 7-10 (Complessa): Sessione Briefing Completa
 
-Instrada verso il comando `/bettercallclaude-italia:briefing`, che possiede il flusso briefing completo (panel dispatch + Q&A + piano) nella sessione top-level, dove il dispatch Task funziona effettivamente su ogni host (Cowork Desktop, Claude Code CLI). Il comando chiama il coordinatore come planner puro per classificazione e costruzione del piano, e gestisce direttamente il dispatch Task del panel — non invocare tu stesso il coordinatore da qui, il dispatch annidato non è supportato.
+Questa complessità richiede il comando `/bettercallclaude-italia:briefing`, che possiede il flusso completo (panel dispatch + Q&A + piano + esecuzione con checkpoint) nella sessione top-level, dove il dispatch Task funziona effettivamente su ogni host. Tu non puoi invocarlo: gli slash command vengono espansi dall'host su iniziativa dell'utente, non sono strumenti eseguibili dal modello. Non dichiarare mai che il briefing è stato avviato.
+
+Fermati e chiedi esplicitamente all'utente di lanciarlo:
 
 ```
 💡 Questa query coinvolge multipli domini giuridici e beneficerà di una sessione di briefing
-Strutturata. Avvio il comando briefing per assemblare il panel e raccogliere il contesto
-Prima di costruire il piano di esecuzione.
+strutturata. Può lanciare /bettercallclaude-italia:briefing? Il panel di specialisti
+raccoglierà il contesto e costruirà il piano di esecuzione con checkpoint.
 ```
+
+Se l'utente rifiuta o preferisce procedere subito, gestisci la query qui in inline come per complessità 4–6, e segnala nel risultato che la sessione briefing strutturata resta disponibile.
 
 Vedi `/bettercallclaude-italia:briefing` per il comando briefing esplicito, le Fasi A–F e la capacità di ripresa (`--resume [id]`).
 

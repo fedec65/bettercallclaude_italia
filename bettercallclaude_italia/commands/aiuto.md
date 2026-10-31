@@ -148,7 +148,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 
 ## Privacy
 
-BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento del segreto professionale (Art. 622 CP, L. 247/2012, CDF Art. 13). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool locali (es. `mcp__ollama__*`, se configurati) sono esclusi perche non trasmettono dati all'esterno.
+BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento del segreto professionale (Art. 622 CP, L. 247/2012, CDF Art. 13). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool locali (`mcp__ollama__*`, wrapper incluso nel plugin) sono esclusi perche non trasmettono dati all'esterno.
 
 | Modalita | Pattern forti | Pattern deboli+contesto | Tool locali |
 |------|--------------|------------------------|--------|
@@ -157,7 +157,7 @@ BetterCallClaude Italia include un hook PreToolUse di assistenza al rilevamento 
 | `balanced` | **Conferma richiesta** (ask) | **Conferma richiesta** (ask) | Sempre permesso |
 | `cloud` | **Conferma richiesta** (ask) | Permesso senza prompt | Sempre permesso |
 
-La modalita si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` (default: `balanced`). In modalita `strict`, il contenuto privilegiato e bloccato ma le chiamate senza pattern privilegiati passano normalmente (i server MCP cloud restano usabili per la ricerca). Per elaborare contenuto privilegiato in sicurezza, configura un server MCP locale (es. Ollama): i suoi tool sono sempre esenti.
+La modalita si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` (default: `balanced`). In modalita `strict`, il contenuto privilegiato e bloccato ma le chiamate senza pattern privilegiati passano normalmente (i server MCP cloud restano usabili per la ricerca). Per elaborare contenuto privilegiato in sicurezza, avvia Ollama (`ollama serve`): i tool del wrapper `ollama` incluso nel plugin sono sempre esenti dall'hook; senza daemon restituiscono un errore di connessione ma il plugin continua a funzionare sui 9 server remoti.
 
 > **Nota**: L'hook privacy e una tecnologia assistiva e non garantisce la conformita all'Art. 622 CP o alla L. 247/2012 / CDF Art. 13. Gli avvocati restano professionalmente responsabili della protezione della confidenzialita del cliente.
 

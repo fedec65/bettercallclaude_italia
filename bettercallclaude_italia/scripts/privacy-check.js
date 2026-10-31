@@ -10,16 +10,18 @@
  * Modes (configurable via userConfig.privacy_mode):
  *   - strict:   Strong/weak patterns trigger DENY (blocked).
  *               Non-privileged content passes through (cloud MCP servers usable).
- *               mcp__ollama__* is always allowed (local).
+ *               mcp__ollama__* (and scoped mcp__plugin_*_ollama__*) is always allowed (local).
  *   - balanced: Strong patterns trigger ASK (user confirms).
  *               Weak patterns with discriminator trigger ASK.
  *               No-match content passes through.
  *   - cloud:    Only strong patterns trigger ASK.
  *               Weak patterns are ignored.
  *
- * Ollama exclusion: mcp__ollama__* tools are always allowed in all modes
+ * Ollama exclusion: mcp__ollama__* tools (and the marketplace-scoped
+ * mcp__plugin_<name>_ollama__* variants) are always allowed in all modes
  * because Ollama runs locally (localhost:11434) and never transmits data
- * externally.
+ * externally. Remote hosts require OLLAMA_ALLOW_REMOTE=1 (see
+ * mcp-servers/ollama/src/client.ts).
  *
  * Per Anthropic hooks spec, stdin is:
  *   {
@@ -127,7 +129,9 @@ function resolveMode(data) {
 // ---------------------------------------------------------------------------
 
 function isLocalTool(toolName) {
-  return /^mcp__ollama__/i.test(toolName);
+  // Bare install: mcp__ollama__ollama_generate.
+  // Marketplace install: mcp__plugin_bettercallclaude-italia_ollama__ollama_generate.
+  return /^mcp__(?:plugin_[a-z0-9-]+_)?ollama__/i.test(toolName);
 }
 
 // ---------------------------------------------------------------------------

@@ -148,6 +148,13 @@ function checkDescriptions(dir, label) {
     if (!m) continue;
     count++;
     let desc = m[1].trim();
+    // YAML block scalars (| or >) carry the value on the following indented
+    // lines, which the single-line regex above would silently miss — refuse
+    // them so no description can bypass validation.
+    assert(
+      !/^[|>]/.test(desc),
+      `${label} "${entry.name}": description uses a YAML block scalar — write it as a single line so validation applies`
+    );
     if ((desc.startsWith('"') && desc.endsWith('"')) || (desc.startsWith("'") && desc.endsWith("'"))) {
       desc = desc.slice(1, -1);
     }
@@ -155,11 +162,19 @@ function checkDescriptions(dir, label) {
       desc.length <= DESC_MAX,
       `${label} "${entry.name}": description is ${desc.length} chars (max ${DESC_MAX}) — over-long descriptions break marketplace sync`
     );
+    // Marketplace/CI validators parse the frontmatter as XML-ish markup:
+    // literal <...> sequences (e.g. path templates like <slug>) get read as
+    // tags and the sync warns "description cannot contain XML tags".
+    assert(
+      !/[<>]/.test(desc),
+      `${label} "${entry.name}": description contains '<' or '>' — use {placeholder} or words instead`
+    );
   }
   console.log(`  ✅ ${label} descriptions within ${DESC_MAX}-char limit (${count} checked)`);
 }
 checkDescriptions('bettercallclaude_italia/skills', 'Skill');
 checkDescriptions('bettercallclaude_italia/agents', 'Agent');
+checkDescriptions('bettercallclaude_italia/commands', 'Command');
 
 console.log('');
 
