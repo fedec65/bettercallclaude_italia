@@ -80,13 +80,16 @@ Sei invocato tramite `/bettercallclaude-italia:doctor`. Diagnostica lo stato di 
 
 ## Passo 1: Verifica Gateway
 
-Verifica il gateway HTTP MCP con un check concreto e riproducibile:
+Verifica il gateway HTTP MCP con un check concreto e riproducibile, su DUE livelli:
 
-- Usa WebFetch su `https://mcp-italia.bettercallclaude.ch/` (una GET sulla radice del dominio e sufficiente: il gateway risponde su HTTP anche se la radice restituisce 404/405/401 — qualsiasi risposta HTTP entro pochi secondi conta come "raggiungibile").
-- **Raggiungibile** (qualsiasi codice HTTP, anche di errore) → nota "Gateway online (raggiungibile su mcp-italia.bettercallclaude.ch)".
-- **Nessuna risposta** (errore di rete, DNS, timeout) → nota "Gateway non raggiungibile" e l'impatto probabile.
+1. **Radice del dominio**: WebFetch su `https://mcp-italia.bettercallclaude.ch/` — qualsiasi risposta HTTP (anche 404/405/401) conta come "dominio raggiungibile". Una risposta qui prova solo che la macchina/proxy risponde: NON prova che gli endpoint MCP funzionino.
+2. **Un endpoint MCP reale**: WebFetch su `https://mcp-italia.bettercallclaude.ch/normattiva/mcp` — qualsiasi risposta HTTP (anche errore) conta come "backend MCP vivo"; un errore di rete/DNS/timeout conta come "backend MCP irraggiungibile".
 
-> Il check misura solo la raggiungibilita' della macchina remota: NON dice se l'ambiente corrente ha registrato i connettori del plugin. Ne terrai conto nel Passo 2.
+- **Endpoint MCP raggiungibile** → nota "Gateway online (backend MCP raggiungibile)".
+- **Radice OK ma endpoint MCP senza risposta** → nota "Dominio raggiungibile ma backend MCP non risponde: possibile interruzione dei percorsi /mcp".
+- **Nessuna risposta su entrambi** (errore di rete, DNS, timeout) → nota "Gateway non raggiungibile" e l'impatto probabile.
+
+> Questi check misurano solo la raggiungibilita' remota: NON dicono se l'ambiente corrente ha registrato i connettori del plugin. Ne terrai conto nel Passo 2.
 
 ## Passo 2: Verifica Ogni Server
 
@@ -96,8 +99,9 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 
 > **Caso speciale — 0/9 server con tool assenti**: se NESSUNO dei 9 server ha tool visibili, prima di tutto **incrocia con l'esito del Passo 1 (gateway)**:
 >
-> - **Gateway NON raggiungibile** → e un guasto reale (connessione/firewall/gateway down): prosegui con la diagnosi d'interruzione (Passo 5 "Gateway non raggiungibile"), NON attribuirlo all'ambiente.
-> - **Gateway raggiungibile (o check non eseguibile) + tool assenti su tutti e 9** → non e quasi mai un guasto di tutti i server simultaneo: il problema e che **questa sessione non ha registrato i connettori del plugin**. Non puoi stabilire con certezza quale delle due cause sia: presenta ENTRAMBE le ipotesi con i rispettivi controlli, senza escluderne una:
+> - **Endpoint MCP senza risposta** → interruzione reale del backend (connessione/firewall/gateway down): prosegui con la diagnosi d'interruzione (Passo 5 "Gateway non raggiungibile"), NON attribuirlo all'ambiente.
+> - **Radice OK ma endpoint MCP senza risposta** → possibile interruzione dei soli percorsi `/mcp` (proxy che risponde sulla radice ma non inoltra ai backend): trattala come interruzione reale, segnalala e invita a riprovare piu' tardi.
+> - **Backend MCP raggiungibile (o check non eseguibile) + tool assenti su tutti e 9** → non e quasi mai un guasto di tutti i server simultaneo: il problema e che **questa sessione non ha registrato i connettori del plugin**. Non puoi stabilire con certezza quale delle due cause sia: presenta ENTRAMBE le ipotesi con i rispettivi controlli, senza escluderne una:
 >
 >   **Ipotesi A — ambiente senza supporto connettori**: i 9 server MCP remoti (HTTP su `mcp-italia.bettercallclaude.ch`) vengono registrati solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**. Nella chat web/mobile di claude.ai i connettori del plugin **non compaiono affatto** e `/doctor` segna sempre 0/9.
 >   → *Verifica*: sei su Cowork Desktop / Claude Code? Se no, questa e la causa: i server funzionano, l'ambiente non li carica. Rilancia `/doctor` da Cowork Desktop o Claude Code.
@@ -105,7 +109,7 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 >   **Ipotesi B — connettori non attivati nell'ambiente desktop**: sei gia' su Cowork Desktop / Claude Code ma il plugin non ha registrato i suoi connettori (connettori disattivati nella pagina del plugin, permessi mancanti, sessione avviata prima dell'installazione).
 >   → *Verifica*: pagina del plugin → sezione Connectors: i 9 server compaiono e sono abilitati? Permessi su "Always allow" (Passo 7 di INSTALLAZIONE.md)? Se mancano: riavvia l'app e rilancia `/doctor`; se persistono, segnala su GitHub con questo output.
 >
-> Non proseguire con lo Stadio B finche' una delle due ipotesi non e risolta.
+> Non proseguire con lo Stadio B finche' una delle ipotesi non e risolta.
 
 **Stadio B — Chiamata leggera** (solo se lo Stadio A ha avuto successo): Fai una chiamata minima per confermare la reattivita.
 

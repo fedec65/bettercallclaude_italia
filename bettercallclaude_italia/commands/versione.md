@@ -16,8 +16,12 @@ Sei invocato tramite `/bettercallclaude-italia:versione`. Visualizza la versione
 ## Output
 
 ```
-BetterCallClaude Italia v2.4.0
+BetterCallClaude Italia vX.Y.Z
+```
 
+(dove `vX.Y.Z` e la versione corrente: LEGGILA SEMPRE da `bettercallclaude_italia/.claude-plugin/plugin.json`, campo `version` — non inventarla e non usare numeri di esempio)
+
+```
 Componenti:
 - Agenti: 21
 - Comandi: 30
