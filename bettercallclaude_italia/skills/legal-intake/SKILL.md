@@ -107,7 +107,7 @@ flags:
   - "[avvertenze]"
 ```
 7. **Presenta e affina**: mostra il piano all'utente per revisione.
-8. **Persisti e affida**: salva il piano come file in `bcc-output/` e avvia l'esecuzione.
+8. **Persisti ed esegui**: salva il piano come file in `bcc-output/` e avvia l'esecuzione degli stadi direttamente nella sessione (dispatch top-level).
 
 ---
 

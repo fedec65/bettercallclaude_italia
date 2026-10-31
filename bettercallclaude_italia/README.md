@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.3.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.4.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -9,9 +9,14 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 30 comandi, 17 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane.
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 30 comandi, 17 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane. Per chi preferisce elaborare contenuti soggetti al segreto professionale on-premise, il plugin include opzionalmente un wrapper locale Ollama (5 tool); la sua attivazione è una scelta dell’avvocato (è sufficiente installare Ollama e avviare `ollama serve`).
 
 ---
+
+## Novità della v2.4.0
+
+- **Gate ollama locale opzionale** — il plugin ora include il wrapper locale `ollama` (wrapper MCP STDIO con 5 tool: `ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_classify_privacy` offline, `ollama_list_models`); la presenza o assenza del daemon è una scelta dell'avvocato — se non installi Ollama, il wrapper resta esente dall'hook privacy ma i tool restituiscono errore di connessione, il plugin continua a funzionare con i 9 server remoti. Classificatore offline portato dai pattern dell'hook privacy (Art. 622 CP, L. 247/2012, CDF Art. 13 + 28, Art. 200/103 CPP). I tool `mcp__ollama__*` sono sempre esenti in tutte le modalità.
+- **`/doctor` riconosce Ollama** — nuovo step opzionale (non-bloccante): prova `ollama_check_status` e riporta "online (N modelli)" oppure "non attivo — avvia `ollama serve`"; non entra nel conteggio 8/9 dei server remoti.
 
 ## Novità della v2.3.0
 
@@ -182,6 +187,7 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | `legal-persona-ita` | Drafting documenti + calcolo termini processuali (CPC/CPP/CPA) | HTTP |
 | `citation-verify-ita` | Verifica esistenza citazioni giuridiche | HTTP |
 | `workflows-ita` | Flussi di lavoro personalizzati (salvataggio ed esecuzione) | HTTP |
+| `ollama` | Elaborazione locale on-premise (opzionale, offline) | STDIO locale |
 
 ### Affidabilita Server
 
@@ -218,7 +224,7 @@ Per istruzioni dettagliate: [docs/cassazione-cookie.md](docs/cassazione-cookie.m
 
 ## Privacy
 
-BetterCallClaude Italia include un hook `PreToolUse` di assistenza al rilevamento del segreto professionale (Art. 622 CP, L. 247/2012, CDF Art. 13). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool locali (es. `mcp__ollama__*`, se configurati) sono esclusi dal controllo perche non trasmettono dati all'esterno.
+BetterCallClaude Italia include un hook `PreToolUse` di assistenza al rilevamento del segreto professionale (Art. 622 CP, L. 247/2012, CDF Art. 13). L'hook scansiona le chiamate tool in uscita (Write, Edit, MultiEdit, WebFetch, Bash e tutti i tool MCP) per indicatori di privilegio in italiano e inglese. I tool locali `mcp__ollama__*` (wrapper spedito con il plugin) sono esclusi dal controllo: non trasmettono dati all'esterno e sono sempre esenti, anche in modalità strict.
 
 | Modalità | Pattern forti | Pattern deboli+contesto | Tool locali |
 |----------|--------------|------------------------|--------|
@@ -227,7 +233,7 @@ BetterCallClaude Italia include un hook `PreToolUse` di assistenza al rilevament
 | `balanced` | **Conferma richiesta** (ask) | **Conferma richiesta** (ask) | Sempre permesso |
 | `cloud` | **Conferma richiesta** (ask) | Permesso senza prompt | Sempre permesso |
 
-La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` (default: `balanced`). In modalità `strict`, il contenuto privilegiato è bloccato ma le chiamate senza pattern privilegiati passano normalmente (i server MCP cloud restano usabili per la ricerca). Per elaborare contenuto privilegiato in sicurezza, configura un server MCP locale (es. Ollama): i suoi tool sono sempre esenti.
+La modalità si configura con `/bettercallclaude-italia:privacy strict|balanced|cloud` (default: `balanced`). In modalità `strict`, il contenuto privilegiato è bloccato ma le chiamate senza pattern privilegiati passano normalmente (i server MCP cloud restano usabili per la ricerca). Il plugin include già il wrapper locale `mcp__ollama__*` (5 tool, nessuna configurazione richiesta oltre ad avere Ollama installato): per elaborare contenuto privilegiato on-premise in strict mode avvia `ollama serve`. Senza daemon i tool sono comunque esenti ma restituiscono un errore di connessione — il plugin continua a funzionare sui 9 server remoti.
 
 > **Nota**: L'hook privacy è una tecnologia assistiva e non garantisce la conformità all'Art. 622 CP o alla L. 247/2012 / CDF Art. 13. Gli avvocati restano professionalmente responsabili della protezione della confidenzialità del cliente. Il rilevamento è basato su pattern e può essere eluso da formulazioni non standard.
 

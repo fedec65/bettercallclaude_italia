@@ -8,6 +8,12 @@ tools:
   - Bash
   - WebSearch
   - WebFetch
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_check_status
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_classify_privacy
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_generate
+  - mcp__ollama__ollama_check_status
+  - mcp__ollama__ollama_classify_privacy
+  - mcp__ollama__ollama_generate
 ---
 
 # Routing Privacy

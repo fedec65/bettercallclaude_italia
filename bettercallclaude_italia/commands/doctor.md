@@ -48,6 +48,30 @@ tools:
   - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
   - mcp__citation-verify-ita__citation-verify-ita_check_existence
   - mcp__workflows-ita__list_workflows
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_check_status
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_generate
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_chat
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_classify_privacy
+  - mcp__plugin_bettercallclaude-italia_ollama__ollama_list_models
+  - mcp__ollama__ollama_check_status
+  - mcp__ollama__ollama_generate
+  - mcp__ollama__ollama_chat
+  - mcp__ollama__ollama_classify_privacy
+  - mcp__ollama__ollama_list_models
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__list_agents
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__validate_pipeline
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__save_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__get_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__delete_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__claim_user_id
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__log_run
+  - mcp__workflows-ita__list_agents
+  - mcp__workflows-ita__validate_pipeline
+  - mcp__workflows-ita__save_workflow
+  - mcp__workflows-ita__get_workflow
+  - mcp__workflows-ita__delete_workflow
+  - mcp__workflows-ita__claim_user_id
+  - mcp__workflows-ita__log_run
 ---
 
 # BetterCallClaude Italia — Diagnostica
@@ -81,6 +105,12 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 | legal-persona-ita | Generazione documenti + calcolo termini | `legal-persona-ita_draft_document` (minima) |
 | citation-verify-ita | Verifica esistenza citazioni | `citation-verify-ita_check_existence` (minima) |
 | workflows-ita | Flussi di lavoro personalizzati | `list_workflows` (minima) |
+
+**Server locale opzionale (ollama)** — non rientra nel conteggio dei 9 server remoti e il suo esito non e mai un fallimento. Se i tool `ollama_*` appaiono nella lista dei tool disponibili, chiama `ollama_check_status` (chiamata leggera):
+
+- `online: true` → annota "Ollama locale (opzionale): online (N modelli, versione X)".
+- `online: false` → annota "Ollama locale (opzionale): non attivo — per elaborare contenuto privilegiato in strict mode, avvia `ollama serve`".
+- Tool `ollama_*` assenti dalla lista → annota "Ollama locale (opzionale): wrapper non caricato".
 
 ## Passo 3: Probe Route Agent
 
@@ -118,6 +148,7 @@ Presenta i risultati nella lingua dell'utente, senza gergo tecnico. Esempio:
   Flussi personalizzati          ✓ attivo        —
 
   Servizi attivi: 8/9
+  Ollama locale (opzionale):     ✓ online (22 modelli)
   Route agent (MCP via subagent): ✓ operativa
 
 ╚══════════════════════════════════════════════════════════╝

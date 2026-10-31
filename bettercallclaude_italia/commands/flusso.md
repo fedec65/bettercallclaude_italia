@@ -49,6 +49,16 @@ tools:
   - mcp__workflows-ita__claim_user_id
   - mcp__workflows-ita__list_workflows
   - mcp__workflows-ita__get_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__list_agents
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__validate_pipeline
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__save_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__delete_workflow
+  - mcp__plugin_bettercallclaude-italia_workflows-ita__log_run
+  - mcp__workflows-ita__list_agents
+  - mcp__workflows-ita__validate_pipeline
+  - mcp__workflows-ita__save_workflow
+  - mcp__workflows-ita__delete_workflow
+  - mcp__workflows-ita__log_run
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:flusso`. Applica le metodologie delle skill italian-legal-strategy e italian-legal-research per definire ed eseguire il workflow richiesto.

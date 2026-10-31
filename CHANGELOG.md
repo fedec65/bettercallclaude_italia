@@ -4,6 +4,26 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.0] - 2026-09-02
+
+Riattivazione del **gate ollama locale opzionale**: il plugin torna ad avere un server MCP locale per l'elaborazione on-premise dei contenuti soggetti a segreto professionale, in parità di funzioni con il fork svizzero (fix v4.11.4/v4.11.5 inclusi: fallback `OLLAMA_HOST` e nessun `user_config` nel `.mcp.json`).
+
+### Fixed (review Devin sulla PR #47)
+- **L'esecuzione approvata del briefing non avviava gli specialisti su Cowork Desktop** — la Fase F affidava il piano a `italian-legal-workflow-orchestrator` via `Task`, ma l'orchestratore è un subagente e il suo `Task` verso gli specialisti è dispatch annidato, che Cowork non concede: la pipeline approvata girava senza specialisti. La Fase F ora **esegue gli stadi del piano direttamente nella sessione top-level** (dispatch `Task` per stadio con `task`/`inputs`/`output_stage_N`, retry una volta poi scelta utente su fallimento, persistenza avanzamento `"executing"`, pausa `"paused"` su `checkpoint: true`, summarizer e gate citazioni in chiusura, stato `"completed"`). Sezione "Esecuzione da Briefing" rimossa dall'orchestratore (nessun chiamante rimane: `/flusso` esegue le pipeline da solo) e contratto del coordinatore aggiornato di conseguenza.
+- **Il briefing automatico da `/legale` (complessità 7–10) dichiarava un avvio impossibile** — un modello non può invocare slash command: il ramo ora si ferma e chiede esplicitamente all'utente di lanciare `/briefing` (fallback inline se rifiuta), senza dichiarare mai che il briefing è stato avviato.
+- **Conteggi obsoleti in `/versione`** — Skill 16 → 17; Server MCP 9 → 10 (9 remoti + wrapper ollama locale opzionale).
+- **`SERVER_TOOLS` ometteva `workflows-ita`** — il generatore non poteva introdurre i tool dei flussi nei frontmatter nuovi; ora copre gli 8 tool del server e i file che li menzionano (`crea-flusso`, `flusso`) sono rigenerati ai set completi per server (convenzione del repo).
+- **`check-tool-names.js` valida ora anche il catalogo** — oltre alla parità delle convenzioni, ogni voce `mcp__…` deve puntare a un server registrato in `.mcp.json` e a un tool dell'inventario `SERVER_TOOLS` del server: un nome errato duplicato in entrambe le convenzioni (typo "gemello") non passa più la CI.
+
+### Added
+- **Server MCP `ollama` (STDIO locale, 10° server in `.mcp.json`)** — wrapper Node con 5 tool: `ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_classify_privacy`, `ollama_list_models`. Host risolto da `OLLAMA_HOST` con fallback `http://localhost:11434`. Senza daemon attivo i tool restituiscono un errore di connessione chiaro e il plugin continua a funzionare sui 9 server remoti: l'attivazione del gate è una scelta dell'avvocato (`ollama serve`), non un requisito.
+- **`ollama_classify_privacy` offline** — classificatore locale con la stessa semantica dell'hook privacy (27 pattern PRIVILEGED: 13 italiani + 7 inglesi + 7 riferimenti normativi; 6 pattern CONFIDENTIAL deboli con discriminatore content/path); funziona senza daemon e supporta l'instradamento del contenuto privilegiato verso l'elaborazione locale (Art. 622 CP).
+- **Probe Ollama in `/doctor`** — sezione "Server locale opzionale (ollama)" nel Passo 2: probe non-bloccante che distingue daemon online, non attivo e wrapper non caricato, senza toccare il conteggio `Servizi attivi: 8/9`.
+- **Whitelist twin estesa a `ollama`** — `scripts/generate-tool-frontmatter.js` copre il nuovo server; l'esenzione `mcp__ollama__*` dall'hook privacy vale in tutte le modalità. Parity check su albero completo: 68 file, 1094 voci MCP appaiate e validate contro il catalogo.
+- **Documentazione** — sezione "Ollama (opzionale)" in `docs/INSTALLAZIONE.md` con modelli consigliati, prose aggiornate in `/aiuto`, README root e README del plugin (badge, novità, tabella server, descrizione).
+
+---
+
 ## [2.3.0] - 2026-09-01
 
 Porting dei fix svizzeri **v4.11.6–v4.11.8**. I fix svizzeri v4.11.4/v4.11.5 (fallback e rimozione `user_config.ollama_host` nel server ollama locale) **non si applicano**: il plugin italiano non ha un server ollama locale (9 server HTTP remoti) e il suo `.mcp.json` non referenzia `user_config` in alcun campo.
