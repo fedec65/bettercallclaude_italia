@@ -125,7 +125,17 @@ I 5 tool (`ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_class
 |----------|-----------|
 | "Marketplace sync failed" | Verifica di aver inserito correttamente `fedec65/bettercallclaude_italia` |
 | I connectors non rispondono | Controlla la connessione internet. I server sono su `mcp-italia.bettercallclaude.ch` |
+| `/doctor` segna tutti i server (0/9) come "non connesso" | Vedi sezione sotto — quasi sempre e l'ambiente sbagliato, non un guasto |
 | Comandi non riconosciuti | Assicurati che il plugin sia attivo (toggle blu nella pagina del plugin) |
+
+### "Non connesso" su tutti i 9 server (0/9)
+
+Se `/doctor` segnala **tutti** i server come non connessi, il problema quasi mai e un guasto: e l'**ambiente** in cui stai usando il plugin.
+
+- I 9 connettori MCP sono server HTTP remoti che il plugin registra solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**.
+- Nella **chat web/mobile di claude.ai** i connettori del plugin **non compaiono**: `/doctor` riportera' sempre 0/9, perche' l'ambiente non li carica affatto. Non e un malfunzionamento del plugin: i 9 server funzionano regolarmente in Cowork Desktop / Claude Code.
+- **Cosa fare**: apri Claude Cowork Desktop (o Claude Code), verifica che il plugin sia installato e attivo, e rilancia `/bettercallclaude-italia:doctor` da li. Se in Cowork Desktop persiste 0/9 dopo un riavvio, controlla la connessione internet e che i permessi dei connectors (Passo 7) siano su "Always allow".
+- **Importante**: se qualche server appare "non connesso" ma altri funzionano, invece, e quasi sempre una protezione anti-bot del portale specifico (Cassazione, Corte Costituzionale) o un'interruzione temporanea: riprova dopo qualche minuto.
 
 ---
 

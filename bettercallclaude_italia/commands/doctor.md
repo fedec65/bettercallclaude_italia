@@ -92,6 +92,8 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 
 **Stadio A — Disponibilita tool**: Controlla se i tool del server appaiono nella lista dei tool disponibili. Se non appaiono, segna il server come "non connesso" immediatamente.
 
+> **Caso speciale — 0/9 server con tool assenti**: se NESSUNO dei 9 server ha tool visibili, quasi mai e un guasto di tutti i server contemporaneamente. Prima ipotesi: **l'ambiente in cui stai girando non carica i connettori del plugin**. I 9 server MCP remoti (HTTP su `mcp-italia.bettercallclaude.ch`) vengono registrati solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**. Nella chat web/mobile di claude.ai i connettori del plugin **non compaiono affatto**: `/doctor` segnera' sempre 0/9, con o senza connessione. In quel caso comunica chiaramente: "Questo ambiente (chat web/mobile) non carica i connettori MCP del plugin: i 9 server sono disponibili in Claude Cowork Desktop o Claude Code. Non e un guasto del plugin ne dei server." Non proseguire con lo Stadio B ne con segnalazioni di outage.
+
 **Stadio B — Chiamata leggera** (solo se lo Stadio A ha avuto successo): Fai una chiamata minima per confermare la reattivita.
 
 | Server | Cosa fornisce | Chiamata di test |
@@ -178,10 +180,11 @@ Per ogni server non disponibile, spiega in linguaggio semplice:
 
 ### Fix suggeriti:
 > Se un servizio risulta non disponibile:
-> 1. Riavviare Cowork Desktop (o Claude Code)
-> 2. Verificare la connessione internet
-> 3. Eseguire di nuovo `/bettercallclaude-italia:doctor` dopo qualche minuto
-> 4. Se il problema persiste, il servizio potrebbe essere temporaneamente offline — per i portali con protezione anti-bot (Cassazione, Corte Costituzionale), e un comportamento atteso
+> 1. Verifica di essere in **Claude Cowork Desktop** o **Claude Code**: nella chat web/mobile di claude.ai i connettori del plugin non sono caricati dall'ambiente e `/doctor` segna sempre 0/9 — non e un guasto
+> 2. Riavviare Cowork Desktop (o Claude Code)
+> 3. Verificare la connessione internet
+> 4. Eseguire di nuovo `/bettercallclaude-italia:doctor` dopo qualche minuto
+> 5. Se il problema persiste, il servizio potrebbe essere temporaneamente offline — per i portali con protezione anti-bot (Cassazione, Corte Costituzionale), e un comportamento atteso
 
 ### Gateway non raggiungibile:
 > Il gateway MCP non e raggiungibile.
