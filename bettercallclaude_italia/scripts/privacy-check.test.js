@@ -13,6 +13,9 @@ const {
   classify,
   decide,
   resolveMode,
+  resolveScanLocalWrites,
+  resolveExemptPaths,
+  isExemptPath,
   isLocalTool,
   extractTextFromInput,
   extractPathHint,
@@ -286,13 +289,13 @@ t('reads .privacy-mode file as fallback', () => {
   }
 });
 
-t('userConfig takes priority over .privacy-mode file', () => {
+t('explicit cloud base + .privacy-mode strict file -> strict (file can raise)', () => {
   const fs = require('fs');
   const path = require('path');
   const filePath = path.join(process.cwd(), '.privacy-mode');
   try {
     fs.writeFileSync(filePath, 'strict');
-    assert.strictEqual(resolveMode({ userConfig: { privacy_mode: 'cloud' } }), 'cloud');
+    assert.strictEqual(resolveMode({ userConfig: { privacy_mode: 'cloud' } }), 'strict');
   } finally {
     try { fs.unlinkSync(filePath); } catch (_) {}
   }
@@ -637,6 +640,125 @@ t('NEW-3: strong pattern -> deny in strict', () => {
 t('NEW-3: weak+context -> deny in strict', () => {
   const r = decide('Documento riservato per il cliente', '', 'strict');
   assert.strictEqual(r.decision, 'deny');
+});
+
+// ---------------------------------------------------------------------------
+// v2.4.6: env-based configuration (CLAUDE_PLUGIN_OPTION_*)
+// ---------------------------------------------------------------------------
+
+console.log('resolveMode: env CLAUDE_PLUGIN_OPTION_PRIVACY_MODE');
+
+t('env mode wins over default', () => {
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE = 'strict';
+    assert.strictEqual(resolveMode({}), 'strict');
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE;
+  }
+});
+
+t('env mode wins over stdin userConfig', () => {
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE = 'cloud';
+    assert.strictEqual(resolveMode({ userConfig: { privacy_mode: 'strict' } }), 'cloud');
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE;
+  }
+});
+
+t('env mode is normalized (case, whitespace)', () => {
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE = '  STRICT ';
+    assert.strictEqual(resolveMode({}), 'strict');
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE;
+  }
+});
+
+t('invalid env mode falls back to stdin then default', () => {
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE = 'bogus';
+    assert.strictEqual(resolveMode({ userConfig: { privacy_mode: 'cloud' } }), 'cloud');
+    assert.strictEqual(resolveMode({}), 'balanced');
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE;
+  }
+});
+
+t('env strict + .privacy-mode cloud file stays strict (file cannot lower)', () => {
+  const fs = require('fs');
+  const path = require('path');
+  const filePath = path.join(process.cwd(), '.privacy-mode');
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE = 'strict';
+    fs.writeFileSync(filePath, 'cloud');
+    assert.strictEqual(resolveMode({}), 'strict');
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_MODE;
+    try { fs.unlinkSync(filePath); } catch (_) {}
+  }
+});
+
+console.log('resolveScanLocalWrites / resolveExemptPaths / isExemptPath');
+
+t('scan_local_writes defaults to false', () => {
+  assert.strictEqual(resolveScanLocalWrites({}), false);
+});
+
+t('scan_local_writes reads env', () => {
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_SCAN_LOCAL_WRITES = 'true';
+    assert.strictEqual(resolveScanLocalWrites({}), true);
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_SCAN_LOCAL_WRITES;
+  }
+});
+
+t('scan_local_writes env accepts 1/yes/on, rejects garbage', () => {
+  try {
+    for (const v of ['1', 'yes', 'on', 'TRUE']) {
+      process.env.CLAUDE_PLUGIN_OPTION_SCAN_LOCAL_WRITES = v;
+      assert.strictEqual(resolveScanLocalWrites({}), true, v);
+    }
+    process.env.CLAUDE_PLUGIN_OPTION_SCAN_LOCAL_WRITES = 'banana';
+    assert.strictEqual(resolveScanLocalWrites({}), false);
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_SCAN_LOCAL_WRITES;
+  }
+});
+
+t('scan_local_writes falls back to stdin userConfig', () => {
+  assert.strictEqual(resolveScanLocalWrites({ userConfig: { scan_local_writes: true } }), true);
+  assert.strictEqual(resolveScanLocalWrites({ userConfig: { scan_local_writes: 'false' } }), false);
+});
+
+t('exempt paths default to empty', () => {
+  assert.deepStrictEqual(resolveExemptPaths({}), []);
+});
+
+t('exempt paths split on semicolon, expand tilde, trim', () => {
+  const os = require('os');
+  const paths = resolveExemptPaths({ userConfig: { privacy_exempt_paths: ' ~/docs/blog ; /tmp/x/ ' } });
+  assert.deepStrictEqual(paths, [os.homedir() + '/docs/blog', '/tmp/x']);
+});
+
+t('exempt paths read from env', () => {
+  try {
+    process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_EXEMPT_PATHS = '/var/editoriale';
+    assert.deepStrictEqual(resolveExemptPaths({}), ['/var/editoriale']);
+  } finally {
+    delete process.env.CLAUDE_PLUGIN_OPTION_PRIVACY_EXEMPT_PATHS;
+  }
+});
+
+t('isExemptPath matches exact, child dirs, both separators', () => {
+  const exempt = ['/tmp/blog'];
+  assert.strictEqual(isExemptPath('/tmp/blog', exempt), true);
+  assert.strictEqual(isExemptPath('/tmp/blog/post.md', exempt), true);
+  assert.strictEqual(isExemptPath('/tmp/blog/sub/dir', exempt), true);
+  assert.strictEqual(isExemptPath('/tmp/blogger/post.md', exempt), false);
+  assert.strictEqual(isExemptPath('', exempt), false);
+  assert.strictEqual(isExemptPath('/tmp/blog', []), false);
 });
 
 // ---------------------------------------------------------------------------

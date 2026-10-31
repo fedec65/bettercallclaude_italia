@@ -104,24 +104,71 @@ const DEFAULT_MODE = 'balanced';
 
 function resolveMode(data) {
   const cfg = data.userConfig || data.user_config || {};
-  const fromConfig = (typeof cfg.privacy_mode === 'string' ? cfg.privacy_mode : '').toLowerCase().trim();
-  if (VALID_MODES.includes(fromConfig)) return fromConfig;
+  let base = DEFAULT_MODE;
 
-  // Fallback: read .privacy-mode file from CWD (written by /privacy command).
-  // Security (NEW-1): the file can only RAISE severity above the default
-  // (balanced). A file containing "cloud" is ignored — an attacker who
-  // deposits a .privacy-mode file cannot silently lower protection.
+  // v2.4.6: plugin userConfig reaches hooks as CLAUDE_PLUGIN_OPTION_<KEY>
+  // env vars (per the official plugin spec); stdin userConfig is kept as a
+  // fallback for hosts that pass it. Priority: env > stdin > default.
+  const fromEnv = (envOption('PRIVACY_MODE') || '').toLowerCase().trim();
+  const fromConfig = (typeof cfg.privacy_mode === 'string' ? cfg.privacy_mode : '').toLowerCase().trim();
+  for (const candidate of [fromEnv, fromConfig]) {
+    if (VALID_MODES.includes(candidate)) { base = candidate; break; }
+  }
+
+  // NEW-1 generalized: the .privacy-mode file can only RAISE severity above
+  // the resolved base mode. A deposited file can never lower protection.
   try {
     const fs = require('fs');
     const path = require('path');
     const filePath = path.join(data.cwd || process.cwd(), '.privacy-mode');
     const fromFile = fs.readFileSync(filePath, 'utf8').trim().toLowerCase();
-    if (VALID_MODES.includes(fromFile) && MODE_SEVERITY[fromFile] >= MODE_SEVERITY[DEFAULT_MODE]) {
+    if (VALID_MODES.includes(fromFile) && MODE_SEVERITY[fromFile] > MODE_SEVERITY[base]) {
       return fromFile;
     }
-  } catch (_) { /* file not found or unreadable — use default */ }
+  } catch (_) { /* file not found or unreadable — use base */ }
 
-  return DEFAULT_MODE;
+  return base;
+}
+
+// ---------------------------------------------------------------------------
+// v2.4.6: configuration helpers (env-first, per official plugin spec)
+// ---------------------------------------------------------------------------
+
+function envOption(name) {
+  const v = process.env['CLAUDE_PLUGIN_OPTION_' + name];
+  return typeof v === 'string' ? v : undefined;
+}
+
+function resolveScanLocalWrites(data) {
+  const cfg = data.userConfig || data.user_config || {};
+  let raw = envOption('SCAN_LOCAL_WRITES');
+  if (raw === undefined && cfg.scan_local_writes !== undefined && cfg.scan_local_writes !== null) {
+    raw = String(cfg.scan_local_writes);
+  }
+  if (raw === undefined || String(raw).trim() === '') return false;
+  return ['1', 'true', 'yes', 'on'].includes(String(raw).trim().toLowerCase());
+}
+
+function resolveExemptPaths(data) {
+  const cfg = data.userConfig || data.user_config || {};
+  let raw = envOption('PRIVACY_EXEMPT_PATHS');
+  if (raw === undefined && typeof cfg.privacy_exempt_paths === 'string') {
+    raw = cfg.privacy_exempt_paths;
+  }
+  const os = require('os');
+  const home = os.homedir();
+  return String(raw || '')
+    .split(';')
+    .map((p) => p.trim())
+    .filter(Boolean)
+    .map((p) => (p === '~' || p.startsWith('~/') || p.startsWith('~\\') ? home + p.slice(1) : p))
+    .map((p) => p.replace(/[\\/]+$/, ''));
+}
+
+function isExemptPath(p, exemptPaths) {
+  if (!p || !exemptPaths || !exemptPaths.length) return false;
+  const norm = String(p).replace(/[\\/]+$/, '');
+  return exemptPaths.some((e) => norm === e || norm.startsWith(e + '/') || norm.startsWith(e + '\\'));
 }
 
 // ---------------------------------------------------------------------------
@@ -388,6 +435,10 @@ module.exports = {
   classify,
   decide,
   resolveMode,
+  resolveScanLocalWrites,
+  resolveExemptPaths,
+  isExemptPath,
+  envOption,
   isLocalTool,
   extractTextFromInput,
   extractPathHint,
