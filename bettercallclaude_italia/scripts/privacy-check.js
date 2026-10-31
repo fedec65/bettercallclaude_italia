@@ -106,7 +106,11 @@ function main() {
 
     // v2.4.6: Bash uploads whose every source file lives in an exempt folder
     // are exempt too (Devin PR #62); mixed sources still go through checks.
-    if (allPathsExempt(bashPaths, exemptPaths)) { process.exit(0); }
+    // Privileged inline data alongside an exempt source must NOT be hidden
+    // (Devin PR #62 round 3): strip the referenced paths and re-classify.
+    if (allPathsExempt(bashPaths, exemptPaths)) {
+      if (!classify(stripPaths(content, bashPaths), '')) { process.exit(0); }
+    }
 
     if (!content.trim() && !bashPaths.length && mode !== 'strict') { process.exit(0); }
 
@@ -224,6 +228,16 @@ function allPathsExempt(paths, exemptPaths) {
   return !!paths.length && paths.every((p) => isExemptPath(p, exemptPaths));
 }
 
+// Removes referenced file paths from extracted command text so exemption of
+// Bash sources cannot hide privileged inline data (Devin PR #62 round 3):
+// `curl --data-binary @blog/post.md -d 'segreto professionale ...'` still
+// classifies on the residual content.
+function stripPaths(content, paths) {
+  let out = String(content || '');
+  for (const p of paths) out = out.split(p).join('');
+  return out;
+}
+
 // ---------------------------------------------------------------------------
 // Local tool detection
 // ---------------------------------------------------------------------------
@@ -244,14 +258,14 @@ function isLocalWriteTool(toolName) {
 
 // Bash commands able to send data off the machine (heuristic list, hardened in
 // Devin PR #61/#62): direct transfer tools, git push as a subcommand in any
-// form (`git push`, `git -C <dir> push` — flag/value pairs matched explicitly
-// so a commit message containing "push" does not false-positive), GitHub CLI
-// API calls, and Python commands using HTTP clients (the python branch may
-// span `;` because one-liners quote their whole -c argument).
+// form (flag/value pairs and --flag=value options, so a commit message
+// containing "push" does not false-positive), GitHub CLI API calls, and
+// Python -c one-liners whose QUOTED argument uses an HTTP client (quoting
+// required, so "; grep requests log" after the one-liner is not flagged).
 // Everything else (cat, grep, sed, redirects to local files) does not
 // exfiltrate and is skipped unless scan_local_writes is on.
 const NETWORK_COMMANDS =
-  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b(?:\s+-[A-Za-z]+\s+[^\s|;]+)*\s+push\b|\bgh\s+api\b|\bpython[0-9.]*\b[^|&]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b/i;
+  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b(?:\s+-[A-Za-z]+\s+[^\s|;]+|\s+--[A-Za-z-]+=[^\s|;]+)*\s+push\b|\bgh\s+api\b|\bpython[0-9.]*\b\s+-c\s+(?:"[^"]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^"]*"|'[^']*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^']*')/i;
 
 /**
  * Decide whether a tool call enters content scanning at all.
@@ -549,6 +563,7 @@ module.exports = {
   isExemptPath,
   exemptsToolPath,
   allPathsExempt,
+  stripPaths,
   envOption,
   isLocalTool,
   isLocalWriteTool,

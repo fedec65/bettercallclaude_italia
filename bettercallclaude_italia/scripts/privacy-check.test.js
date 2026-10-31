@@ -18,6 +18,7 @@ const {
   isExemptPath,
   exemptsToolPath,
   allPathsExempt,
+  stripPaths,
   isLocalTool,
   isLocalWriteTool,
   shouldScanTool,
@@ -830,10 +831,22 @@ t('git commit message mentioning push is not a network command (Devin PR #62)', 
   assert.strictEqual(NETWORK_COMMANDS.test('git commit -m push'), false);
   assert.strictEqual(NETWORK_COMMANDS.test('git commit -m "push segreto professionale"'), false);
   assert.strictEqual(NETWORK_COMMANDS.test('git -c user.name=x push'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('git --git-dir=/path push'), true);
 });
 
 t('python one-liner with semicolons is detected (Devin PR #62)', () => {
   assert.strictEqual(NETWORK_COMMANDS.test('python3 -c \'import json; import requests; requests.post("https://x", data=d)\''), true);
+});
+
+t('local command chain after python one-liner is not flagged (Devin PR #62 round 3)', () => {
+  assert.strictEqual(NETWORK_COMMANDS.test('python -c \'print(1)\' ; grep requests log.txt'), false);
+  assert.strictEqual(NETWORK_COMMANDS.test('python analyze.py'), false);
+});
+
+t('stripPaths removes referenced paths for residual classification (Devin PR #62 round 3)', () => {
+  assert.strictEqual(stripPaths('curl --data-binary @/tmp/blog/post.md https://x', ['/tmp/blog/post.md']), 'curl --data-binary @ https://x');
+  const residual = classify(stripPaths('curl @/tmp/blog/post.md -d "segreto professionale del cliente Rossi"', ['/tmp/blog/post.md']), '');
+  assert.strictEqual(residual, 'segreto-professionale');
 });
 
 console.log('decide: diagnostic prefix');
