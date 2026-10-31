@@ -83,11 +83,15 @@ Sei invocato tramite `/bettercallclaude-italia:doctor`. Diagnostica lo stato di 
 Verifica il gateway HTTP MCP con un check concreto e riproducibile, su DUE livelli:
 
 1. **Radice del dominio**: WebFetch su `https://mcp-italia.bettercallclaude.ch/` — qualsiasi risposta HTTP (anche 404/405/401) conta come "dominio raggiungibile". Una risposta qui prova solo che la macchina/proxy risponde: NON prova che gli endpoint MCP funzionino.
-2. **Un endpoint MCP reale**: WebFetch su `https://mcp-italia.bettercallclaude.ch/normattiva/mcp` — qualsiasi risposta HTTP (anche errore) conta come "backend MCP vivo"; un errore di rete/DNS/timeout conta come "backend MCP irraggiungibile".
+2. **Un endpoint MCP reale**: WebFetch su `https://mcp-italia.bettercallclaude.ch/normattiva/mcp`. Interpreta lo stato HTTP — NON qualsiasi risposta va bene, perche' un proxy puo' rispondere al posto del backend:
+   - **Backend vivo**: 2xx, oppure 401/405/406 (risposte tipiche del protocollo MCP/SSE a una GET).
+   - **Backend probabilmente guasto**: errore di rete/DNS/timeout, oppure QUALUNQUE 5xx (500, 502, 503, 504, … — 5xx indica che qualcuno ha parlato col backend o che il proxy segnala un upstream down).
+   - **Esito ambiguo**: altri 4xx (es. 404) — il proxy potrebbe aver risposto lui. Considera il probe INDETERMINATO.
 
-- **Endpoint MCP raggiungibile** → nota "Gateway online (backend MCP raggiungibile)".
-- **Radice OK ma endpoint MCP senza risposta** → nota "Dominio raggiungibile ma backend MCP non risponde: possibile interruzione dei percorsi /mcp".
-- **Nessuna risposta su entrambi** (errore di rete, DNS, timeout) → nota "Gateway non raggiungibile" e l'impatto probabile.
+- **Probe endpoint MCP: backend vivo** → nota "Gateway online (backend MCP raggiungibile)". Se la radice era SENZA risposta ma l'endpoint risponde, aggiungi: "La sola radice del dominio non risponde (possibile blocco del path `/`), ma gli endpoint MCP sono raggiungibili: i servizi funzionano."
+- **Probe endpoint MCP: backend probabilmente guasto** → nota "Backend MCP non risponde: possibile interruzione dei percorsi /mcp (o del backend)".
+- **Probe endpoint MCP: ambiguo** → nota "Esito probe indeterminato (il proxy potrebbe aver risposto al posto del backend)": non usarlo come prova ne' di salute ne' di guasto.
+- **Radice senza risposta E probe endpoint MCP non "vivo"** (errore di rete, DNS, timeout) → nota "Gateway non raggiungibile" e l'impatto probabile.
 
 > Questi check misurano solo la raggiungibilita' remota: NON dicono se l'ambiente corrente ha registrato i connettori del plugin. Ne terrai conto nel Passo 2.
 
@@ -99,9 +103,9 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 
 > **Caso speciale — 0/9 server con tool assenti**: se NESSUNO dei 9 server ha tool visibili, prima di tutto **incrocia con l'esito del Passo 1 (gateway)**:
 >
-> - **Endpoint MCP senza risposta** → interruzione reale del backend (connessione/firewall/gateway down): prosegui con la diagnosi d'interruzione (Passo 5 "Gateway non raggiungibile"), NON attribuirlo all'ambiente.
-> - **Radice OK ma endpoint MCP senza risposta** → possibile interruzione dei soli percorsi `/mcp` (proxy che risponde sulla radice ma non inoltra ai backend): trattala come interruzione reale, segnalala e invita a riprovare piu' tardi.
-> - **Backend MCP raggiungibile (o check non eseguibile) + tool assenti su tutti e 9** → non e quasi mai un guasto di tutti i server simultaneo: il problema e che **questa sessione non ha registrato i connettori del plugin**. Non puoi stabilire con certezza quale delle due cause sia: presenta ENTRAMBE le ipotesi con i rispettivi controlli, senza escluderne una:
+> - **Radice senza risposta E probe endpoint MCP "probabilmente guasto"** → interruzione reale del backend (connessione/firewall/gateway down): prosegui con la diagnosi d'interruzione (Passo 5 "Gateway non raggiungibile"), NON attribuirlo all'ambiente.
+> - **Radice OK (o irrilevante: endpoint vivo) ma probe endpoint MCP "probabilmente guasto"** → possibile interruzione dei soli percorsi `/mcp` (proxy che risponde sulla radice ma non inoltra ai backend): trattala come interruzione reale, segnalala e invita a riprovare piu' tardi.
+> - **Probe endpoint MCP "vivo" + tool assenti su tutti e 9** → non e quasi mai un guasto di tutti i server simultaneo: il problema e che **questa sessione non ha registrato i connettori del plugin**. Non puoi stabilire con certezza quale delle due cause sia: presenta ENTRAMBE le ipotesi con i rispettivi controlli, senza escluderne una:
 >
 >   **Ipotesi A — ambiente senza supporto connettori**: i 9 server MCP remoti (HTTP su `mcp-italia.bettercallclaude.ch`) vengono registrati solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**. Nella chat web/mobile di claude.ai i connettori del plugin **non compaiono affatto** e `/doctor` segna sempre 0/9.
 >   → *Verifica*: sei su Cowork Desktop / Claude Code? Se no, questa e la causa: i server funzionano, l'ambiente non li carica. Rilancia `/doctor` da Cowork Desktop o Claude Code.
@@ -109,7 +113,9 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 >   **Ipotesi B — connettori non attivati nell'ambiente desktop**: sei gia' su Cowork Desktop / Claude Code ma il plugin non ha registrato i suoi connettori (connettori disattivati nella pagina del plugin, permessi mancanti, sessione avviata prima dell'installazione).
 >   → *Verifica*: pagina del plugin → sezione Connectors: i 9 server compaiono e sono abilitati? Permessi su "Always allow" (Passo 7 di INSTALLAZIONE.md)? Se mancano: riavvia l'app e rilancia `/doctor`; se persistono, segnala su GitHub con questo output.
 >
-> Non proseguire con lo Stadio B finche' una delle ipotesi non e risolta.
+> - **Probe endpoint MCP "ambiguo" (o check non eseguibile) + tool assenti su tutti e 9** → esito INDETERMINATO: non concludere. Presenta insieme: (1) possibile interruzione dei percorsi `/mcp` — invita a riprovare piu' tardi; (2) le verifiche delle Ipotesi A e B sopra. Dopo i controlli, se i connettori risultano attivi e l'ambiente e quello giusto, segnala su GitHub con questo output.
+>
+> Non proseguire con lo Stadio B finche' le ipotesi non sono risolte o il probe non e' tornato "vivo".
 
 **Stadio B — Chiamata leggera** (solo se lo Stadio A ha avuto successo): Fai una chiamata minima per confermare la reattivita.
 

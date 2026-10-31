@@ -4,6 +4,18 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.5] - 2026-10-31
+
+### Fixed
+- **Review Devin sulla PR #60**: classificazione del probe MCP resa esaustiva e rami del caso 0/9 per esito del probe — qualunque 5xx (incluso 500) conta come "backend probabilmente guasto"; la radice che non risponde NON basta più per dichiarare il gateway irraggiungibile se l'endpoint MCP risponde; con probe ambiguo (altri 4xx) il caso 0/9 non conclude più a favore dell'ambiente ma presenta insieme possibile interruzione dei percorsi `/mcp` e verifiche dei connettori.
+
+## [2.4.4] - 2026-10-31
+
+### Fixed
+- **Review Devin sulla PR #59 (promozione v2.4.3)**:
+  - `versione.md`: il percorso di `plugin.json` ora usa `${CLAUDE_PLUGIN_ROOT}` (come gli altri comandi) invece di un percorso relativo alla working directory, che in Cowork non esiste.
+  - `doctor.md` Passo 1: il probe dell'endpoint MCP ora classifica lo stato HTTP — 2xx/401/405/406 = backend vivo; errori di rete o 502/503/504 = backend probabilmente guasto; altri 4xx = ambiguo (proxy che risponde al posto del backend), mai usato come prova di salute. Passo 2: rami del caso 0/9 resi mutuamente esclusivi (radice+endpoint giu' = gateway irraggiungibile; radice OK + endpoint guasto = interruzione percorsi /mcp; endpoint vivo o ambiguo = ipotesi d'ambiente).
+
 ## [2.4.3] - 2026-10-31
 
 ### Fixed
