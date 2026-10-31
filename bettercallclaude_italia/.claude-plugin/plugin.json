@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "2.4.6",
+  "version": "2.4.7",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con assistenza al rilevamento del segreto professionale (Art. 622 CP).",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
@@ -36,7 +36,7 @@
     "privacy_exempt_paths": {
       "type": "string",
       "title": "Cartelle escluse dal controllo privacy",
-      "description": "Elenco di cartelle escluse dal controllo del segreto professionale, separate da punto e virgola (espansione di ~ supportata). Utile per cartelle editoriali o non legali. Esempio: ~/Documenti/blog;~/progetti/linkedin.",
+      "description": "Elenco di cartelle i cui file sono esclusi dal controllo del segreto professionale, separate da punto e virgola (espansione di ~ supportata). L'esenzione vale per le chiamate che hanno per bersaglio un file in quelle cartelle: l'invio in rete di contenuto da altre origini resta controllato. Utile per cartelle editoriali o non legali. Esempio: ~/Documenti/blog;~/progetti/linkedin.",
       "default": "",
       "sensitive": false
     },

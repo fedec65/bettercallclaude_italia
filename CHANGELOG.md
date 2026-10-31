@@ -4,6 +4,15 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.7] - 2026-11-01
+
+### Fixed
+- **Review Devin sulla PR #61**:
+  - **Esenzione per cartelle limitata al percorso di destinazione del tool**: la `cwd` della sessione non esenta piu' tutto cio' che viene inviato in rete — contenuto privilegiato da altre origini resta controllato anche lavorando dentro una cartella esenta (era: skip totale della sessione).
+  - **Bypass traversal dell'esenzione**: `isExemptPath` normalizza ora `.`/`..` e i separatori prima del confronto — `/esenta/../clienti/segreto.txt` non aggira piu' il controllo.
+  - **Comandi di rete non elencati**: la lista euristica copre ora `git -C <dir> push` in qualunque forma, `gh api`, `socat`/`telnet` e one-liner Python con client HTTP (`requests`, `httpx`, `urllib`, `aiohttp`); `scan_local_writes: true` resta la rete di sicurezza per la scansione completa.
+  - **Descrizione del tool MCP `ollama_classify_privacy`** allineata alla classificazione v2.4.6 (citazioni normativi e clausole come CONFIDENTIAL con contesto, discriminator ristretto): gli agenti che la leggono non ricevono piu' regole di routing obsolete.
+
 ## [2.4.6] - 2026-11-01
 
 ### Fixed

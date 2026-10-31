@@ -61,8 +61,12 @@ sono scannerizzati: scrivere un file locale non trasmette dati.
 Configurazione (pannello /config del plugin):
 - privacy_mode: strict | balanced | cloud
 - scan_local_writes: true ripristina la scansione completa di tutti i tool
-- privacy_exempt_paths: cartelle escluse dal controllo, separate da ";"
-  (es. ~/Documenti/blog;~/progetti/linkedin), espansione di ~ supportata
+- privacy_exempt_paths: cartelle i cui FILE SONO esclusi dal controllo,
+  separate da ";" (es. ~/Documenti/blog;~/progetti/linkedin), espansione di ~
+  supportata. L'esenzione vale per le chiamate che hanno per bersaglio un file
+  in quelle cartelle: la sessione aperta in una cartella esenta NON esenta
+  tutto cio' che viene inviato in rete da quella sessione (contenuto
+  privilegiato inviato altrove resta controllato).
 
 Nota: la modalita base si configura nel pannello /config (userConfig
 privacy_mode, ricevuta dall'hook come variabile d'ambiente). Il file

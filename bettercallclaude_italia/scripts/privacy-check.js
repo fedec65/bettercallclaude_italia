@@ -82,9 +82,12 @@ function main() {
     const scanLocal = resolveScanLocalWrites(data);
     const exemptPaths = resolveExemptPaths(data);
 
-    // v2.4.6: user-configured exempt folders skip the check entirely.
+    // v2.4.6: user-configured exempt folders skip the check for tool calls
+    // TARGETING those folders. The session cwd deliberately does NOT exempt
+    // everything: privileged content from elsewhere must still be decided on
+    // (Devin PR #61).
     const earlyPath = extractPathHint(toolInput);
-    if (isExemptPath(earlyPath, exemptPaths) || isExemptPath(data.cwd || '', exemptPaths)) {
+    if (isExemptPath(earlyPath, exemptPaths)) {
       process.exit(0);
     }
 
@@ -184,13 +187,20 @@ function resolveExemptPaths(data) {
     .map((p) => p.trim())
     .filter(Boolean)
     .map((p) => (p === '~' || p.startsWith('~/') || p.startsWith('~\\') ? home + p.slice(1) : p))
-    .map((p) => p.replace(/[\\/]+$/, ''));
+    .map(normalizePathForMatch);
+}
+
+// Collapses . and .. segments and unifies separators before prefix matching,
+// so /exempt/../clienti/secret.txt cannot bypass the exemption (Devin PR #61).
+function normalizePathForMatch(p) {
+  const path = require('path');
+  return path.normalize(String(p).replace(/\\/g, '/')).replace(/[\\/]+$/, '');
 }
 
 function isExemptPath(p, exemptPaths) {
   if (!p || !exemptPaths || !exemptPaths.length) return false;
-  const norm = String(p).replace(/[\\/]+$/, '');
-  return exemptPaths.some((e) => norm === e || norm.startsWith(e + '/') || norm.startsWith(e + '\\'));
+  const norm = normalizePathForMatch(p);
+  return exemptPaths.some((e) => norm === e || norm.startsWith(e + '/'));
 }
 
 // ---------------------------------------------------------------------------
@@ -211,10 +221,13 @@ function isLocalWriteTool(toolName) {
   return /^(Write|Edit|MultiEdit)$/.test(toolName);
 }
 
-// Bash commands able to send data off the machine. `git push` is matched as
-// a compound form. Everything else (cat, grep, sed, redirects to local files)
-// does not exfiltrate and is skipped unless scan_local_writes is on.
-const NETWORK_COMMANDS = /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync)\b|\bgit\s+push\b/i;
+// Bash commands able to send data off the machine (heuristic list, Devin PR #61
+// hardening): direct transfer tools, git push in any form (also `git -C repo
+// push`), GitHub CLI API calls, and Python one-liners using HTTP clients.
+// Everything else (cat, grep, sed, redirects to local files) does not
+// exfiltrate and is skipped unless scan_local_writes is on.
+const NETWORK_COMMANDS =
+  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b[^|;&]*\bpush\b|\bgh\s+api\b|\bpython[0-9.]*\b[^|;&]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b/i;
 
 /**
  * Decide whether a tool call enters content scanning at all.
