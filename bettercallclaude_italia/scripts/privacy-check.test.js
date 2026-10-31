@@ -47,32 +47,43 @@ t('detects segreto professionale', () => {
   assert.strictEqual(classify('Questo documento contiene segreto professionale', ''), 'segreto-professionale');
 });
 
-t('detects segreto commerciale', () => {
-  assert.strictEqual(classify('Informazioni di segreto commerciale', ''), 'segreto-commerciale');
+// Reference patterns (v2.4.6) — norm citations and contract boilerplate are
+// weak: they only count with a client/case discriminator.
+
+t('detects segreto commerciale with discriminator', () => {
+  assert.strictEqual(classify('Violazione del segreto commerciale a danno del cliente Rossi', ''), 'segreto-commerciale+context');
 });
 
-t('detects Art. 622 CP', () => {
-  assert.strictEqual(classify('Violazione Art. 622 CP', ''), 'art-622-cp');
+t('segreto commerciale without discriminator returns null', () => {
+  assert.strictEqual(classify('Concorrenza sleale e violazione del segreto commerciale', ''), null);
 });
 
-t('detects art. 622 c.p. (Italian dotted form)', () => {
-  assert.strictEqual(classify('Violazione art. 622 c.p.', ''), 'art-622-cp');
+t('detects Art. 622 CP with discriminator', () => {
+  assert.strictEqual(classify('Violazione Art. 622 CP per il cliente Rossi', ''), 'art-622-cp+context');
 });
 
-t('detects Art 622 C.P. (variant)', () => {
-  assert.strictEqual(classify('Violazione Art 622 C.P.', ''), 'art-622-cp');
+t('art. 622 c.p. (Italian dotted form) without discriminator returns null', () => {
+  assert.strictEqual(classify('Riferimento: art. 622 c.p.', ''), null);
 });
 
-t('detects L. 247/2012', () => {
-  assert.strictEqual(classify('Dovere di riservatezza L. 247/2012', ''), 'l-247-2012');
+t('Art 622 C.P. (variant) without discriminator returns null', () => {
+  assert.strictEqual(classify('Violazione Art 622 C.P. in astratto', ''), null);
 });
 
-t('detects CDF Art. 13', () => {
-  assert.strictEqual(classify('Obbligo di segretezza CDF Art. 13', ''), 'cdf-art-13');
+t('detects L. 247/2012 with discriminator', () => {
+  assert.strictEqual(classify('Dovere di riservatezza L. 247/2012 nel mandante', ''), 'l-247-2012+context');
 });
 
-t('detects CDF Art. 28', () => {
-  assert.strictEqual(classify('Dovere di riserbo CDF Art. 28', ''), 'cdf-art-28');
+t('L. 247/2012 without discriminator returns null', () => {
+  assert.strictEqual(classify('Riferimento: l. 247/2012.', ''), null);
+});
+
+t('detects CDF Art. 13 with discriminator', () => {
+  assert.strictEqual(classify('Obbligo di segretezza CDF Art. 13 verso il cliente', ''), 'cdf-art-13+context');
+});
+
+t('detects CDF Art. 28 with discriminator', () => {
+  assert.strictEqual(classify('Dovere di riserbo CDF Art. 28 verso il cliente', ''), 'cdf-art-28+context');
 });
 
 t('detects attorney-client privilege', () => {
@@ -83,12 +94,20 @@ t('detects work product', () => {
   assert.strictEqual(classify('Attorney work product', ''), 'work-product');
 });
 
-t('detects vincolo di riservatezza', () => {
-  assert.strictEqual(classify('Soggetto a vincolo di riservatezza', ''), 'vincolo-riservatezza');
+t('detects vincolo di riservatezza with discriminator', () => {
+  assert.strictEqual(classify('Soggetto a vincolo di riservatezza verso il cliente', ''), 'vincolo-riservatezza+context');
 });
 
-t('detects obbligo di riservatezza', () => {
-  assert.strictEqual(classify('Informazione coperta da obbligo di riservatezza', ''), 'obbligo-riservatezza');
+t('vincolo di riservatezza without discriminator returns null', () => {
+  assert.strictEqual(classify('Clausola: vincolo di riservatezza del fornitore', ''), null);
+});
+
+t('detects obbligo di riservatezza with discriminator', () => {
+  assert.strictEqual(classify('Obbligo di riservatezza verso il cliente Rossi', ''), 'obbligo-riservatezza+context');
+});
+
+t('obbligo di riservatezza without discriminator returns null', () => {
+  assert.strictEqual(classify('Clausola: obbligo di riservatezza del fornitore', ''), null);
 });
 
 t('detects segreto istruttorio', () => {
@@ -111,12 +130,24 @@ t('detects privileged and confidential', () => {
   assert.strictEqual(classify('Privileged and confidential notice', ''), 'privileged-confidential');
 });
 
-t('detects Art. 200 CPP', () => {
-  assert.strictEqual(classify('Art. 200 CPP tutela del testimone', ''), 'art-200-cpp');
+t('detects Art. 200 CPP with discriminator', () => {
+  assert.strictEqual(classify('Art. 200 CPP nel procedimento del cliente', ''), 'art-200-cpp+context');
 });
 
-t('detects Art. 103 CPP', () => {
-  assert.strictEqual(classify('Art. 103 CPP garanzie del difensore', ''), 'art-103-cpp');
+t('Art. 200 CPP without discriminator returns null', () => {
+  assert.strictEqual(classify('Il teste si avvale della facolta ex art. 200 c.p.p.', ''), null);
+});
+
+t('detects Art. 103 CPP with discriminator', () => {
+  assert.strictEqual(classify('Art. 103 CPP a tutela del cliente', ''), 'art-103-cpp+context');
+});
+
+t('Art. 103 CPP without discriminator returns null', () => {
+  assert.strictEqual(classify('Garanzie ex art. 103 c.p.p.', ''), null);
+});
+
+t('detects Art. 663 CP with discriminator', () => {
+  assert.strictEqual(classify('Art. 663 CP nel fascicolo del cliente', ''), 'art-663-cp+context');
 });
 
 // ---------------------------------------------------------------------------
@@ -146,11 +177,11 @@ t('detects non divulgare with discriminator', () => {
 });
 
 t('detects uso interno with discriminator', () => {
-  assert.strictEqual(classify('Solo per uso interno dello studio legale', ''), 'uso-interno+context');
+  assert.strictEqual(classify('Solo per uso interno del cliente Rossi', ''), 'uso-interno+context');
 });
 
-t('new discriminator: tribunale triggers context', () => {
-  assert.strictEqual(classify('Documento riservato per il tribunale di Milano', ''), 'riservato-bare+context');
+t('tribunale no longer triggers context (v2.4.6)', () => {
+  assert.strictEqual(classify('Documento riservato per il tribunale di Milano', ''), null);
 });
 
 t('new discriminator: controparte triggers context', () => {
@@ -159,6 +190,48 @@ t('new discriminator: controparte triggers context', () => {
 
 t('path discriminator: fascicoli directory triggers context', () => {
   assert.strictEqual(classify('Documento riservato', '/fascicoli/2026/Rossi-vs-Bianchi/memoria.docx'), 'riservato-bare+context');
+});
+
+// ---------------------------------------------------------------------------
+// Reporter reproductions (v2.4.6)
+// ---------------------------------------------------------------------------
+
+console.log('classify: reporter reproductions (v2.4.6)');
+
+t('reporter: norm citation in legal text passes', () => {
+  assert.strictEqual(classify('Riferimento: l. 247/2012.', '/x/f.md'), null);
+});
+
+t('reporter: contract boilerplate clause passes', () => {
+  assert.strictEqual(classify('Clausola: obbligo di riservatezza del fornitore.', '/x/f.md'), null);
+});
+
+t('reporter: trade secret article headline passes', () => {
+  assert.strictEqual(classify('Concorrenza sleale e violazione del segreto commerciale.', '/x/f.md'), null);
+});
+
+t('reporter: witness privilege citation passes', () => {
+  assert.strictEqual(classify('Il teste si avvale della facolta ex art. 200 c.p.p.', '/x/f.md'), null);
+});
+
+t('reporter: riservato with generic legal vocabulary passes', () => {
+  assert.strictEqual(classify('articolo ad accesso riservato; Per gli avvocati', '/x/f.md'), null);
+});
+
+t('reporter: privato with generic legal vocabulary passes', () => {
+  assert.strictEqual(classify('Rapporti di diritto privato tra le parti; il giudice', '/x/f.md'), null);
+});
+
+t('generic legal vocabulary alone is not a discriminator', () => {
+  assert.strictEqual(hasDiscriminator('parere dell avvocato presso il tribunale in opposizione al ricorso', ''), false);
+});
+
+t('client terms still discriminate', () => {
+  assert.strictEqual(hasDiscriminator('controparte e parte avversa del cliente', ''), true);
+});
+
+t('two reference patterns count as two signals', () => {
+  assert.strictEqual(classify('Riferimenti: l. 247/2012 e art. 622 c.p.', ''), 'art-622-cp+context');
 });
 
 // ---------------------------------------------------------------------------
@@ -427,8 +500,8 @@ t('two weak patterns trigger discriminator', () => {
   assert.strictEqual(hasDiscriminator('confidential and riservato', ''), true);
 });
 
-t('tribunale triggers discriminator', () => {
-  assert.strictEqual(hasDiscriminator('causa pendente presso il tribunale', ''), true);
+t('tribunale is not a discriminator (v2.4.6)', () => {
+  assert.strictEqual(hasDiscriminator('causa pendente presso il tribunale', ''), false);
 });
 
 t('controparte triggers discriminator', () => {

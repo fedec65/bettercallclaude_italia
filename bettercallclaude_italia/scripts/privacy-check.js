@@ -289,13 +289,10 @@ function walkStrings(node, emit, depth) {
 const STRONG_PATTERNS = [
   // Italian -- attorney-specific
   { rx: /\bsegreto\s+professionale\b/i,                  cat: 'segreto-professionale' },
-  { rx: /\bsegreto\s+commerciale\b/i,                    cat: 'segreto-commerciale' },
   { rx: /\bsegreto\s+del\s+mandato\b/i,                  cat: 'segreto-del-mandato' },
   { rx: /\bstrettamente\s+riservato\b/i,                 cat: 'strettamente-riservato' },
   { rx: /\briserbatissimo\b/i,                           cat: 'riserbatissimo' },
   { rx: /\bsegreto\s+d[' ]ufficio\b/i,                   cat: 'segreto-d-ufficio' },
-  { rx: /\bvincolo\s+(?:di\s+)?riservatezza\b/i,         cat: 'vincolo-riservatezza' },
-  { rx: /\bobbligo\s+di\s+riservatezza\b/i,              cat: 'obbligo-riservatezza' },
   { rx: /\bsegreto\s+istruttorio\b/i,                    cat: 'segreto-istruttorio' },
   { rx: /\bsegreto\s+investigativo\b/i,                  cat: 'segreto-investigativo' },
   { rx: /\briservatezza\s+professionale\b/i,             cat: 'riservatezza-professionale' },
@@ -310,13 +307,24 @@ const STRONG_PATTERNS = [
   { rx: /\blegal(?:ly)?\s+privileged\b/i,                cat: 'legally-privileged' },
   { rx: /\bprivileged\s+(?:and\s+)?confidential\b/i,     cat: 'privileged-confidential' },
   { rx: /\bprotected\s+by\s+(?:legal\s+)?privilege\b/i,  cat: 'protected-by-privilege' },
+];
 
-  // Legal article references -- Italian
-  { rx: /\bArt\.?\s*622\s*C\.?\s*P\.?\b/i,                cat: 'art-622-cp' },
+// ---------------------------------------------------------------------------
+// Reference patterns (weak) -- v2.4.6
+// Norm citations and contract boilerplate appear routinely in acts, opinions
+// and articles: citing the secrecy norm is not breaching secrecy. They only
+// count together with a client/case discriminator, same weight as WEAK.
+// ---------------------------------------------------------------------------
+
+const REFERENCE_PATTERNS = [
+  { rx: /\bsegreto\s+commerciale\b/i,                    cat: 'segreto-commerciale' },
+  { rx: /\bvincolo\s+(?:di\s+)?riservatezza\b/i,         cat: 'vincolo-riservatezza' },
+  { rx: /\bobbligo\s+di\s+riservatezza\b/i,              cat: 'obbligo-riservatezza' },
+  { rx: /\bArt\.?\s*622\s*C\.?\s*P\.?\b/i,               cat: 'art-622-cp' },
   { rx: /\bL\.?\s*247[/]2012\b/i,                        cat: 'l-247-2012' },
-  { rx: /\bCDF\s+Art\.?\s*13\b/i,                         cat: 'cdf-art-13' },
-  { rx: /\bCDF\s+Art\.?\s*28\b/i,                         cat: 'cdf-art-28' },
-  { rx: /\bArt\.?\s*663\s*C\.?\s*P\.?\b/i,                cat: 'art-663-cp' },
+  { rx: /\bCDF\s+Art\.?\s*13\b/i,                        cat: 'cdf-art-13' },
+  { rx: /\bCDF\s+Art\.?\s*28\b/i,                        cat: 'cdf-art-28' },
+  { rx: /\bArt\.?\s*663\s*C\.?\s*P\.?\b/i,               cat: 'art-663-cp' },
   { rx: /\bArt\.?\s*200\s*C\.?\s*P\.?\s*P\.?\b/i,        cat: 'art-200-cpp' },
   { rx: /\bArt\.?\s*103\s*C\.?\s*P\.?\s*P\.?\b/i,        cat: 'art-103-cpp' },
 ];
@@ -338,13 +346,14 @@ const DISCRIMINATOR_PATH = new RegExp(
   'i'
 );
 
+// v2.4.6: narrowed to client/case-identifying terms. Generic legal vocabulary
+// (avvocato, giudice, tribunale, ricorso, ...) is present in virtually every
+// legal text, so weak patterns fired everywhere.
 const DISCRIMINATOR_CONTENT = new RegExp(
   '\\b(' +
   'cliente|clienti|client|mandante|mandanti' +
   '|dossier|numero\\s+di\\s+pratica|riferimento\\s+atto' +
-  '|procedimento|processo|giudizio|ricorso|opposizione' +
-  '|avvocato|avvocati|avvocatessa|studio\\s+legale' +
-  '|tribunale|corte|giudice|parte\\s+avversa|controparte' +
+  '|parte\\s+avversa|controparte' +
   ')\\b',
   'i'
 );
@@ -352,6 +361,11 @@ const DISCRIMINATOR_CONTENT = new RegExp(
 function classify(content, pathHint) {
   for (const p of STRONG_PATTERNS) {
     if (p.rx.test(content)) return p.cat;
+  }
+  for (const p of REFERENCE_PATTERNS) {
+    if (p.rx.test(content) && hasDiscriminator(content, pathHint)) {
+      return p.cat + '+context';
+    }
   }
   for (const p of WEAK_PATTERNS) {
     if (p.rx.test(content) && hasDiscriminator(content, pathHint)) {
@@ -366,6 +380,7 @@ function hasDiscriminator(content, pathHint) {
   if (DISCRIMINATOR_CONTENT.test(content)) return true;
   let weakHits = 0;
   for (const p of WEAK_PATTERNS) if (p.rx.test(content)) weakHits++;
+  for (const p of REFERENCE_PATTERNS) if (p.rx.test(content)) weakHits++;
   return weakHits >= 2;
 }
 
@@ -380,6 +395,7 @@ module.exports = {
   hasDiscriminator,
   isStrongCategory,
   STRONG_PATTERNS,
+  REFERENCE_PATTERNS,
   WEAK_PATTERNS,
   MODE_SEVERITY,
 };
