@@ -4,6 +4,14 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.3] - 2026-10-31
+
+### Fixed
+- **Review Devin sulla PR #57 (promozione v2.4.2)** — `doctor.md`:
+  - Passo 1: check gateway concreto su due livelli (radice del dominio + un endpoint MCP reale `/normattiva/mcp`), con criterio esplicito di risposta; distinzione tra "dominio raggiungibile", "backend MCP non risponde" e "gateway non raggiungibile".
+  - Passo 2, caso 0/9: la diagnosi non attribuisce piu' automaticamente la causa alla chat web/mobile — presenta entrambe le ipotesi (ambiente senza supporto connettori vs connettori non attivati/permessi mancanti in Cowork Desktop/Claude Code) con i rispettivi controlli, dopo aver escluso l'interruzione del backend MCP.
+- **Review Devin sulla PR #58** — `versione.md` non hardcodava piu' il numero di versione nell'output di esempio: `/versione` ora legge la versione da `plugin.json`; `doctor.md` esclude esplicitamente l'ipotesi di percorsi `/mcp` guasti prima di diagnosticare problemi d'ambiente.
+
 ## [2.4.2] - 2026-10-31
 
 ### Fixed
