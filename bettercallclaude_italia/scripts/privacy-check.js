@@ -4,18 +4,30 @@
  *
  * PreToolUse hook that detects potential attorney-client privileged content
  * (segreto professionale / Art. 622 CP, L. 247/2012, CDF Art. 13) across IT/EN
- * before it leaves the machine via Write, Edit, MultiEdit, WebFetch, Bash,
- * or any MCP tool.
+ * before it leaves the machine.
  *
- * Modes (configurable via userConfig.privacy_mode):
+ * Scan perimeter (v2.4.6): by default only network egress is scanned —
+ * WebFetch, non-local MCP tools, and Bash commands with network commands
+ * (curl, wget, nc, ssh, scp, rsync, git push, ...). Write/Edit/MultiEdit on
+ * local files are NOT scanned because writing a local file never transmits
+ * data; userConfig scan_local_writes=true restores full scanning. The NEW-2
+ * privileged-path analysis stays active for every Bash command.
+ * User-configured exempt folders (userConfig privacy_exempt_paths) skip the
+ * check entirely.
+ *
+ * Modes (configurable via userConfig privacy_mode, received as the
+ * CLAUDE_PLUGIN_OPTION_PRIVACY_MODE env var per the plugin spec):
  *   - strict:   Strong/weak patterns trigger DENY (blocked).
  *               Non-privileged content passes through (cloud MCP servers usable).
  *               mcp__ollama__* (and scoped mcp__plugin_*_ollama__*) is always allowed (local).
  *   - balanced: Strong patterns trigger ASK (user confirms).
- *               Weak patterns with discriminator trigger ASK.
+ *               Weak/reference patterns with discriminator trigger ASK.
  *               No-match content passes through.
  *   - cloud:    Only strong patterns trigger ASK.
- *               Weak patterns are ignored.
+ *               Weak/reference patterns are ignored.
+ *
+ * The .privacy-mode file in the project directory can only RAISE severity
+ * above the resolved base mode (NEW-1, generalized v2.4.6).
  *
  * Ollama exclusion: mcp__ollama__* tools (and the marketplace-scoped
  * mcp__plugin_<name>_ollama__* variants) are always allowed in all modes
@@ -66,9 +78,19 @@ function main() {
       ? data.tool_input
       : data;
 
-    if (isLocalTool(toolName)) { process.exit(0); }
-
     const mode = resolveMode(data);
+    const scanLocal = resolveScanLocalWrites(data);
+    const exemptPaths = resolveExemptPaths(data);
+
+    // v2.4.6: user-configured exempt folders skip the check entirely.
+    const earlyPath = extractPathHint(toolInput);
+    if (isExemptPath(earlyPath, exemptPaths) || isExemptPath(data.cwd || '', exemptPaths)) {
+      process.exit(0);
+    }
+
+    // v2.4.6: default perimeter is network egress only (see shouldScanTool).
+    if (!shouldScanTool(toolName, toolInput, scanLocal)) { process.exit(0); }
+
     const content = extractTextFromInput(toolName, toolInput);
     const pathHint = extractPathHint(toolInput);
 
@@ -80,7 +102,7 @@ function main() {
 
     if (!content.trim() && !bashPaths.length && mode !== 'strict') { process.exit(0); }
 
-    const result = decide(content, pathHint, mode, bashPaths);
+    const result = decide(content, pathHint, mode, bashPaths, { toolName });
     if (!result) { process.exit(0); }
 
     process.stdout.write(JSON.stringify({
@@ -182,10 +204,57 @@ function isLocalTool(toolName) {
 }
 
 // ---------------------------------------------------------------------------
+// v2.4.6: scan perimeter
+// ---------------------------------------------------------------------------
+
+function isLocalWriteTool(toolName) {
+  return /^(Write|Edit|MultiEdit)$/.test(toolName);
+}
+
+// Bash commands able to send data off the machine. `git push` is matched as
+// a compound form. Everything else (cat, grep, sed, redirects to local files)
+// does not exfiltrate and is skipped unless scan_local_writes is on.
+const NETWORK_COMMANDS = /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync)\b|\bgit\s+push\b/i;
+
+/**
+ * Decide whether a tool call enters content scanning at all.
+ * Default perimeter is network egress only: WebFetch, non-local MCP tools and
+ * network-capable Bash commands are scanned; local writes are not, because
+ * writing a local file never transmits data (the model already holds the
+ * content). NEW-2 path analysis stays active for every Bash command.
+ * Returns false also for local MCP tools (Ollama) in every configuration.
+ */
+function shouldScanTool(toolName, toolInput, scanLocalWrites) {
+  if (isLocalTool(toolName)) return false;
+  if (isLocalWriteTool(toolName)) return !!scanLocalWrites;
+  if (toolName === 'Bash' || toolName === 'bash') {
+    const cmd = (toolInput && typeof toolInput.command === 'string') ? toolInput.command : '';
+    if (scanLocalWrites) return true;
+    if (NETWORK_COMMANDS.test(cmd)) return true;
+    return extractBashFilePaths(cmd).length > 0;
+  }
+  return true;
+}
+
+// ---------------------------------------------------------------------------
 // Decision logic
 // ---------------------------------------------------------------------------
 
-function decide(content, pathHint, mode, bashPaths) {
+function diagnosticPrefix(toolName, mode, category, content) {
+  let match = '';
+  const all = STRONG_PATTERNS.concat(REFERENCE_PATTERNS, WEAK_PATTERNS);
+  for (const p of all) {
+    const m = p.rx.exec(content || '');
+    if (m) { match = m[0]; break; }
+  }
+  return '[privacy-check] tool=' + (toolName || '?') +
+    ' mode=' + mode +
+    ' categoria=' + category +
+    (match ? ' match="' + match + '"' : '') + ' — ';
+}
+
+function decide(content, pathHint, mode, bashPaths, opts) {
+  const toolName = (opts && opts.toolName) || '';
   const category = classify(content, pathHint);
 
   // NEW-2: check if any Bash file path hits a discriminator
@@ -196,16 +265,17 @@ function decide(content, pathHint, mode, bashPaths) {
     // Content without privileged markers passes through, so the 7 cloud
     // MCP servers remain usable for non-privileged research.
     if (!category && !bashPathHit) return null;
+    const prefix = diagnosticPrefix(toolName, mode, category || 'bash-privileged-path', content);
     return {
       decision: 'deny',
-      reason: bashPathHit && !category
+      reason: prefix + (bashPathHit && !category
         ? 'BLOCCATO: comando shell referenzia file in directory privilegiata. ' +
           'Modalita strict: esfiltrazione di contenuto privilegiato bloccata. ' +
           'Art. 622 CP / L. 247/2012, CDF Art. 13.'
         : `BLOCCATO: contenuto soggetto a segreto professionale (categoria: ${category}). ` +
           'Modalita strict: contenuto privilegiato non puo lasciare la macchina. ' +
           'Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
-          'Usare Ollama (locale) per elaborare contenuto privilegiato.',
+          'Usare Ollama (locale) per elaborare contenuto privilegiato.'),
     };
   }
 
@@ -214,7 +284,7 @@ function decide(content, pathHint, mode, bashPaths) {
     if (mode === 'cloud') return null;
     return {
       decision: 'ask',
-      reason:
+      reason: diagnosticPrefix(toolName, mode, 'bash-privileged-path', content) +
         'Comando shell referenzia file in directory privilegiata. ' +
         'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
         'Confermare che il contenuto del file puo lasciare la macchina.',
@@ -223,10 +293,12 @@ function decide(content, pathHint, mode, bashPaths) {
 
   if (!category) return null;
 
+  const prefix = diagnosticPrefix(toolName, mode, category, content);
+
   if (isStrongCategory(category)) {
     return {
       decision: 'ask',
-      reason:
+      reason: prefix +
         `Rilevato contenuto soggetto a segreto professionale (categoria: ${category}). ` +
         'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
         'Confermare che questo contenuto puo lasciare la macchina.',
@@ -237,7 +309,7 @@ function decide(content, pathHint, mode, bashPaths) {
 
   return {
     decision: 'ask',
-    reason:
+    reason: prefix +
       `Rilevato possibile contenuto soggetto a segreto professionale (categoria: ${category}). ` +
       'Diritto italiano: Art. 622 CP / L. 247/2012, CDF Art. 13. ' +
       'Confermare che questo contenuto puo lasciare la macchina.',
@@ -440,6 +512,9 @@ module.exports = {
   isExemptPath,
   envOption,
   isLocalTool,
+  isLocalWriteTool,
+  shouldScanTool,
+  NETWORK_COMMANDS,
   extractTextFromInput,
   extractPathHint,
   extractBashFilePaths,
