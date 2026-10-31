@@ -4,6 +4,16 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.2] - 2026-10-31
+
+### Fixed
+- **`/doctor` non distingueva ambiente non supportato da outage reale** — con 0/9 server "non connesso" (tipico della chat web/mobile di claude.ai, dove i connettori MCP del plugin non vengono caricati), la diagnostica segnalava un falso guasto di tutti i server. `doctor.md` ora incrocia il caso 0/9 con l'esito del check gateway (gateway down = interruzione reale; gateway ok + tool assenti su tutti e 9 = ambiente senza connettori) e comunica la limitazione dell'ambiente invece dell'outage. Guida dettagliata in `INSTALLAZIONE.md` (issue #48, #50).
+
+## [2.4.1] - 2026-10-31
+
+### Fixed
+- **Guida cookie Cassazione non più valida** — `docs/cassazione-cookie.md` riscritta sulla nuova area riservata ItalGiure (`/new/...`, cookie HttpOnly): il cookie si copia dalla scheda Network → Request Headers → Cookie (aperta prima della ricerca), con verifica della presenza di `PHPSESSID`; login SPID o credenziali Cassa Forense; nessuna durata garantita (scadenza a chiusura browser o per inattività). Allineati `README.md`, la descrizione di `italgiure_cookie` in `plugin.json`, `agents/researcher.md` e `skills/italian-legal-research/SKILL.md`. Aggiunta sezione su timeout e blocco anti-bot FortiWeb/Akamai e nota che SentenzeWeb non richiede login (issue #52, #49).
+
 ## [2.4.0] - 2026-10-31
 
 Riattivazione del **gate ollama locale opzionale**: il plugin torna ad avere un server MCP locale per l'elaborazione on-premise dei contenuti soggetti a segreto professionale, in parità di funzioni con il fork svizzero (fix v4.11.4/v4.11.5 inclusi: fallback `OLLAMA_HOST` e nessun `user_config` nel `.mcp.json`).
