@@ -4,6 +4,13 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.3] - 2026-10-31
+
+### Fixed
+- **Review Devin sulla PR #57 (promozione v2.4.2)** — `doctor.md`:
+  - Passo 1: il check gateway e ora concreto (WebFetch su `https://mcp-italia.bettercallclaude.ch/`, qualsiasi risposta HTTP = raggiungibile) invece di un generico "endpoint health".
+  - Passo 2, caso 0/9 con gateway raggiungibile: la diagnosi non attribuisce piu' automaticamente la causa alla chat web/mobile — presenta entrambe le ipotesi (ambiente senza supporto connettori vs connettori non attivati/permessi mancanti in Cowork Desktop/Claude Code) con i rispettivi controlli.
+
 ## [2.4.2] - 2026-10-31
 
 ### Fixed

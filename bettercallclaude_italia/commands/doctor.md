@@ -80,11 +80,13 @@ Sei invocato tramite `/bettercallclaude-italia:doctor`. Diagnostica lo stato di 
 
 ## Passo 1: Verifica Gateway
 
-Verifica il gateway HTTP MCP:
+Verifica il gateway HTTP MCP con un check concreto e riproducibile:
 
-- Tenta di raggiungere l'endpoint health del gateway MCP.
-- Se il check ha successo, nota "Gateway online".
-- Se fallisce, nota "Gateway non raggiungibile" e l'impatto probabile.
+- Usa WebFetch su `https://mcp-italia.bettercallclaude.ch/` (una GET sulla radice del dominio e sufficiente: il gateway risponde su HTTP anche se la radice restituisce 404/405/401 — qualsiasi risposta HTTP entro pochi secondi conta come "raggiungibile").
+- **Raggiungibile** (qualsiasi codice HTTP, anche di errore) → nota "Gateway online (raggiungibile su mcp-italia.bettercallclaude.ch)".
+- **Nessuna risposta** (errore di rete, DNS, timeout) → nota "Gateway non raggiungibile" e l'impatto probabile.
+
+> Il check misura solo la raggiungibilita' della macchina remota: NON dice se l'ambiente corrente ha registrato i connettori del plugin. Ne terrai conto nel Passo 2.
 
 ## Passo 2: Verifica Ogni Server
 
@@ -95,7 +97,15 @@ Per ciascuno dei 9 server MCP, usa un **approccio a due stadi**:
 > **Caso speciale — 0/9 server con tool assenti**: se NESSUNO dei 9 server ha tool visibili, prima di tutto **incrocia con l'esito del Passo 1 (gateway)**:
 >
 > - **Gateway NON raggiungibile** → e un guasto reale (connessione/firewall/gateway down): prosegui con la diagnosi d'interruzione (Passo 5 "Gateway non raggiungibile"), NON attribuirlo all'ambiente.
-> - **Gateway raggiungibile (o check non eseguibile) + tool assenti su tutti e 9** → quasi mai un guasto di tutti i server simultaneo. Prima ipotesi: **l'ambiente in cui stai girando non carica i connettori del plugin**. I 9 server MCP remoti (HTTP su `mcp-italia.bettercallclaude.ch`) vengono registrati solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**. Nella chat web/mobile di claude.ai i connettori del plugin **non compaiono affatto**: `/doctor` segnera' sempre 0/9, con o senza connessione. In quel caso comunica chiaramente: "Questo ambiente (chat web/mobile) non carica i connettori MCP del plugin: i 9 server sono disponibili in Claude Cowork Desktop o Claude Code. Non e un guasto del plugin ne dei server." Non proseguire con lo Stadio B ne con segnalazioni di outage.
+> - **Gateway raggiungibile (o check non eseguibile) + tool assenti su tutti e 9** → non e quasi mai un guasto di tutti i server simultaneo: il problema e che **questa sessione non ha registrato i connettori del plugin**. Non puoi stabilire con certezza quale delle due cause sia: presenta ENTRAMBE le ipotesi con i rispettivi controlli, senza escluderne una:
+>
+>   **Ipotesi A — ambiente senza supporto connettori**: i 9 server MCP remoti (HTTP su `mcp-italia.bettercallclaude.ch`) vengono registrati solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**. Nella chat web/mobile di claude.ai i connettori del plugin **non compaiono affatto** e `/doctor` segna sempre 0/9.
+>   → *Verifica*: sei su Cowork Desktop / Claude Code? Se no, questa e la causa: i server funzionano, l'ambiente non li carica. Rilancia `/doctor` da Cowork Desktop o Claude Code.
+>
+>   **Ipotesi B — connettori non attivati nell'ambiente desktop**: sei gia' su Cowork Desktop / Claude Code ma il plugin non ha registrato i suoi connettori (connettori disattivati nella pagina del plugin, permessi mancanti, sessione avviata prima dell'installazione).
+>   → *Verifica*: pagina del plugin → sezione Connectors: i 9 server compaiono e sono abilitati? Permessi su "Always allow" (Passo 7 di INSTALLAZIONE.md)? Se mancano: riavvia l'app e rilancia `/doctor`; se persistono, segnala su GitHub con questo output.
+>
+> Non proseguire con lo Stadio B finche' una delle due ipotesi non e risolta.
 
 **Stadio B — Chiamata leggera** (solo se lo Stadio A ha avuto successo): Fai una chiamata minima per confermare la reattivita.
 
@@ -183,7 +193,7 @@ Per ogni server non disponibile, spiega in linguaggio semplice:
 
 ### Fix suggeriti:
 > Se un servizio risulta non disponibile:
-> 1. Verifica di essere in **Claude Cowork Desktop** o **Claude Code**: nella chat web/mobile di claude.ai i connettori del plugin non sono caricati dall'ambiente e `/doctor` segna sempre 0/9 — non e un guasto
+> 1. Se TUTTI i 9 risultano assenti (0/9): segui le due ipotesi del Passo 2 (ambiente senza supporto connettori vs connettori non attivati in Cowork Desktop/Claude Code) — non dare per scontata la prima
 > 2. Riavviare Cowork Desktop (o Claude Code)
 > 3. Verificare la connessione internet
 > 4. Eseguire di nuovo `/bettercallclaude-italia:doctor` dopo qualche minuto
