@@ -63,10 +63,12 @@ Configurazione (pannello /config del plugin):
 - scan_local_writes: true ripristina la scansione completa di tutti i tool
 - privacy_exempt_paths: cartelle i cui FILE SONO esclusi dal controllo,
   separate da ";" (es. ~/Documenti/blog;~/progetti/linkedin), espansione di ~
-  supportata. L'esenzione vale per le chiamate che hanno per bersaglio un file
-  in quelle cartelle: la sessione aperta in una cartella esenta NON esenta
-  tutto cio' che viene inviato in rete da quella sessione (contenuto
-  privilegiato inviato altrove resta controllato).
+  supportata. L'esenzione copre: le chiamate che hanno per bersaglio un file
+  in quelle cartelle (i percorsi relativi si risolvono sulla directory di
+  lavoro della sessione) e i comandi Bash il cui invio in rete ha TUTTE le
+  sorgenti (curl @file, cat file | ...) in quelle cartelle. La sessione aperta
+  in una cartella esenta NON esenta tutto cio' che viene inviato in rete da
+  quella sessione (contenuto privilegiato inviato altrove resta controllato).
 
 Nota: la modalita base si configura nel pannello /config (userConfig
 privacy_mode, ricevuta dall'hook come variabile d'ambiente). Il file

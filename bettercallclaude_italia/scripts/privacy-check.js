@@ -85,9 +85,10 @@ function main() {
     // v2.4.6: user-configured exempt folders skip the check for tool calls
     // TARGETING those folders. The session cwd deliberately does NOT exempt
     // everything: privileged content from elsewhere must still be decided on
-    // (Devin PR #61).
+    // (Devin PR #61). Relative targets resolve against the session cwd
+    // (Devin PR #62); Bash source paths are handled after extraction below.
     const earlyPath = extractPathHint(toolInput);
-    if (isExemptPath(earlyPath, exemptPaths)) {
+    if (exemptsToolPath(earlyPath, data.cwd || '', exemptPaths)) {
       process.exit(0);
     }
 
@@ -102,6 +103,10 @@ function main() {
     const bashPaths = (toolName === 'Bash' || toolName === 'bash')
       ? extractBashFilePaths(typeof toolInput.command === 'string' ? toolInput.command : '')
       : [];
+
+    // v2.4.6: Bash uploads whose every source file lives in an exempt folder
+    // are exempt too (Devin PR #62); mixed sources still go through checks.
+    if (allPathsExempt(bashPaths, exemptPaths)) { process.exit(0); }
 
     if (!content.trim() && !bashPaths.length && mode !== 'strict') { process.exit(0); }
 
@@ -203,6 +208,22 @@ function isExemptPath(p, exemptPaths) {
   return exemptPaths.some((e) => norm === e || norm.startsWith(e + '/'));
 }
 
+// Resolves relative tool targets against the session cwd before exemption
+// matching, so 'post.md' written while cwd is an exempt folder is exempt too
+// (Devin PR #62). Bash-only check: source paths extracted from commands.
+function exemptsToolPath(pathHint, cwd, exemptPaths) {
+  if (!pathHint) return false;
+  const path = require('path');
+  const resolved = path.isAbsolute(pathHint)
+    ? pathHint
+    : path.join(cwd || process.cwd(), pathHint);
+  return isExemptPath(resolved, exemptPaths);
+}
+
+function allPathsExempt(paths, exemptPaths) {
+  return !!paths.length && paths.every((p) => isExemptPath(p, exemptPaths));
+}
+
 // ---------------------------------------------------------------------------
 // Local tool detection
 // ---------------------------------------------------------------------------
@@ -221,13 +242,16 @@ function isLocalWriteTool(toolName) {
   return /^(Write|Edit|MultiEdit)$/.test(toolName);
 }
 
-// Bash commands able to send data off the machine (heuristic list, Devin PR #61
-// hardening): direct transfer tools, git push in any form (also `git -C repo
-// push`), GitHub CLI API calls, and Python one-liners using HTTP clients.
+// Bash commands able to send data off the machine (heuristic list, hardened in
+// Devin PR #61/#62): direct transfer tools, git push as a subcommand in any
+// form (`git push`, `git -C <dir> push` — flag/value pairs matched explicitly
+// so a commit message containing "push" does not false-positive), GitHub CLI
+// API calls, and Python commands using HTTP clients (the python branch may
+// span `;` because one-liners quote their whole -c argument).
 // Everything else (cat, grep, sed, redirects to local files) does not
 // exfiltrate and is skipped unless scan_local_writes is on.
 const NETWORK_COMMANDS =
-  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b[^|;&]*\bpush\b|\bgh\s+api\b|\bpython[0-9.]*\b[^|;&]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b/i;
+  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b(?:\s+-[A-Za-z]+\s+[^\s|;]+)*\s+push\b|\bgh\s+api\b|\bpython[0-9.]*\b[^|&]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b/i;
 
 /**
  * Decide whether a tool call enters content scanning at all.
@@ -523,6 +547,8 @@ module.exports = {
   resolveScanLocalWrites,
   resolveExemptPaths,
   isExemptPath,
+  exemptsToolPath,
+  allPathsExempt,
   envOption,
   isLocalTool,
   isLocalWriteTool,

