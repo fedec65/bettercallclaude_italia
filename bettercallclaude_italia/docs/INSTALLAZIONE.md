@@ -115,6 +115,8 @@ Modelli consigliati: `llama3` (uso generale), `qwen2.5` (bilingue IT/EN), `mixtr
 
 I 5 tool (`ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_classify_privacy`, `ollama_list_models`) sono sempre esenti dall'hook privacy in ogni modalità; `ollama_classify_privacy` funziona anche senza daemon (classificazione offline con gli stessi pattern dell'hook). L'host si configura con la variabile d'ambiente `OLLAMA_HOST` (default `http://localhost:11434`).
 
+**Host remoto**: l'esenzione privacy vale perché l'elaborazione resta locale. Se `OLLAMA_HOST` punta a un host non-loopback (es. un server Ollama sulla LAN dello studio), il wrapper rifiuta di partire a meno di consenso esplicito: imposta `OLLAMA_ALLOW_REMOTE=1`. Senza questa variabile, un host remoto viene trattato come errore di configurazione — il contenuto privilegiato non deve lasciare la macchina per inadempienza.
+
 ---
 
 ## Problemi Comuni

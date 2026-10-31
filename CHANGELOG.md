@@ -4,14 +4,20 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
-## [2.4.0] - 2026-09-02
+## [2.4.0] - 2026-10-31
 
 Riattivazione del **gate ollama locale opzionale**: il plugin torna ad avere un server MCP locale per l'elaborazione on-premise dei contenuti soggetti a segreto professionale, in parità di funzioni con il fork svizzero (fix v4.11.4/v4.11.5 inclusi: fallback `OLLAMA_HOST` e nessun `user_config` nel `.mcp.json`).
+
+### Fixed (review Devin sulla PR #54)
+- **Modalita strict bloccava i nomi scoped ollama** — `isLocalTool` in `privacy-check.js` riconosceva solo `mcp__ollama__*` (installazione bare); le chiamate scoped `mcp__plugin_bettercallclaude-italia_ollama__*` usate dal marketplace erano negate in strict, rendendo l'inferenza locale di contenuto privilegiato inutilizzabile. Il riconoscimento copre ora entrambe le convenzioni.
+- **`OLLAMA_HOST` remoto esfiltrava contenuto privilegiato** — il wrapper onorava qualsiasi host esplicito mentre l'hook privacy esenta i tool `ollama__*` come "locali". Un host non-loopback ora richiede il consenso esplicito `OLLAMA_ALLOW_REMOTE=1` (documentato in `INSTALLAZIONE.md`); senza, il wrapper rifiuta di inizializzare con errore chiaro.
+- **Gate citazioni del briefing non eseguibile** — la Fase F prevede `citation-content-verify` ma la allowlist di `/briefing` non includeva i tool MCP del verificatore (legal-citations-ita, normattiva, cassazione, eur-lex-ita, citation-verify-ita): il deliverable citazionale poteva essere marcato completato senza verifica. Allowlist allineata alla skill.
+- **Conteggio skill incoerente tra `/versione` e `/aiuto`** — `/versione` riportava 17, `/aiuto` elenca 16 attivabili + `shared` come risorsa non attivabile. `/versione` ora stampa `16 (+1 risorsa condivisa)`.
 
 ### Fixed (review Devin sulla PR #47)
 - **L'esecuzione approvata del briefing non avviava gli specialisti su Cowork Desktop** — la Fase F affidava il piano a `italian-legal-workflow-orchestrator` via `Task`, ma l'orchestratore è un subagente e il suo `Task` verso gli specialisti è dispatch annidato, che Cowork non concede: la pipeline approvata girava senza specialisti. La Fase F ora **esegue gli stadi del piano direttamente nella sessione top-level** (dispatch `Task` per stadio con `task`/`inputs`/`output_stage_N`, retry una volta poi scelta utente su fallimento, persistenza avanzamento `"executing"`, pausa `"paused"` su `checkpoint: true`, summarizer e gate citazioni in chiusura, stato `"completed"`). Sezione "Esecuzione da Briefing" rimossa dall'orchestratore (nessun chiamante rimane: `/flusso` esegue le pipeline da solo) e contratto del coordinatore aggiornato di conseguenza.
 - **Il briefing automatico da `/legale` (complessità 7–10) dichiarava un avvio impossibile** — un modello non può invocare slash command: il ramo ora si ferma e chiede esplicitamente all'utente di lanciare `/briefing` (fallback inline se rifiuta), senza dichiarare mai che il briefing è stato avviato.
-- **Conteggi obsoleti in `/versione`** — Skill 16 → 17; Server MCP 9 → 10 (9 remoti + wrapper ollama locale opzionale).
+- **Conteggi obsoleti in `/versione`** — Skill 16 → 17; Server MCP 9 → 10 (9 remoti + wrapper ollama locale opzionale). (Il conteggio skill è stato poi riallineato a `16 (+1 risorsa condivisa)` dalla review della PR #54.)
 - **`SERVER_TOOLS` ometteva `workflows-ita`** — il generatore non poteva introdurre i tool dei flussi nei frontmatter nuovi; ora copre gli 8 tool del server e i file che li menzionano (`crea-flusso`, `flusso`) sono rigenerati ai set completi per server (convenzione del repo).
 - **`check-tool-names.js` valida ora anche il catalogo** — oltre alla parità delle convenzioni, ogni voce `mcp__…` deve puntare a un server registrato in `.mcp.json` e a un tool dell'inventario `SERVER_TOOLS` del server: un nome errato duplicato in entrambe le convenzioni (typo "gemello") non passa più la CI.
 

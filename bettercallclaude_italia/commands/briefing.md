@@ -12,6 +12,30 @@ tools:
   - mcp__legal-persona-ita__legal-persona-ita_draft_document
   - mcp__plugin_bettercallclaude-italia_legal-persona-ita__legal-persona-ita_compute_deadlines
   - mcp__legal-persona-ita__legal-persona-ita_compute_deadlines
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_validate
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_parse
+  - mcp__plugin_bettercallclaude-italia_legal-citations-ita__legal-citations-ita_format
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_search_advanced
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_get_atto
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_search
+  - mcp__plugin_bettercallclaude-italia_eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__eur-lex-ita__eur-lex-ita_get_atto_celex
+  - mcp__plugin_bettercallclaude-italia_normattiva__normattiva_elenco_tipi
+  - mcp__normattiva__normattiva_elenco_tipi
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__legal-citations-ita__legal-citations-ita_validate
+  - mcp__legal-citations-ita__legal-citations-ita_parse
+  - mcp__legal-citations-ita__legal-citations-ita_format
+  - mcp__normattiva__normattiva_search
+  - mcp__normattiva__normattiva_search_advanced
+  - mcp__normattiva__normattiva_get_atto
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__eur-lex-ita__eur-lex-ita_search
 ---
 
 Sei invocato tramite `/bettercallclaude-italia:briefing`. Orchestri il flusso completo nella sessione top-level, dove il dispatch Task funziona effettivamente su ogni host (Cowork Desktop, Claude Code CLI). L'agente coordinatore (`italian-legal-briefing-coordinator`) è un planner puro — classifica, seleziona il panel e costruisce il piano; tu gestisci tutto il lavoro che richiede Task o interazione con l'utente.

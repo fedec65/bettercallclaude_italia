@@ -35286,6 +35286,17 @@ var require_client = __commonJS({
       constructor(host, timeoutMs) {
         const configured = (host ?? process.env.OLLAMA_HOST ?? "").trim();
         const effective = configured && !configured.startsWith("${") ? configured : DEFAULT_HOST;
+        const hostname = (() => {
+          try {
+            return new URL(effective).hostname;
+          } catch {
+            return "";
+          }
+        })();
+        const isLoopback = hostname === "localhost" || hostname === "127.0.0.1" || hostname === "[::1]" || hostname === "::1";
+        if (!isLoopback && process.env.OLLAMA_ALLOW_REMOTE !== "1") {
+          throw new Error(`OLLAMA_HOST punta a un host remoto (${effective}) e il contenuto privilegiato potrebbe lasciare la macchina. Per un server Ollama fidato (es. LAN dello studio) imposta OLLAMA_ALLOW_REMOTE=1; altrimenti usa il default localhost.`);
+        }
         this.host = effective.replace(/\/+$/, "");
         this.timeoutMs = timeoutMs ?? DEFAULT_TIMEOUT_MS;
       }
