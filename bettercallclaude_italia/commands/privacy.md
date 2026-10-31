@@ -31,20 +31,43 @@ Mostra all'utente:
 
 Modalita corrente: **[balanced]**
 
-| Modalita | Pattern forti | Pattern deboli+contesto | Tool locali |
-|----------|--------------|------------------------|--------|
+| Modalita | Pattern forti | Pattern deboli/riferimenti con contesto | Tool locali |
+|----------|--------------|------------------------------------------|-------------|
 | strict | BLOCCATO (deny) | BLOCCATO (deny) | Sempre permesso |
 |        | Contenuto non privilegiato passa (server MCP cloud usabili) | | |
 | **balanced** | Conferma richiesta (ask) | Conferma richiesta (ask) | Sempre permesso |
 | cloud | Conferma richiesta (ask) | Permesso senza prompt | Sempre permesso |
 
-Pattern forti: segreto professionale, Art. 622 CP, L. 247/2012, CDF Art. 13,
-vincolo di riservatezza, attorney-client privilege, ecc.
+Pattern forti: segreto professionale, segreto del mandato, segreto istruttorio,
+riserbatissimo, strettamente riservato, riservatezza professionale,
+attorney-client privilege, work product, strictly confidential, ecc.
 
-Pattern deboli: riservato, confidenziale, confidential, privato, non divulgare,
-uso interno (richiedono contesto legale: cliente, tribunale, avvocato, ecc.)
+Pattern deboli e riferimenti normativi: riservato, confidenziale, privato,
+non divulgare, uso interno, Art. 622 CP, L. 247/2012, CDF Art. 13/28,
+Art. 200/103/663 CPP, obbligo/vincolo di riservatezza, segreto commerciale —
+contano solo insieme a un contesto cliente/causa (cliente, mandante, dossier,
+controparte, oppure 2+ segnali deboli): citare la norma sul segreto non
+equivale a violarlo.
 
 I tool locali (es. `mcp__ollama__*`, se Ollama e configurato) sono sempre esclusi dal controllo perche non trasmettono dati all'esterno.
+
+## Perimetro di scansione
+
+Di default l'hook controlla solo le chiamate in uscita di rete: WebFetch,
+tool MCP non locali e comandi Bash capaci di inviare dati (curl, wget, nc,
+ssh, scp, rsync, git push, ...). Write/Edit/MultiEdit su file locali non
+sono scannerizzati: scrivere un file locale non trasmette dati.
+
+Configurazione (pannello /config del plugin):
+- privacy_mode: strict | balanced | cloud
+- scan_local_writes: true ripristina la scansione completa di tutti i tool
+- privacy_exempt_paths: cartelle escluse dal controllo, separate da ";"
+  (es. ~/Documenti/blog;~/progetti/linkedin), espansione di ~ supportata
+
+Nota: la modalita base si configura nel pannello /config (userConfig
+privacy_mode, ricevuta dall'hook come variabile d'ambiente). Il file
+.privacy-mode nel progetto puo solo alzare la severita rispetto alla
+modalita base, mai abbassarla.
 
 Per cambiare: /bettercallclaude-italia:privacy strict|balanced|cloud
 ```
@@ -55,7 +78,7 @@ Quando l'utente specifica una modalita:
 
 1. Valida che l'argomento sia `strict`, `balanced` o `cloud` (case-insensitive).
 2. Se non valido, mostra errore e le opzioni disponibili.
-3. Se valido, **scrivi la modalita nel file `.privacy-mode`** nella directory del progetto corrente (`$CWD/.privacy-mode`). Il file contiene solo la parola della modalita (es. `strict`). **Nota**: il file puo solo alzare la severita rispetto al default `balanced`, mai abbassarla (un file con `cloud` viene ignorato per sicurezza).
+3. Se valido, **scrivi la modalita nel file `.privacy-mode`** nella directory del progetto corrente (`$CWD/.privacy-mode`). Il file contiene solo la parola della modalita (es. `strict`). **Nota**: il file puo solo alzare la severita rispetto alla modalita base risolta (userConfig `privacy_mode` nel pannello /config, default `balanced`), mai abbassarla: un file con `cloud` viene ignorato quando la base e' `balanced` o `strict` (sicurezza NEW-1, generalizzata in v2.4.6).
 4. Conferma il cambio all'utente:
 
 ```

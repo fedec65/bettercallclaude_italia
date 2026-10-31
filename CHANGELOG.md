@@ -4,6 +4,21 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.6] - 2026-11-01
+
+### Fixed
+- **Falsi positivi dell'hook privacy su citazioni normative e lessico contrattuale** (segnalazione utente su Cowork): Art. 622 CP, L. 247/2012, CDF Art. 13/28, Artt. 200/103/663 CPP, «obbligo/vincolo di riservatezza» e «segreto commerciale» sono ora pattern deboli — contano solo con contesto cliente/causa (cliente, mandante, dossier, controparte o 2+ segnali). Il discriminator di contesto e' ristretto ai termini identificativi di cliente/causa: «avvocato», «giudice», «tribunale», «ricorso» e simili (presenti in quasi ogni testo legale) non attivano piu' i pattern deboli.
+- **`userConfig.privacy_mode` ignorato**: gli hook ricevono la configurazione del plugin come variabili d'ambiente `CLAUDE_PLUGIN_OPTION_*` (la stdin non la include). La modalita' scelta in `/config` ha ora effetto; il file `.privacy-mode` puo' solo alzare la severita' rispetto alla modalita' base risolta.
+
+### Changed
+- **Perimetro di scansione di default: solo uscite di rete.** L'hook controlla WebFetch, tool MCP non locali e comandi Bash di rete (curl, wget, nc, ssh, scp, rsync, git push); Write/Edit/MultiEdit locali non sono scannerizzati perche' non trasmettono dati. Nuova chiave `userConfig.scan_local_writes` (default false) per ripristinare la scansione completa. Il controllo sui path privilegiati nei comandi Bash resta attivo sempre.
+- **Nuova chiave `userConfig.privacy_exempt_paths`**: elenco di cartelle escluse dal controllo (separate da `;`, `~` espanso), configurabile nelle impostazioni del plugin — nessun file della cartella di lavoro puo' modificare la protezione.
+- **Messaggi di decisione diagnostici**: ogni blocco/conferma inizia con `[privacy-check] tool=... mode=... categoria=... match="..."` cosi' il motivo e' leggibile in ogni superficie. Nota: l'errore «is blocked in this session — it resolves to a protected location or a path outside the connected folder» osservato in Cowork e' un messaggio di Cowork sulla protezione del percorso, non testo dell'hook.
+- Documentazione allineata: descrizioni di `privacy_mode` in `plugin.json` e tabella modalita' del comando `/privacy` corrispondono al comportamento reale (conferma su pattern forti in balanced/cloud, blocco solo in strict).
+
+### Notes
+- Allineata la classificazione del server Ollama locale (`classifyPrivacy`) agli stessi pattern e discriminator.
+
 ## [2.4.5] - 2026-10-31
 
 ### Fixed
