@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.4.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.4.2-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -210,9 +210,9 @@ Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazi
 Per accedere alle **massime complete** della Cassazione (banca dati ItalGiure), il plugin richiede un cookie di sessione ItalGiure.
 
 **Come funziona:**
-1. **Ottieni il cookie**: Accedi all'area riservata [ItalGiure](https://www.italgiure.giustizia.it/new/archives) con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e copia il risultato.
+1. **Ottieni il cookie**: Accedi all'area riservata [ItalGiure](https://www.italgiure.giustizia.it/new/archives) con SPID o credenziali (es. convenzione Cassa Forense), apri DevTools (F12/Cmd+Option+I), vai sulla scheda **Network**, apri una richiesta dati e copia il valore del campo **Cookie** in Request Headers. Nella Console `document.cookie` restituisce una stringa vuota: i cookie sono HttpOnly.
 2. **Salvalo una volta sola**: inseriscilo nelle impostazioni del plugin alla voce **"Cookie sessione ItalGiure"** (`userConfig.italgiure_cookie`). Il plugin lo passerà automaticamente a ogni chiamata Cassazione, in tutte le conversazioni.
-3. **Rinnovo**: il cookie dura fino a 30 giorni; a scadenza il server segnala `cookieValido: false` e l'agente ti guida al rinnovo.
+3. **Rinnovo**: il cookie scade con la chiusura del browser o per inattività (non esiste una durata garantita); quando il server segnala `cookieValido: false`, riferai il login e copia un nuovo cookie dalla scheda Network. Timeout ripetuti anche con cookie valido indicano il blocco anti-bot lato ItalGiure (FortiWeb/Akamai): riprova più tardi o usa i link di fallback.
 
 **Senza cookie**: I tool restituiscono link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI) e istruzioni per configurarlo.
 

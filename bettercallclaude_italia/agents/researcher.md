@@ -71,9 +71,9 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 3. **Conversazione corrente**: se non configurato nelle impostazioni ma l'utente lo ha fornito nella conversazione, usa quello.
 4. **Solo se assente in tutti i casi**, chiedilo una sola volta:
 
-> "Per accedere alle massime complete della Cassazione serve il tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID/credenziali, apri DevTools (F12/Cmd+Option+I), vai su Console, digita `document.cookie` e incolla qui il risultato. Per non ripetere questa operazione a ogni conversazione, salvalo nelle impostazioni del plugin alla voce 'Cookie sessione ItalGiure': resta valido fino a 30 giorni."
+> "Per accedere alle massime complete della Cassazione serve il tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense); apri DevTools (F12/Cmd+Option+I) sulla scheda Network PRIMA di fare la ricerca; fai una ricerca nell'area riservata e copia da Request Headers - Cookie di una richiesta /new/... il valore che contiene PHPSESSID (i cookie sono HttpOnly: document.cookie in Console restituisce stringa vuota). Per non ripetere questa operazione a ogni conversazione, salvalo nelle impostazioni del plugin alla voce 'Cookie sessione ItalGiure'. Il cookie scade alla chiusura del browser o per inattivita': rinnovalo quando il server segnala cookieValido: false."
 
-Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo (stessa procedura).
+Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo (stessa procedura). Se le chiamate vanno in timeout anche con cookie valido mentre la ricerca funziona dal browser, segnala il probabile blocco anti-bot lato ItalGiure (FortiWeb/Akamai) e suggerisci di riprovare più tardi o usare i link di fallback.
 
 ### Passo 4: VERIFICA
 - Valida ogni citazione tramite MCP legal-citations-ita `legal-citations-ita_validate`.
