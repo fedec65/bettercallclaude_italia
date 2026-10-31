@@ -4,6 +4,11 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.5] - 2026-10-31
+
+### Fixed
+- **Review Devin sulla PR #60**: classificazione del probe MCP resa esaustiva e rami del caso 0/9 per esito del probe — qualunque 5xx (incluso 500) conta come "backend probabilmente guasto"; la radice che non risponde NON basta più per dichiarare il gateway irraggiungibile se l'endpoint MCP risponde; con probe ambiguo (altri 4xx) il caso 0/9 non conclude più a favore dell'ambiente ma presenta insieme possibile interruzione dei percorsi `/mcp` e verifiche dei connettori.
+
 ## [2.4.4] - 2026-10-31
 
 ### Fixed
