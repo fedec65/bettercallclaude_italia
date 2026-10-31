@@ -1,5 +1,5 @@
 {
-  "description": "Rilevamento segreto professionale per la pratica legale italiana. Scansiona Write/Edit/MultiEdit/WebFetch/Bash e tutti gli input tool MCP (mcp__.*) prima che il contenuto lasci la macchina. Pattern forti: DENY (blocco). Pattern deboli con contesto: ASK. Configurabile via userConfig.privacy_mode (strict/balanced/cloud).",
+  "description": "Rilevamento segreto professionale per la pratica legale italiana. Di default scansiona solo le chiamate in uscita di rete (WebFetch, comandi Bash di rete, input tool MCP); Write/Edit/MultiEdit locali sono esclusi (riattivabili con userConfig scan_local_writes). Pattern forti: DENY in strict, ASK in balanced/cloud. Pattern deboli e riferimenti normativi con contesto cliente/causa: DENY in strict, ASK in balanced, ignorati in cloud. Cartelle esenti configurabili via userConfig privacy_exempt_paths.",
   "hooks": {
     "PreToolUse": [
       {

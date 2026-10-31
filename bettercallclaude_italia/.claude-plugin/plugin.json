@@ -1,6 +1,6 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "2.4.5",
+  "version": "2.4.6",
   "description": "Intelligenza Legale Italiana -- Ricerca sui precedenti della Cassazione, strategia di causa, redazione legale e verifica delle citazioni in tutte le 20 regioni italiane con assistenza al rilevamento del segreto professionale (Art. 622 CP).",
   "author": { "name": "Federico Cesconi" },
   "userConfig": {
@@ -21,8 +21,23 @@
     "privacy_mode": {
       "type": "string",
       "title": "Modalità privacy",
-      "description": "Livello di protezione del segreto professionale. strict = conferma su tutte le chiamate esterne + blocco indicatori forti; balanced = blocco indicatori forti + conferma indicatori deboli con contesto; cloud = solo blocco indicatori forti.",
+      "description": "Livello di protezione del segreto professionale sulle chiamate in uscita. strict = blocco (deny) di pattern forti e di pattern deboli/riferimenti con contesto; balanced = conferma (ask) su pattern forti e deboli/riferimenti con contesto; cloud = conferma (ask) solo su pattern forti.",
       "default": "balanced",
+      "options": ["strict", "balanced", "cloud"],
+      "sensitive": false
+    },
+    "scan_local_writes": {
+      "type": "boolean",
+      "title": "Scansiona scritture locali",
+      "description": "Quando false (default), l'hook privacy controlla solo le chiamate in uscita di rete (WebFetch, tool MCP, comandi Bash di rete); Write/Edit/MultiEdit su file locali non sono scannerizzati perche non trasmettono dati. Impostare true per ripristinare la scansione completa di tutti i tool.",
+      "default": false,
+      "sensitive": false
+    },
+    "privacy_exempt_paths": {
+      "type": "string",
+      "title": "Cartelle escluse dal controllo privacy",
+      "description": "Elenco di cartelle escluse dal controllo del segreto professionale, separate da punto e virgola (espansione di ~ supportata). Utile per cartelle editoriali o non legali. Esempio: ~/Documenti/blog;~/progetti/linkedin.",
+      "default": "",
       "sensitive": false
     },
     "api_token": {
