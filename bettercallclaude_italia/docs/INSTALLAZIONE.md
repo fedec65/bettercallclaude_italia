@@ -135,7 +135,8 @@ Se `/doctor` segnala **tutti** i server come non connessi, il problema quasi mai
 - I 9 connettori MCP sono server HTTP remoti che il plugin registra solo negli ambienti che supportano i MCP server dei plugin: **Claude Cowork Desktop** e **Claude Code**.
 - Nella **chat web/mobile di claude.ai** i connettori del plugin **non compaiono**: `/doctor` riportera' sempre 0/9, perche' l'ambiente non li carica affatto. Non e un malfunzionamento del plugin: i 9 server funzionano regolarmente in Cowork Desktop / Claude Code.
 - **Cosa fare**: apri Claude Cowork Desktop (o Claude Code), verifica che il plugin sia installato e attivo, e rilancia `/bettercallclaude-italia:doctor` da li. Se in Cowork Desktop persiste 0/9 dopo un riavvio, controlla la connessione internet e che i permessi dei connectors (Passo 7) siano su "Always allow".
-- **Importante**: se qualche server appare "non connesso" ma altri funzionano, invece, e quasi sempre una protezione anti-bot del portale specifico (Cassazione, Corte Costituzionale) o un'interruzione temporanea: riprova dopo qualche minuto.
+- **Importante — gateway vs ambiente**: se in Cowork Desktop / Claude Code vedi 0/9 **e** `/doctor` segnala anche il gateway come non raggiungibile, non e l'ambiente: e connessione, firewall o gateway down (controlla internet e riprova). Il caso "ambiente" vale solo quando il resto funziona ma i tool dei 9 server proprio non esistono (tipico della chat web/mobile).
+- **Se invece ALCUNI server funzionano e altri no**: distinguere due casi. (1) I tool compaiono ma le chiamate falliscono → quasi sempre protezione anti-bot del portale specifico (Cassazione, Corte Costituzionale) o interruzione temporanea: riprova dopo qualche minuto. (2) I tool di un solo server non compaiono → riavvia Cowork Desktop e verifica i permessi (Passo 7); se persiste, segnala su GitHub.
 
 ---
 
