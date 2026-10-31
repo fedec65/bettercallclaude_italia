@@ -13,13 +13,13 @@ Istruzioni per l'utente del plugin BetterCallClaude — Come usare il server Cas
 1. Apri il tuo browser (Chrome, Firefox, Safari, Edge).
 2. Vai sull'area riservata ItalGiure: [https://www.italgiure.giustizia.it/new/archives](https://www.italgiure.giustizia.it/new/archives)
 3. Fai login con **SPID** oppure con **nome utente e password** (per esempio le credenziali della convenzione Cassa Forense).
-4. Fai **una ricerca qualsiasi** nell'area riservata (anche solo aprire il motore di ricerca sentenze).
-5. Apri gli Strumenti per sviluppatori:
+4. **Prima di fare qualsiasi ricerca**, apri gli Strumenti per sviluppatori:
    - **Windows/Linux**: F12 o Ctrl+Shift+I
    - **macOS**: Cmd+Option+I
-6. Vai sulla scheda **"Network"** (Rete).
-7. Nell'elenco delle richieste, individua una chiamata dati della app (per esempio quella con `sn.solr` o un percorso `/new/...`), e aprila: nella sezione **Request Headers → Cookie** trovi la stringa completa dei cookie inviati (tipo `PHPSESSID=...; sessonly=1; lang=it; cookiesession1=...`).
-8. Seleziona e copia **tutto** il valore del campo `Cookie`.
+5. Vai sulla scheda **"Network"** (Rete) — deve essere aperta *prima* della ricerca, altrimenti le richieste non vengono registrate.
+6. Ora **fai una ricerca qualsiasi** nell'area riservata (il motore di ricerca sentenze). Se la pagina era già aperta prima di attivare Network, ricaricala (F5/Cmd+R).
+7. Nell'elenco delle richieste registrate, individua una chiamata dati dell'**area riservata** (un percorso `/new/...`): aprila e nella sezione **Request Headers → Cookie** trovi la stringa completa dei cookie inviati (tipo `PHPSESSID=...; sessonly=1; lang=it; cookiesession1=...`).
+8. Verifica che nella stringa compaia **`PHPSESSID`**: è il cookie che attesta il login. Se lo vedi, seleziona e copia **tutto** il valore del campo `Cookie`.
 
 **Perché non più `document.cookie`?** I cookie di sessione della nuova area riservata sono marcati **HttpOnly**: JavaScript non può leggerli, quindi la Console restituisce una stringa vuota. L'unico punto da cui si vedono è la scheda Network. Inoltre il vecchio cookie `ASPSESSIONID...` **non esiste più**: oggi i cookie sono `PHPSESSID`, `sessonly`, `lang`, più quelli del firewall FortiWeb (`cookiesession1`) e di Akamai Bot Manager (`_abck`, `bm_sz`, `ak_bmsc`, `bm_sv`).
 
