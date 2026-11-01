@@ -531,7 +531,7 @@ function extractBashSourceRefs(cmd) {
     // PR #61 third review). The mask stops at command separators (;|&) so
     // a following `cat /privileged/...` is still extracted, tolerates
     // multiple spaces/tabs and =, and never eats a longer flag name.
-    .replace(/--data-raw(?:[ \t=]+[^\s;|&]*)?(?![A-Za-z-])/g, (m) => ' '.repeat(m.length));
+    .replace(/(?<![A-Za-z0-9_./-])--data-raw(?:[ \t=]+[^\s;|&]*)?(?![A-Za-z-])/g, (m) => ' '.repeat(m.length));
   for (const { rx, many } of patterns) {
     let m;
     while ((m = rx.exec(masked)) !== null) {
