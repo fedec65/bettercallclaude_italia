@@ -487,7 +487,10 @@ function maskQuotedSpans(cmd) {
   for (let i = 0; i < s.length; i++) {
     const ch = s[i];
     if (quote) {
-      if (ch === '\\' && i + 1 < s.length) {
+      // Backslash escapes apply ONLY inside double quotes; in single quotes
+      // it is literal content, so a trailing \' closes the quote normally
+      // and a later upload must not be masked (Devin PR #63 round 7).
+      if (quote === '"' && ch === '\\' && i + 1 < s.length) {
         out += '  ';
         i++;
       } else if (ch === quote) {
