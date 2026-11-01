@@ -849,9 +849,14 @@ t('python interpreter flags before -c are handled (Devin PR #62 round 4)', () =>
 });
 
 t('stripPaths removes referenced paths for residual classification (Devin PR #62 round 3)', () => {
-  assert.strictEqual(stripPaths('curl --data-binary @/tmp/blog/post.md https://x', ['/tmp/blog/post.md']), 'curl --data-binary @ https://x');
+  assert.strictEqual(stripPaths('curl --data-binary @/tmp/blog/post.md https://x', ['/tmp/blog/post.md']), 'curl --data-binary @  https://x');
   const residual = classify(stripPaths('curl @/tmp/blog/post.md -d "segreto professionale del cliente Rossi"', ['/tmp/blog/post.md']), '');
   assert.strictEqual(residual, 'segreto-professionale');
+});
+
+t('stripPaths replaces with space so text is not joined across paths (Devin PR #62 round 5)', () => {
+  assert.strictEqual(stripPaths('segreto /tmp/blog/post.md professionale', ['/tmp/blog/post.md']), 'segreto   professionale');
+  assert.strictEqual(classify(stripPaths('segreto /tmp/blog/post.md professionale', ['/tmp/blog/post.md']), ''), 'segreto-professionale');
 });
 
 t('effectiveBashInput strips exempt sources for the final decision (Devin PR #62 round 4)', () => {

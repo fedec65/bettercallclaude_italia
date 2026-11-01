@@ -229,10 +229,12 @@ function allPathsExempt(paths, exemptPaths) {
 // Removes referenced file paths from extracted command text so exemption of
 // Bash sources cannot hide privileged inline data (Devin PR #62 round 3):
 // `curl --data-binary @blog/post.md -d 'segreto professionale ...'` still
-// classifies on the residual content.
+// classifies on the residual content. Occurrences are replaced with a space
+// (not deleted) so surrounding text is not joined into or split out of
+// markers (round 5).
 function stripPaths(content, paths) {
   let out = String(content || '');
-  for (const p of paths) out = out.split(p).join('');
+  for (const p of paths) out = out.split(p).join(' ');
   return out;
 }
 
