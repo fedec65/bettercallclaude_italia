@@ -41,6 +41,12 @@ jobs:
       - name: Build Ollama bundle
         run: npm run build:ollama
 
+      - name: Clean dist
+        # Only the archive for the tagged version may reach the release:
+        # stale zips (e.g. an old version committed to the repo) must not be
+        # attached alongside the current one (Devin PR #65 review).
+        run: rm -f dist/*.zip
+
       - name: Package plugin
         run: npm run package
 
@@ -63,6 +69,6 @@ jobs:
           name: "v${{ steps.get_version.outputs.VERSION }}"
           body_path: /tmp/release-notes.md
           files: |
-            dist/*.zip
+            dist/bettercallclaude_italia-v${{ steps.get_version.outputs.VERSION }}.zip
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

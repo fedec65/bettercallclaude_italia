@@ -4,6 +4,11 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.10] - 2026-11-01
+
+### Fixed
+- **Review Devin su PR #61 (quarta review)**: la maschera di `--data-raw` non corrompe piu' path che contengono la sottostringa come nome di directory (`curl --data-binary @/tmp/--data-raw/fascicoli/doc.txt`). Un lookbehind vincola il match all'opzione vera (preceduta da spazio/separatore/inizio, mai da `/`, alfanumerici o `-_.`), cosi' il path privilegiato resta intero e viene estratto e bloccato in strict.
+
 ## [2.4.9] - 2026-11-01
 
 ### Fixed
