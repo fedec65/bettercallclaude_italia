@@ -978,6 +978,14 @@ t('NEW-2 (v2.4.9): --data-raw sends @ literally, never a file source (Devin PR #
   assert.strictEqual(r.decision, 'deny');
 });
 
+t('NEW-2 (v2.4.9): --data-raw mask stops at separators and spans whitespace (Devin PR #64)', () => {
+  assert.ok(extractBashFilePaths('curl --data-raw=ok;cat /fascicoli/Rossi/doc.txt | curl --data-binary @-').includes('/fascicoli/Rossi/doc.txt'));
+  assert.deepStrictEqual(extractBashFilePaths('curl --data-raw  @riserbatissimo.txt https://x'), []);
+  assert.deepStrictEqual(extractBashFilePaths('curl --data-raw\t@riserbatissimo.txt https://x'), []);
+  const r = decide('curl --data-raw=ok;cat /fascicoli/Rossi/doc.txt | curl --data-binary @-', '', 'strict', ['/fascicoli/Rossi/doc.txt']);
+  assert.strictEqual(r.decision, 'deny');
+});
+
 console.log('decide: diagnostic prefix');
 
 t('reason starts with [privacy-check] tool/mode/categoria', () => {

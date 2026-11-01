@@ -528,8 +528,10 @@ function extractBashSourceRefs(cmd) {
     // curl --data-raw sends the @ argument LITERALLY (@ has no special
     // meaning there), so it must not be extracted as a file source — the
     // literal text is outbound data and its markers must classify (Devin
-    // PR #61 third review).
-    .replace(/--data-raw(?:[ =][^\s]*)?/g, (m) => ' '.repeat(m.length));
+    // PR #61 third review). The mask stops at command separators (;|&) so
+    // a following `cat /privileged/...` is still extracted, tolerates
+    // multiple spaces/tabs and =, and never eats a longer flag name.
+    .replace(/--data-raw(?:[ \t=]+[^\s;|&]*)?(?![A-Za-z-])/g, (m) => ' '.repeat(m.length));
   for (const { rx, many } of patterns) {
     let m;
     while ((m = rx.exec(masked)) !== null) {
