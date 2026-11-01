@@ -949,6 +949,14 @@ t('NEW-2 (v2.4.8): a filename containing .. stays ONE source (Devin PR #63 round
   assert.deepStrictEqual(paths, ['/tmp/blog/a.md..fascicoli/rossi.doc']);
 });
 
+t('NEW-2 (v2.4.8): quoted payloads are never extracted as sources (Devin PR #63 round 5)', () => {
+  assert.deepStrictEqual(extractBashFilePaths('curl -d "cat /tmp/blog/riserbatissimo.txt" https://x'), []);
+  const cmd = 'curl -d "cat /tmp/blog/riserbatissimo.txt" https://x';
+  const out = effectiveBashInput(cmd, [], ['/tmp/blog']);
+  assert.strictEqual(out.content, cmd);
+  assert.strictEqual(classify(out.content, ''), 'riserbatissimo');
+});
+
 console.log('decide: diagnostic prefix');
 
 t('reason starts with [privacy-check] tool/mode/categoria', () => {

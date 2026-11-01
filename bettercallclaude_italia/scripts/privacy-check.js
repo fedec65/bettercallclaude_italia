@@ -473,6 +473,28 @@ function extractBashFilePaths(cmd) {
  * exactly the extracted occurrences — never a payload that merely repeats
  * the filename (quoted or not).
  */
+// Replaces the CONTENT of quoted spans with spaces (keeping the quote
+// characters and the total length), so regex extraction never matches inside
+// quoted payloads: `curl -d "cat /tmp/blog/riserbatissimo.txt"` must not
+// treat the payload text as a file reference (Devin PR #63 round 5).
+// Offsets are preserved 1:1 with the original string.
+function maskQuotedSpans(cmd) {
+  let out = '';
+  let quote = null;
+  for (const ch of String(cmd || '')) {
+    if (quote) {
+      if (ch === quote) { quote = null; out += ch; }
+      else { out += ' '; }
+    } else if (ch === '"' || ch === "'") {
+      quote = ch;
+      out += ch;
+    } else {
+      out += ch;
+    }
+  }
+  return out;
+}
+
 function extractBashSourceRefs(cmd) {
   const refs = [];
   const REL = '(?:(?:\\/|\\.\\.?\\/)[^\\s;|&"\']+|(?!https?:\\/\\/|w{3}\\.)[^\\s;|&"\'/-]*(?:\\.|\\/)[^\\s;|&"\']+)';
@@ -485,9 +507,10 @@ function extractBashSourceRefs(cmd) {
     // cat, head, tail, ... followed by one or more paths (absolute or relative)
     { rx: new RegExp('\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)((?:\\s+(?:' + REL + '))+)', 'g'), many: true },
   ];
+  const masked = maskQuotedSpans(cmd);
   for (const { rx, many } of patterns) {
     let m;
-    while ((m = rx.exec(cmd)) !== null) {
+    while ((m = rx.exec(masked)) !== null) {
       if (many) {
         const run = m[1];
         const runStart = m.index + m[0].indexOf(run);
