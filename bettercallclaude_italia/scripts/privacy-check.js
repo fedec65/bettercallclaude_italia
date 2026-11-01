@@ -524,7 +524,12 @@ function extractBashSourceRefs(cmd) {
     // cat, head, tail, ... followed by one or more paths (absolute or relative)
     { rx: new RegExp('\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)((?:\\s+(?:' + REL + '))+)', 'g'), many: true },
   ];
-  const masked = maskQuotedSpans(cmd);
+  const masked = maskQuotedSpans(cmd)
+    // curl --data-raw sends the @ argument LITERALLY (@ has no special
+    // meaning there), so it must not be extracted as a file source — the
+    // literal text is outbound data and its markers must classify (Devin
+    // PR #61 third review).
+    .replace(/--data-raw(?:[ =][^\s]*)?/g, (m) => ' '.repeat(m.length));
   for (const { rx, many } of patterns) {
     let m;
     while ((m = rx.exec(masked)) !== null) {

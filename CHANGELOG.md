@@ -4,6 +4,11 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.9] - 2026-11-01
+
+### Fixed
+- **Review Devin su PR #61 (terza review)**: `curl --data-raw` invia l'argomento `@` come testo LITERALE (`@` non ha significato speciale con quel flag): l'estrazione non lo tratta piu' come sorgente file, cosi' il testo letterale — che e' dato in uscita — viene classificato e in strict bloccato, anche da una cartella esente. Sorgenti reali (`--data-binary @file`, `--data @file`, `<`, `cat/head/...`) invariati.
+
 ## [2.4.8] - 2026-11-01
 
 ### Fixed

