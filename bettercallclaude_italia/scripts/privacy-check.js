@@ -82,9 +82,13 @@ function main() {
     const scanLocal = resolveScanLocalWrites(data);
     const exemptPaths = resolveExemptPaths(data);
 
-    // v2.4.6: user-configured exempt folders skip the check entirely.
+    // v2.4.6: user-configured exempt folders skip the check for tool calls
+    // TARGETING those folders. The session cwd deliberately does NOT exempt
+    // everything: privileged content from elsewhere must still be decided on
+    // (Devin PR #61). Relative targets resolve against the session cwd
+    // (Devin PR #62); Bash source paths are handled after extraction below.
     const earlyPath = extractPathHint(toolInput);
-    if (isExemptPath(earlyPath, exemptPaths) || isExemptPath(data.cwd || '', exemptPaths)) {
+    if (exemptsToolPath(earlyPath, data.cwd || '', exemptPaths)) {
       process.exit(0);
     }
 
@@ -100,9 +104,15 @@ function main() {
       ? extractBashFilePaths(typeof toolInput.command === 'string' ? toolInput.command : '')
       : [];
 
-    if (!content.trim() && !bashPaths.length && mode !== 'strict') { process.exit(0); }
+    // v2.4.6: Bash uploads whose every source file lives in an exempt folder
+    // (Devin PR #62, rounds 3-4): the final decision runs on the stripped
+    // content without the exempt paths — inline privileged data is still
+    // caught and exempt filenames do not distort the decision.
+    const effective = effectiveBashInput(content, bashPaths, exemptPaths);
 
-    const result = decide(content, pathHint, mode, bashPaths, { toolName });
+    if (!effective.content.trim() && !effective.bashPaths.length && mode !== 'strict') { process.exit(0); }
+
+    const result = decide(effective.content, pathHint, mode, effective.bashPaths, { toolName });
     if (!result) { process.exit(0); }
 
     process.stdout.write(JSON.stringify({
@@ -184,13 +194,60 @@ function resolveExemptPaths(data) {
     .map((p) => p.trim())
     .filter(Boolean)
     .map((p) => (p === '~' || p.startsWith('~/') || p.startsWith('~\\') ? home + p.slice(1) : p))
-    .map((p) => p.replace(/[\\/]+$/, ''));
+    .map(normalizePathForMatch);
+}
+
+// Collapses . and .. segments and unifies separators before prefix matching,
+// so /exempt/../clienti/secret.txt cannot bypass the exemption (Devin PR #61).
+function normalizePathForMatch(p) {
+  const path = require('path');
+  return path.normalize(String(p).replace(/\\/g, '/')).replace(/[\\/]+$/, '');
 }
 
 function isExemptPath(p, exemptPaths) {
   if (!p || !exemptPaths || !exemptPaths.length) return false;
-  const norm = String(p).replace(/[\\/]+$/, '');
-  return exemptPaths.some((e) => norm === e || norm.startsWith(e + '/') || norm.startsWith(e + '\\'));
+  const norm = normalizePathForMatch(p);
+  return exemptPaths.some((e) => norm === e || norm.startsWith(e + '/'));
+}
+
+// Resolves relative tool targets against the session cwd before exemption
+// matching, so 'post.md' written while cwd is an exempt folder is exempt too
+// (Devin PR #62). Bash-only check: source paths extracted from commands.
+function exemptsToolPath(pathHint, cwd, exemptPaths) {
+  if (!pathHint) return false;
+  const path = require('path');
+  const resolved = path.isAbsolute(pathHint)
+    ? pathHint
+    : path.join(cwd || process.cwd(), pathHint);
+  return isExemptPath(resolved, exemptPaths);
+}
+
+function allPathsExempt(paths, exemptPaths) {
+  return !!paths.length && paths.every((p) => isExemptPath(p, exemptPaths));
+}
+
+// Removes referenced file paths from extracted command text so exemption of
+// Bash sources cannot hide privileged inline data (Devin PR #62 round 3):
+// `curl --data-binary @blog/post.md -d 'segreto professionale ...'` still
+// classifies on the residual content. Occurrences are replaced with a space
+// (not deleted) so surrounding text is not joined into or split out of
+// markers (round 5).
+function stripPaths(content, paths) {
+  let out = String(content || '');
+  for (const p of paths) out = out.split(p).join(' ');
+  return out;
+}
+
+// When every Bash source path is exempt, the final decision runs on the
+// command text stripped of those paths (round 3: inline privileged data must
+// not be hidden) and without the exempt paths as discriminators (round 4: an
+// exempt filename like riserbatissimo.txt must not distort the decision —
+// cloud mode then correctly ignores weak-only inline content).
+function effectiveBashInput(content, bashPaths, exemptPaths) {
+  if (allPathsExempt(bashPaths, exemptPaths)) {
+    return { content: stripPaths(content, bashPaths), bashPaths: [] };
+  }
+  return { content, bashPaths };
 }
 
 // ---------------------------------------------------------------------------
@@ -211,10 +268,16 @@ function isLocalWriteTool(toolName) {
   return /^(Write|Edit|MultiEdit)$/.test(toolName);
 }
 
-// Bash commands able to send data off the machine. `git push` is matched as
-// a compound form. Everything else (cat, grep, sed, redirects to local files)
-// does not exfiltrate and is skipped unless scan_local_writes is on.
-const NETWORK_COMMANDS = /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync)\b|\bgit\s+push\b/i;
+// Bash commands able to send data off the machine (heuristic list, hardened in
+// Devin PR #61/#62): direct transfer tools, git push as a subcommand in any
+// form (flag/value pairs and --flag=value options, so a commit message
+// containing "push" does not false-positive), GitHub CLI API calls, and
+// Python -c one-liners whose QUOTED argument uses an HTTP client (quoting
+// required, so "; grep requests log" after the one-liner is not flagged).
+// Everything else (cat, grep, sed, redirects to local files) does not
+// exfiltrate and is skipped unless scan_local_writes is on.
+const NETWORK_COMMANDS =
+  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b(?:\s+-[A-Za-z]+\s+[^\s|;]+|\s+--[A-Za-z-]+=[^\s|;]+)*\s+push\b|\bgh\s+api\b|\bpython[0-9.]*\b(?:\s+-[A-Za-z]+)*\s+-c\s+(?:"[^"]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^"]*"|'[^']*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^']*')/i;
 
 /**
  * Decide whether a tool call enters content scanning at all.
@@ -510,6 +573,10 @@ module.exports = {
   resolveScanLocalWrites,
   resolveExemptPaths,
   isExemptPath,
+  exemptsToolPath,
+  allPathsExempt,
+  stripPaths,
+  effectiveBashInput,
   envOption,
   isLocalTool,
   isLocalWriteTool,

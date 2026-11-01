@@ -35699,9 +35699,14 @@ Works entirely OFFLINE \u2014 no Ollama or network connection required.
 
 Detects patterns in Italian and English:
 - PRIVILEGED: segreto professionale, segreto del mandato, strettamente riservato,
-  Art. 622 CP, L. 247/2012, CDF Art. 13, attorney-client privilege, work product, etc.
-- CONFIDENTIAL: riservato, confidenziale, uso interno, non divulgare \u2014 only when
-  a legal-context discriminator is present (cliente, procedimento, tribunale, ...)
+  riserbatissimo, segreto istruttorio, riservatezza professionale,
+  attorney-client privilege, work product, etc.
+- CONFIDENTIAL: riservato, confidenziale, uso interno, non divulgare, plus norm
+  citations and contract boilerplate (Art. 622 CP, L. 247/2012, CDF Art. 13/28,
+  obbligo/vincolo di riservatezza, segreto commerciale) \u2014 only when a
+  client/case discriminator is present (cliente, mandante, dossier,
+  controparte, or 2+ weak signals). Generic legal vocabulary (avvocato,
+  giudice, tribunale, ricorso, ...) is NOT a discriminator.
 - PUBLIC: No privacy patterns detected
 
 Returns the classification level, matched patterns, and routing guidance.`,
