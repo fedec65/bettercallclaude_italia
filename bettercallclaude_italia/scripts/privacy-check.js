@@ -247,21 +247,38 @@ function stripPaths(content, paths) {
   return out;
 }
 
-// Removes a referenced file path from extracted command text ONLY where it
-// appears as a file reference (curl @path, < path, cat/head/... path), never
-// inside inline payloads: `curl @riserbatissimo.txt -d "riserbatissimo.txt
-// del cliente"` keeps the payload marker so it still classifies (Devin PR #63
-// round 2). Used for exemption of Bash sources; replaces occurrences with a
-// space so surrounding text is not joined into or split out of markers.
+// Removes a referenced file path from the UNQUOTED spans of a command, so
+// exemption of Bash sources cannot hide privileged inline data while quoted
+// payloads keep every marker:
+//   `curl @riserbatissimo.txt -d "riserbatissimo.txt del cliente"` strips the
+//   file reference but preserves the payload (Devin PR #63 rounds 2-3);
+//   multi-argument reads (`cat a.txt b.txt | ...`) strip every argument, not
+//   only the first.
 function stripBashSourceRefs(content, paths) {
   const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const refCtx = (p) => new RegExp(
-    '(?:@|<\\s*|\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)\\s+)' + esc(p),
-    'g'
-  );
-  let out = String(content || '');
-  for (const p of paths) out = out.replace(refCtx(p), ' ');
-  return out;
+  const matchers = paths.map((p) => new RegExp(esc(p), 'g'));
+  const segments = [];
+  let cur = '';
+  let quote = null;
+  for (const ch of String(content || '')) {
+    if (quote) {
+      cur += ch;
+      if (ch === quote) { segments.push({ text: cur, quoted: true }); cur = ''; quote = null; }
+    } else if (ch === '"' || ch === "'") {
+      if (cur) { segments.push({ text: cur, quoted: false }); cur = ''; }
+      quote = ch;
+      cur = ch;
+    } else {
+      cur += ch;
+    }
+  }
+  if (cur) segments.push({ text: cur, quoted: quote !== null });
+  return segments.map((seg) => {
+    if (seg.quoted) return seg.text;
+    let t = seg.text;
+    for (const rx of matchers) t = t.replace(rx, ' ');
+    return t;
+  }).join('');
 }
 
 // When every Bash source resolves into an exempt folder, the final decision
