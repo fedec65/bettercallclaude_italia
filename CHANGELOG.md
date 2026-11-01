@@ -4,6 +4,51 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.10] - 2026-11-01
+
+### Fixed
+- **Review Devin su PR #61 (quarta review)**: la maschera di `--data-raw` non corrompe piu' path che contengono la sottostringa come nome di directory (`curl --data-binary @/tmp/--data-raw/fascicoli/doc.txt`). Un lookbehind vincola il match all'opzione vera (preceduta da spazio/separatore/inizio, mai da `/`, alfanumerici o `-_.`), cosi' il path privilegiato resta intero e viene estratto e bloccato in strict.
+
+## [2.4.9] - 2026-11-01
+
+### Fixed
+- **Review Devin su PR #61 (terza review)**: `curl --data-raw` invia l'argomento `@` come testo LITERALE (`@` non ha significato speciale con quel flag): l'estrazione non lo tratta piu' come sorgente file, cosi' il testo letterale — che e' dato in uscita — viene classificato e in strict bloccato, anche da una cartella esente. Il mascheramento si ferma ai separatori di comando (`;` `|` `&`), copre spazi multipli/tab e la forma `=`, e non tocca flag piu' lunghi. Sorgenti reali (`--data-binary @file`, `--data @file`, `<`, `cat/head/...`) invariati.
+
+## [2.4.8] - 2026-11-01
+
+### Fixed
+- **Review Devin su PR #63 (seconda review della PR #61)**:
+  - **Esenzione per bersaglio solo sulle scritture locali**: per i tool di rete (WebFetch, MCP) l'argomento `path` indica una destinazione di output, non la sorgente dei dati inviati — non esenta mai il controllo in uscita.
+  - **Sorgenti Bash relative tracciate**: `extractBashFilePaths` cattura anche sorgenti relative (`file.ext`, `dir/file`, `./x`, `../x`, piu' file per lo stesso comando) risolte sulla directory di lavoro; l'estrazione maschera i contenuti quotati, comprese le virgolette escapate (offset invariati) e la rimozione avviene per offset su ESATTAMENTE le occorrenze attribuite a file (nuovo `extractBashSourceRefs` con indici): un basename con marcatori in una cartella esente non genera conferme spurie, un marker dentro un payload — quotato o meno — che ripete il nome del file non viene mai cancellato, e letture multi-file esenti non vengono bloccate.
+  - **Token concatenati con `..`**: una scrittura tipo `cat a.md..fascicoli/rossi.doc` resta UNA sorgente sola (in Bash i `..` dentro un nome file sono letterali): niente sorgenti inventate, niente blocchi spurii in strict su file esenti.
+  - Nessun falso positivo su flag (`head -5`), URL o parole comuni.
+
+## [2.4.7] - 2026-11-01
+
+### Fixed
+- **Review Devin sulle PR #61 e #62**:
+  - **Esenzione per cartelle limitata al percorso di destinazione del tool**: la `cwd` della sessione non esenta piu' tutto cio' che viene inviato in rete — contenuto privilegiato da altre origini resta controllato anche lavorando dentro una cartella esenta (era: skip totale della sessione).
+  - **Bypass traversal dell'esenzione**: `isExemptPath` normalizza ora `.`/`..` e i separatori prima del confronto — `/esenta/../clienti/segreto.txt` non aggira piu' il controllo.
+  - **Comandi di rete non elencati**: la lista euristica copre ora `git -C <dir> push` e `git --git-dir=<path> push` in qualunque forma, `gh api`, `socat`/`telnet` e one-liner Python con client HTTP (`requests`, `httpx`, `urllib`, `aiohttp`) dentro l'argomento `-c` quotato, con flag dell'interprete ammesse prima di `-c`; `git commit` con messaggio che contiene "push" e catene locali dopo il one-liner NON scattano come falsi positivi.
+  - **Bersagli relativi**: i percorsi relativi si risolvono sulla directory di lavoro della sessione prima del confronto con le cartelle esente.
+  - **Sorgenti Bash**: un comando Bash e' esentato quando TUTTE le sorgenti estratte (`curl @file`, `cat file | ...`) sono in cartelle esente; sorgenti miste restano controllate; la decisione finale avviene sul testo privo delle path esente, cosi' dati inline privilegiati NON vengono nascosti e nomi di file esenti con marcatori forti non distorcono la decisione (in cloud il contenuto debole-only inline resta permesso).
+  - **Descrizione del tool MCP `ollama_classify_privacy`** allineata alla classificazione v2.4.6 (citazioni normative e clausole come CONFIDENTIAL con contesto, discriminator ristretto): gli agenti che la leggono non ricevono piu' regole di routing obsolete.
+
+## [2.4.6] - 2026-11-01
+
+### Fixed
+- **Falsi positivi dell'hook privacy su citazioni normative e lessico contrattuale** (segnalazione utente su Cowork): Art. 622 CP, L. 247/2012, CDF Art. 13/28, Artt. 200/103/663 CPP, «obbligo/vincolo di riservatezza» e «segreto commerciale» sono ora pattern deboli — contano solo con contesto cliente/causa (cliente, mandante, dossier, controparte o 2+ segnali). Il discriminator di contesto e' ristretto ai termini identificativi di cliente/causa: «avvocato», «giudice», «tribunale», «ricorso» e simili (presenti in quasi ogni testo legale) non attivano piu' i pattern deboli.
+- **`userConfig.privacy_mode` ignorato**: gli hook ricevono la configurazione del plugin come variabili d'ambiente `CLAUDE_PLUGIN_OPTION_*` (la stdin non la include). La modalita' scelta in `/config` ha ora effetto; il file `.privacy-mode` puo' solo alzare la severita' rispetto alla modalita' base risolta.
+
+### Changed
+- **Perimetro di scansione di default: solo uscite di rete.** L'hook controlla WebFetch, tool MCP non locali e comandi Bash di rete (curl, wget, nc, ssh, scp, rsync, git push); Write/Edit/MultiEdit locali non sono scannerizzati perche' non trasmettono dati. Nuova chiave `userConfig.scan_local_writes` (default false) per ripristinare la scansione completa. Il controllo sui path privilegiati nei comandi Bash resta attivo sempre.
+- **Nuova chiave `userConfig.privacy_exempt_paths`**: elenco di cartelle escluse dal controllo (separate da `;`, `~` espanso), configurabile nelle impostazioni del plugin — nessun file della cartella di lavoro puo' modificare la protezione.
+- **Messaggi di decisione diagnostici**: ogni blocco/conferma inizia con `[privacy-check] tool=... mode=... categoria=... match="..."` cosi' il motivo e' leggibile in ogni superficie. Nota: l'errore «is blocked in this session — it resolves to a protected location or a path outside the connected folder» osservato in Cowork e' un messaggio di Cowork sulla protezione del percorso, non testo dell'hook.
+- Documentazione allineata: descrizioni di `privacy_mode` in `plugin.json` e tabella modalita' del comando `/privacy` corrispondono al comportamento reale (conferma su pattern forti in balanced/cloud, blocco solo in strict).
+
+### Notes
+- Allineata la classificazione del server Ollama locale (`classifyPrivacy`) agli stessi pattern e discriminator.
+
 ## [2.4.5] - 2026-10-31
 
 ### Fixed

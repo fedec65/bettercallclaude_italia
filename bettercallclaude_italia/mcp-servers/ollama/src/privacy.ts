@@ -28,13 +28,10 @@ interface PatternDef {
 const PRIVILEGED_PATTERNS: PatternDef[] = [
   // Italian -- attorney-specific
   { regex: /\bsegreto\s+professionale\b/i, meaning: 'Segreto professionale', language: 'it', level: 'PRIVILEGED' },
-  { regex: /\bsegreto\s+commerciale\b/i, meaning: 'Segreto commerciale', language: 'it', level: 'PRIVILEGED' },
   { regex: /\bsegreto\s+del\s+mandato\b/i, meaning: 'Segreto del mandato', language: 'it', level: 'PRIVILEGED' },
   { regex: /\bstrettamente\s+riservato\b/i, meaning: 'Strettamente riservato', language: 'it', level: 'PRIVILEGED' },
   { regex: /\briserbatissimo\b/i, meaning: 'Riserbatissimo', language: 'it', level: 'PRIVILEGED' },
   { regex: /\bsegreto\s+d[' ]ufficio\b/i, meaning: "Segreto d'ufficio", language: 'it', level: 'PRIVILEGED' },
-  { regex: /\bvincolo\s+(?:di\s+)?riservatezza\b/i, meaning: 'Vincolo di riservatezza', language: 'it', level: 'PRIVILEGED' },
-  { regex: /\bobbligo\s+di\s+riservatezza\b/i, meaning: 'Obbligo di riservatezza', language: 'it', level: 'PRIVILEGED' },
   { regex: /\bsegreto\s+istruttorio\b/i, meaning: 'Segreto istruttorio', language: 'it', level: 'PRIVILEGED' },
   { regex: /\bsegreto\s+investigativo\b/i, meaning: 'Segreto investigativo', language: 'it', level: 'PRIVILEGED' },
   { regex: /\briservatezza\s+professionale\b/i, meaning: 'Riservatezza professionale', language: 'it', level: 'PRIVILEGED' },
@@ -49,15 +46,6 @@ const PRIVILEGED_PATTERNS: PatternDef[] = [
   { regex: /\blegal(?:ly)?\s+privileged\b/i, meaning: 'Legally privileged', language: 'en', level: 'PRIVILEGED' },
   { regex: /\bprivileged\s+(?:and\s+)?confidential\b/i, meaning: 'Privileged and confidential', language: 'en', level: 'PRIVILEGED' },
   { regex: /\bprotected\s+by\s+(?:legal\s+)?privilege\b/i, meaning: 'Protected by privilege', language: 'en', level: 'PRIVILEGED' },
-
-  // Legal article references -- Italian
-  { regex: /\bArt\.?\s*622\s*C\.?\s*P\.?\b/i, meaning: 'Art. 622 CP (segreto professionale)', language: 'legal', level: 'PRIVILEGED' },
-  { regex: /\bL\.?\s*247[/]2012\b/i, meaning: 'L. 247/2012 (forensi)', language: 'legal', level: 'PRIVILEGED' },
-  { regex: /\bCDF\s+Art\.?\s*13\b/i, meaning: 'CDF Art. 13', language: 'legal', level: 'PRIVILEGED' },
-  { regex: /\bCDF\s+Art\.?\s*28\b/i, meaning: 'CDF Art. 28', language: 'legal', level: 'PRIVILEGED' },
-  { regex: /\bArt\.?\s*663\s*C\.?\s*P\.?\b/i, meaning: 'Art. 663 CP', language: 'legal', level: 'PRIVILEGED' },
-  { regex: /\bArt\.?\s*200\s*C\.?\s*P\.?\s*P\.?\b/i, meaning: 'Art. 200 CPP (segreto testimonianza)', language: 'legal', level: 'PRIVILEGED' },
-  { regex: /\bArt\.?\s*103\s*C\.?\s*P\.?\s*P\.?\b/i, meaning: 'Art. 103 CPP (garanzie difensore)', language: 'legal', level: 'PRIVILEGED' },
 ];
 
 // ---------------------------------------------------------------------------
@@ -65,6 +53,18 @@ const PRIVILEGED_PATTERNS: PatternDef[] = [
 // ---------------------------------------------------------------------------
 
 const CONFIDENTIAL_PATTERNS: PatternDef[] = [
+  // Reference patterns (v2.4.6) — norm citations and contract boilerplate,
+  // weak: they only count with a client/case discriminator.
+  { regex: /\bsegreto\s+commerciale\b/i, meaning: 'Segreto commerciale (con contesto legale)', language: 'it', level: 'CONFIDENTIAL' },
+  { regex: /\bvincolo\s+(?:di\s+)?riservatezza\b/i, meaning: 'Vincolo di riservatezza (con contesto legale)', language: 'it', level: 'CONFIDENTIAL' },
+  { regex: /\bobbligo\s+di\s+riservatezza\b/i, meaning: 'Obbligo di riservatezza (con contesto legale)', language: 'it', level: 'CONFIDENTIAL' },
+  { regex: /\bArt\.?\s*622\s*C\.?\s*P\.?\b/i, meaning: 'Art. 622 CP (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
+  { regex: /\bL\.?\s*247[/]2012\b/i, meaning: 'L. 247/2012 (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
+  { regex: /\bCDF\s+Art\.?\s*13\b/i, meaning: 'CDF Art. 13 (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
+  { regex: /\bCDF\s+Art\.?\s*28\b/i, meaning: 'CDF Art. 28 (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
+  { regex: /\bArt\.?\s*663\s*C\.?\s*P\.?\b/i, meaning: 'Art. 663 CP (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
+  { regex: /\bArt\.?\s*200\s*C\.?\s*P\.?\s*P\.?\b/i, meaning: 'Art. 200 CPP (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
+  { regex: /\bArt\.?\s*103\s*C\.?\s*P\.?\s*P\.?\b/i, meaning: 'Art. 103 CPP (citazione, con contesto)', language: 'legal', level: 'CONFIDENTIAL' },
   { regex: /\briservato\b/i, meaning: 'Riservato (con contesto legale)', language: 'it', level: 'CONFIDENTIAL' },
   { regex: /\bconfidenziale\b/i, meaning: 'Confidenziale (con contesto legale)', language: 'it', level: 'CONFIDENTIAL' },
   { regex: /\bconfidential\b/i, meaning: 'Confidential (con contesto legale)', language: 'en', level: 'CONFIDENTIAL' },
@@ -73,14 +73,13 @@ const CONFIDENTIAL_PATTERNS: PatternDef[] = [
   { regex: /\buso\s+interno\b/i, meaning: 'Uso interno (con contesto legale)', language: 'it', level: 'CONFIDENTIAL' },
 ];
 
-// Mirrors the hook's DISCRIMINATOR_CONTENT (no path hint available here)
+// Mirrors the hook's DISCRIMINATOR_CONTENT (no path hint available here).
+// v2.4.6: narrowed to client/case-identifying terms.
 const DISCRIMINATOR_CONTENT = new RegExp(
   '\\b(' +
   'cliente|clienti|client|mandante|mandanti' +
   '|dossier|numero\\s+di\\s+pratica|riferimento\\s+atto' +
-  '|procedimento|processo|giudizio|ricorso|opposizione' +
-  '|avvocato|avvocati|avvocatessa|studio\\s+legale' +
-  '|tribunale|corte|giudice|parte\\s+avversa|controparte' +
+  '|parte\\s+avversa|controparte' +
   ')\\b',
   'i'
 );

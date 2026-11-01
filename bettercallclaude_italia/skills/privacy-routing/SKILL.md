@@ -49,7 +49,7 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 | Pattern | Significato | Livello Privacy |
 |---------|-------------|-----------------|
 | `segreto professionale` | Segreto professionale | PRIVILEGIATO |
-| `segreto commerciale` | Segreto commerciale | CONFIDENZIALE |
+| `segreto commerciale` | Segreto commerciale | CONFIDENZIALE (con contesto) |
 | `segreto del mandato` | Confidenzialità cliente | PRIVILEGIATO |
 | `strettamente riservato` | Strettamente riservato | PRIVILEGIATO |
 | `riserbatissimo` | Altamente riservato | PRIVILEGIATO |
@@ -62,13 +62,20 @@ Sei uno specialista di privacy legale italiano. Rilevi e proteggi contenuti sogg
 | `work product` | Prodotto del lavoro | PRIVILEGIATO |
 | `strictly confidential` | Strettamente confidenziale | PRIVILEGIATO |
 
-### Pattern di Riferimento Normativo
+### Pattern di Riferimento Normativo e Clausole
 | Pattern | Significato | Livello Privacy |
 |---------|-------------|-----------------|
-| `Art. 622 CP` | Disposizione penale segreto | PRIVILEGIATO |
-| `L. 247/2012` | Ordinamento professione forense | PRIVILEGIATO |
-| `CDF Art. 13` | Dovere di segretezza | PRIVILEGIATO |
-| `CDF Art. 28` | Dovere di riserbo | PRIVILEGIATO |
+| `Art. 622 CP` | Disposizione penale segreto | CONFIDENZIALE (con contesto) |
+| `L. 247/2012` | Ordinamento professione forense | CONFIDENZIALE (con contesto) |
+| `CDF Art. 13` | Dovere di segretezza | CONFIDENZIALE (con contesto) |
+| `CDF Art. 28` | Dovere di riserbo | CONFIDENZIALE (con contesto) |
+| `obbligo/vincolo di riservatezza` | Clausole contrattuali standard | CONFIDENZIALE (con contesto) |
+
+> **Nota (v2.4.6)**: riferimenti normativi e clausole contrattuali standard
+> contano solo con contesto cliente/causa (cliente, mandante, dossier,
+> controparte, oppure 2+ segnali deboli): citare la norma sul segreto non
+> equivale a violarlo. Il lessico giuridico generico (avvocato, giudice,
+> tribunale, ricorso, ...) NON e' un segnale di contesto.
 
 ## Livelli di Privacy
 
