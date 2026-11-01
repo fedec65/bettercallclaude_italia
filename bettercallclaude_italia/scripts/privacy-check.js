@@ -247,19 +247,35 @@ function stripPaths(content, paths) {
   return out;
 }
 
+// Removes a referenced file path from extracted command text ONLY where it
+// appears as a file reference (curl @path, < path, cat/head/... path), never
+// inside inline payloads: `curl @riserbatissimo.txt -d "riserbatissimo.txt
+// del cliente"` keeps the payload marker so it still classifies (Devin PR #63
+// round 2). Used for exemption of Bash sources; replaces occurrences with a
+// space so surrounding text is not joined into or split out of markers.
+function stripBashSourceRefs(content, paths) {
+  const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const refCtx = (p) => new RegExp(
+    '(?:@|<\\s*|\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)\\s+)' + esc(p),
+    'g'
+  );
+  let out = String(content || '');
+  for (const p of paths) out = out.replace(refCtx(p), ' ');
+  return out;
+}
+
 // When every Bash source resolves into an exempt folder, the final decision
-// runs on the command text stripped of BOTH the original tokens and their
-// resolved forms (a relative exempt source must not leave a
-// privileged-looking basename in the residual text), without the exempt
-// paths as discriminators (round 4: an exempt filename like
-// riserbatissimo.txt must not distort the decision).
+// runs on the command text with the exempt file REFERENCES removed (both the
+// original token and its resolved form) and without the exempt paths as
+// discriminators: an exempt filename like riserbatissimo.txt must not
+// distort the decision (round 4) nor erase inline markers (round 5).
 // sources: [{ raw, resolved }].
 function effectiveBashInput(content, sources, exemptPaths) {
   if (sources.length && sources.every((s) => isExemptPath(s.resolved, exemptPaths))) {
-    let stripped = String(content || '');
-    for (const s of sources) {
-      stripped = stripped.split(s.resolved).join(' ').split(s.raw).join(' ');
-    }
+    const stripped = stripBashSourceRefs(
+      content,
+      sources.flatMap((s) => [s.resolved, s.raw])
+    );
     return { content: stripped, bashPaths: [] };
   }
   return { content, bashPaths: sources.map((s) => s.resolved) };
@@ -463,22 +479,12 @@ function extractBashFilePaths(cmd) {
     // cat, head, tail, ... followed by one or more paths (absolute or relative)
     { rx: new RegExp('\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)((?:\\s+(?:' + REL + '))+)', 'g'), many: true },
   ];
-  // A token like `a.md..fascicoli/rossi.doc` glues two sources together:
-  // splitting on '..' tracks the second one so it cannot hide from the
-  // privileged-directory check (Devin PR #63).
-  function expandBashToken(tok) {
-    if (tok.includes('..') && !/^\.\.?\//.test(tok)) {
-      return tok.split('..').filter(Boolean).filter((t) => relTest.test(t));
-    }
-    return relTest.test(tok) ? [tok] : [];
-  }
-
   for (const { rx, many } of patterns) {
     let m;
     while ((m = rx.exec(cmd)) !== null) {
       if (many) {
         for (const tok of m[1].trim().split(/\s+/)) {
-          for (const t of expandBashToken(tok)) paths.push(t);
+          if (relTest.test(tok)) paths.push(tok);
         }
       } else {
         paths.push(m[1]);
@@ -613,6 +619,7 @@ module.exports = {
   exemptsToolPath,
   allPathsExempt,
   stripPaths,
+  stripBashSourceRefs,
   effectiveBashInput,
   envOption,
   isLocalTool,

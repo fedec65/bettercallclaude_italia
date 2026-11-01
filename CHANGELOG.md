@@ -9,8 +9,8 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 ### Fixed
 - **Review Devin su PR #63 (seconda review della PR #61)**:
   - **Esenzione per bersaglio solo sulle scritture locali**: per i tool di rete (WebFetch, MCP) l'argomento `path` indica una destinazione di output, non la sorgente dei dati inviati — non esenta mai il controllo in uscita.
-  - **Sorgenti Bash relative tracciate**: `extractBashFilePaths` cattura anche sorgenti relative (`file.ext`, `dir/file`, `./x`, `../x`, piu' file per lo stesso comando) risolte sulla directory di lavoro; `effectiveBashInput` rimuove dal testo sia il token originale sia la forma risolta, cosi' un basename con marcatori in una cartella esente non genera piu' conferme spurie e una sorgente relativa non puo' sfuggire accanto a una assoluta esente.
-  - **Token concatenati con `..`**: una scrittura tipo `cat a.md..fascicoli/rossi.doc` viene separata nelle due sorgenti, cosi' il pezzo privilegiato resta sottoposto ai controlli.
+  - **Sorgenti Bash relative tracciate**: `extractBashFilePaths` cattura anche sorgenti relative (`file.ext`, `dir/file`, `./x`, `../x`, piu' file per lo stesso comando) risolte sulla directory di lavoro; la rimozione dal testo avviene solo in posizione di riferimento al file (`@path`, `< path`, `cat/head/... path`), sia per il token originale sia per la forma risolta — un basename con marcatori in una cartella esente non genera conferme spurie e un marker dentro un payload inline non viene mai cancellato.
+  - **Token concatenati con `..`**: una scrittura tipo `cat a.md..fascicoli/rossi.doc` resta UNA sorgente sola (in Bash i `..` dentro un nome file sono letterali): niente sorgenti inventate, niente blocchi spurii in strict su file esenti.
   - Nessun falso positivo su flag (`head -5`), URL o parole comuni.
 
 ## [2.4.7] - 2026-11-01
