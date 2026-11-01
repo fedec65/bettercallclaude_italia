@@ -86,9 +86,12 @@ function main() {
     // TARGETING those folders. The session cwd deliberately does NOT exempt
     // everything: privileged content from elsewhere must still be decided on
     // (Devin PR #61). Relative targets resolve against the session cwd
-    // (Devin PR #62); Bash source paths are handled after extraction below.
+    // (Devin PR #62). Target-path exemption applies to LOCAL WRITE tools
+    // only: for network tools (WebFetch, mcp__*) a `path` argument names an
+    // OUTPUT destination, not the source of the data being sent, so it must
+    // never silence the outbound check (Devin PR #61, second review).
     const earlyPath = extractPathHint(toolInput);
-    if (exemptsToolPath(earlyPath, data.cwd || '', exemptPaths)) {
+    if (isLocalWriteTool(toolName) && exemptsToolPath(earlyPath, data.cwd || '', exemptPaths)) {
       process.exit(0);
     }
 
@@ -99,9 +102,13 @@ function main() {
     const pathHint = extractPathHint(toolInput);
 
     // NEW-2: extract file paths referenced in Bash commands and check
-    // them against discriminators (curl @file, cat file | nc, etc.)
+    // them against discriminators (curl @file, cat file | nc, etc.).
+    // Relative sources resolve against the session cwd so exemption and
+    // privileged-path checks see real locations (Devin PR #61 second review).
+    const path = require('path');
     const bashPaths = (toolName === 'Bash' || toolName === 'bash')
       ? extractBashFilePaths(typeof toolInput.command === 'string' ? toolInput.command : '')
+        .map((p) => (path.isAbsolute(p) ? p : path.join(data.cwd || process.cwd(), p)))
       : [];
 
     // v2.4.6: Bash uploads whose every source file lives in an exempt folder
@@ -431,21 +438,33 @@ function extractPathHint(input) {
  * NEW-2: Extract file paths referenced in a Bash command string.
  * Catches patterns like: curl @file, curl --data-binary @file,
  * cat file | ..., head/tail/less/base64 file, input redirect < file.
+ * v2.4.8 (Devin PR #61 second review): also captures RELATIVE sources
+ * (./file, ../file, path/like/file, file.ext) so a non-exempt relative
+ * source cannot hide next to an exempt absolute one. Relative paths are
+ * resolved against the session cwd by the caller.
  */
 function extractBashFilePaths(cmd) {
   const paths = [];
+  const REL = '(?:(?:\\/|\\.\\.?\\/)[^\\s;|&"\']+|(?!https?:\\/\\/|w{3}\\.)[^\\s;|&"\'/-]*(?:\\.|\\/)[^\\s;|&"\']+)';
+  const relTest = new RegExp('^(?:' + REL + ')$');
   const patterns = [
-    // curl @file or curl --data-binary @file
-    /@(\/[^\s;|&"']+)/g,
-    // input redirect: < /path/to/file
-    /<\s*(\/[^\s;|&"']+)/g,
-    // cat, head, tail, less, base64, xxd followed by absolute path
-    /\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)\s+(\/[^\s;|&"']+)/g,
+    // curl @file or curl --data-binary @file (absolute, ./relative, file.ext)
+    { rx: new RegExp('@(' + REL + ')', 'g'), many: false },
+    // input redirect: < /path/to/file (or relative)
+    { rx: new RegExp('<\\s*(' + REL + ')', 'g'), many: false },
+    // cat, head, tail, ... followed by one or more paths (absolute or relative)
+    { rx: new RegExp('\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)((?:\\s+(?:' + REL + '))+)', 'g'), many: true },
   ];
-  for (const rx of patterns) {
+  for (const { rx, many } of patterns) {
     let m;
     while ((m = rx.exec(cmd)) !== null) {
-      paths.push(m[1]);
+      if (many) {
+        for (const tok of m[1].trim().split(/\s+/)) {
+          if (relTest.test(tok)) paths.push(tok);
+        }
+      } else {
+        paths.push(m[1]);
+      }
     }
   }
   return paths;
