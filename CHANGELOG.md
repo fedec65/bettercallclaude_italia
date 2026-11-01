@@ -4,6 +4,11 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.11] - 2026-11-01
+
+### Fixed
+- **Pacchetto di release ridotto da ~32MB a ~5MB**: `package-plugin.sh` copiava l'intera directory del plugin senza esclusioni, includendo `node_modules/` del server Ollama (esbuild in tre copie, typescript — l'84% del peso) che sono dipendenze di build non necessarie a chi installa (il server distribuito e' il bundle compilato `dist/index.js`). Ora lo staging esclude `node_modules`, `.DS_Store`, `__pycache__`. Inoltre ridimensionate le immagini della documentazione (screenshot della guida da 2710px a 1600px, logo a 800px, framework a 1200px — tutte mostrate al massimo a ~600px): `docs/images` passa da 10,9MB a 4,9MB senza perdita visibile.
+
 ## [2.4.10] - 2026-11-01
 
 ### Fixed
