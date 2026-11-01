@@ -108,8 +108,12 @@ function main() {
     const path = require('path');
     const cwdBase = data.cwd || process.cwd();
     const bashSources = (toolName === 'Bash' || toolName === 'bash')
-      ? extractBashFilePaths(typeof toolInput.command === 'string' ? toolInput.command : '')
-        .map((raw) => ({ raw, resolved: path.isAbsolute(raw) ? raw : path.join(cwdBase, raw) }))
+      ? extractBashSourceRefs(typeof toolInput.command === 'string' ? toolInput.command : '')
+        .map((r) => ({
+          raw: r.raw,
+          resolved: path.isAbsolute(r.raw) ? r.raw : path.join(cwdBase, r.raw),
+          index: r.index,
+        }))
       : [];
     const bashPaths = bashSources.map((s) => s.resolved);
 
@@ -247,53 +251,33 @@ function stripPaths(content, paths) {
   return out;
 }
 
-// Removes a referenced file path from the UNQUOTED spans of a command, so
-// exemption of Bash sources cannot hide privileged inline data while quoted
-// payloads keep every marker:
-//   `curl @riserbatissimo.txt -d "riserbatissimo.txt del cliente"` strips the
-//   file reference but preserves the payload (Devin PR #63 rounds 2-3);
-//   multi-argument reads (`cat a.txt b.txt | ...`) strip every argument, not
-//   only the first.
-function stripBashSourceRefs(content, paths) {
-  const esc = (s) => String(s).replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-  const matchers = paths.map((p) => new RegExp(esc(p), 'g'));
-  const segments = [];
-  let cur = '';
-  let quote = null;
-  for (const ch of String(content || '')) {
-    if (quote) {
-      cur += ch;
-      if (ch === quote) { segments.push({ text: cur, quoted: true }); cur = ''; quote = null; }
-    } else if (ch === '"' || ch === "'") {
-      if (cur) { segments.push({ text: cur, quoted: false }); cur = ''; }
-      quote = ch;
-      cur = ch;
-    } else {
-      cur += ch;
-    }
+// Removes EXACTLY the command spans the extractor attributed to exempt
+// source files (by character offset), never a payload that merely repeats
+// the filename — quoted or not:
+//   `curl @riserbatissimo.txt -d riserbatissimo.txt` strips the file
+//   reference and keeps the payload marker (Devin PR #63 rounds 2-4).
+// sources: [{ raw, resolved, index }].
+function stripBashSourceRefs(content, sources) {
+  let out = String(content || '');
+  const spans = sources
+    .map((s) => ({ index: s.index, length: s.raw.length }))
+    .filter((sp) => sp.index >= 0 && sp.length > 0)
+    .sort((a, b) => b.index - a.index);
+  for (const sp of spans) {
+    out = out.slice(0, sp.index) + ' ' + out.slice(sp.index + sp.length);
   }
-  if (cur) segments.push({ text: cur, quoted: quote !== null });
-  return segments.map((seg) => {
-    if (seg.quoted) return seg.text;
-    let t = seg.text;
-    for (const rx of matchers) t = t.replace(rx, ' ');
-    return t;
-  }).join('');
+  return out;
 }
 
 // When every Bash source resolves into an exempt folder, the final decision
-// runs on the command text with the exempt file REFERENCES removed (both the
-// original token and its resolved form) and without the exempt paths as
-// discriminators: an exempt filename like riserbatissimo.txt must not
-// distort the decision (round 4) nor erase inline markers (round 5).
-// sources: [{ raw, resolved }].
+// runs on the command text with exactly the extracted file-reference spans
+// removed (by offset) and without the exempt paths as discriminators: an
+// exempt filename like riserbatissimo.txt must not distort the decision
+// (round 4) nor erase a payload that repeats it (rounds 2 and 4).
+// sources: [{ raw, resolved, index }].
 function effectiveBashInput(content, sources, exemptPaths) {
   if (sources.length && sources.every((s) => isExemptPath(s.resolved, exemptPaths))) {
-    const stripped = stripBashSourceRefs(
-      content,
-      sources.flatMap((s) => [s.resolved, s.raw])
-    );
-    return { content: stripped, bashPaths: [] };
+    return { content: stripBashSourceRefs(content, sources), bashPaths: [] };
   }
   return { content, bashPaths: sources.map((s) => s.resolved) };
 }
@@ -475,17 +459,22 @@ function extractPathHint(input) {
   return '';
 }
 
-/**
- * NEW-2: Extract file paths referenced in a Bash command string.
- * Catches patterns like: curl @file, curl --data-binary @file,
- * cat file | ..., head/tail/less/base64 file, input redirect < file.
- * v2.4.8 (Devin PR #61 second review): also captures RELATIVE sources
- * (./file, ../file, path/like/file, file.ext) so a non-exempt relative
- * source cannot hide next to an exempt absolute one. Relative paths are
- * resolved against the session cwd by the caller.
- */
 function extractBashFilePaths(cmd) {
-  const paths = [];
+  return extractBashSourceRefs(cmd).map((r) => r.raw);
+}
+
+/**
+ * NEW-2: extract file path references in a Bash command string, WITH their
+ * character offsets. Catches: curl @file, curl --data-binary @file,
+ * cat/head/tail/... arguments (one or more), input redirect < file.
+ * v2.4.8 (Devin PR #61 second review): also captures RELATIVE sources
+ * (./file, ../file, path/like/file, file.ext). Relative paths are resolved
+ * against the session cwd by the caller. The offsets let the exemption strip
+ * exactly the extracted occurrences — never a payload that merely repeats
+ * the filename (quoted or not).
+ */
+function extractBashSourceRefs(cmd) {
+  const refs = [];
   const REL = '(?:(?:\\/|\\.\\.?\\/)[^\\s;|&"\']+|(?!https?:\\/\\/|w{3}\\.)[^\\s;|&"\'/-]*(?:\\.|\\/)[^\\s;|&"\']+)';
   const relTest = new RegExp('^(?:' + REL + ')$');
   const patterns = [
@@ -500,15 +489,22 @@ function extractBashFilePaths(cmd) {
     let m;
     while ((m = rx.exec(cmd)) !== null) {
       if (many) {
-        for (const tok of m[1].trim().split(/\s+/)) {
-          if (relTest.test(tok)) paths.push(tok);
+        const run = m[1];
+        const runStart = m.index + m[0].indexOf(run);
+        let from = 0;
+        for (const tok of run.trim().split(/\s+/)) {
+          const i = run.indexOf(tok, from);
+          if (i === -1) break;
+          from = i + tok.length;
+          if (relTest.test(tok)) refs.push({ raw: tok, index: runStart + i });
         }
       } else {
-        paths.push(m[1]);
+        const raw = m[1];
+        refs.push({ raw, index: m.index + m[0].indexOf(raw) });
       }
     }
   }
-  return paths;
+  return refs;
 }
 
 function walkStrings(node, emit, depth) {
@@ -646,6 +642,7 @@ module.exports = {
   extractTextFromInput,
   extractPathHint,
   extractBashFilePaths,
+  extractBashSourceRefs,
   hasDiscriminator,
   isStrongCategory,
   STRONG_PATTERNS,
