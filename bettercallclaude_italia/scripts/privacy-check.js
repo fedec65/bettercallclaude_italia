@@ -477,17 +477,31 @@ function extractBashFilePaths(cmd) {
 // characters and the total length), so regex extraction never matches inside
 // quoted payloads: `curl -d "cat /tmp/blog/riserbatissimo.txt"` must not
 // treat the payload text as a file reference (Devin PR #63 round 5).
+// Escaped characters are handled (\" inside a quoted span does not close
+// it), otherwise a later unquoted upload would be hidden (round 6).
 // Offsets are preserved 1:1 with the original string.
 function maskQuotedSpans(cmd) {
+  const s = String(cmd || '');
   let out = '';
   let quote = null;
-  for (const ch of String(cmd || '')) {
+  for (let i = 0; i < s.length; i++) {
+    const ch = s[i];
     if (quote) {
-      if (ch === quote) { quote = null; out += ch; }
-      else { out += ' '; }
+      if (ch === '\\' && i + 1 < s.length) {
+        out += '  ';
+        i++;
+      } else if (ch === quote) {
+        quote = null;
+        out += ch;
+      } else {
+        out += ' ';
+      }
     } else if (ch === '"' || ch === "'") {
       quote = ch;
       out += ch;
+    } else if (ch === '\\' && i + 1 < s.length) {
+      out += ch + s[i + 1];
+      i++;
     } else {
       out += ch;
     }
