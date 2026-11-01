@@ -4,6 +4,15 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.4.8] - 2026-11-01
+
+### Fixed
+- **Review Devin su PR #63 (seconda review della PR #61)**:
+  - **Esenzione per bersaglio solo sulle scritture locali**: per i tool di rete (WebFetch, MCP) l'argomento `path` indica una destinazione di output, non la sorgente dei dati inviati — non esenta mai il controllo in uscita.
+  - **Sorgenti Bash relative tracciate**: `extractBashFilePaths` cattura anche sorgenti relative (`file.ext`, `dir/file`, `./x`, `../x`, piu' file per lo stesso comando) risolte sulla directory di lavoro; `effectiveBashInput` rimuove dal testo sia il token originale sia la forma risolta, cosi' un basename con marcatori in una cartella esente non genera piu' conferme spurie e una sorgente relativa non puo' sfuggire accanto a una assoluta esente.
+  - **Token concatenati con `..`**: una scrittura tipo `cat a.md..fascicoli/rossi.doc` viene separata nelle due sorgenti, cosi' il pezzo privilegiato resta sottoposto ai controlli.
+  - Nessun falso positivo su flag (`head -5`), URL o parole comuni.
+
 ## [2.4.7] - 2026-11-01
 
 ### Fixed
@@ -14,7 +23,6 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
   - **Bersagli relativi**: i percorsi relativi si risolvono sulla directory di lavoro della sessione prima del confronto con le cartelle esente.
   - **Sorgenti Bash**: un comando Bash e' esentato quando TUTTE le sorgenti estratte (`curl @file`, `cat file | ...`) sono in cartelle esente; sorgenti miste restano controllate; la decisione finale avviene sul testo privo delle path esente, cosi' dati inline privilegiati NON vengono nascosti e nomi di file esenti con marcatori forti non distorcono la decisione (in cloud il contenuto debole-only inline resta permesso).
   - **Descrizione del tool MCP `ollama_classify_privacy`** allineata alla classificazione v2.4.6 (citazioni normative e clausole come CONFIDENTIAL con contesto, discriminator ristretto): gli agenti che la leggono non ricevono piu' regole di routing obsolete.
-  - **Seconda review Devin sulla PR #61**: l'esenzione per bersaglio vale ora SOLO per le scritture locali (Write/Edit/MultiEdit) — per i tool di rete (WebFetch, MCP) l'argomento `path` indica una destinazione di output, non la sorgente dei dati, e non esenta mai il controllo in uscita; `extractBashFilePaths` traccia ora anche le sorgenti relative (`file.ext`, `dir/file`, `./x`, `../x`, piu' file per lo stesso comando) risolte sulla directory di lavoro, cosi' una sorgente relativa non esente non puo' piu' sfuggire accanto a una assoluta esente (nessun falso positivo su flag, URL o parole comuni).
 
 ## [2.4.6] - 2026-11-01
 

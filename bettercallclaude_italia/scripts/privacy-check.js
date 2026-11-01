@@ -106,16 +106,18 @@ function main() {
     // Relative sources resolve against the session cwd so exemption and
     // privileged-path checks see real locations (Devin PR #61 second review).
     const path = require('path');
-    const bashPaths = (toolName === 'Bash' || toolName === 'bash')
+    const cwdBase = data.cwd || process.cwd();
+    const bashSources = (toolName === 'Bash' || toolName === 'bash')
       ? extractBashFilePaths(typeof toolInput.command === 'string' ? toolInput.command : '')
-        .map((p) => (path.isAbsolute(p) ? p : path.join(data.cwd || process.cwd(), p)))
+        .map((raw) => ({ raw, resolved: path.isAbsolute(raw) ? raw : path.join(cwdBase, raw) }))
       : [];
+    const bashPaths = bashSources.map((s) => s.resolved);
 
     // v2.4.6: Bash uploads whose every source file lives in an exempt folder
     // (Devin PR #62, rounds 3-4): the final decision runs on the stripped
     // content without the exempt paths — inline privileged data is still
     // caught and exempt filenames do not distort the decision.
-    const effective = effectiveBashInput(content, bashPaths, exemptPaths);
+    const effective = effectiveBashInput(content, bashSources, exemptPaths);
 
     if (!effective.content.trim() && !effective.bashPaths.length && mode !== 'strict') { process.exit(0); }
 
@@ -245,16 +247,22 @@ function stripPaths(content, paths) {
   return out;
 }
 
-// When every Bash source path is exempt, the final decision runs on the
-// command text stripped of those paths (round 3: inline privileged data must
-// not be hidden) and without the exempt paths as discriminators (round 4: an
-// exempt filename like riserbatissimo.txt must not distort the decision —
-// cloud mode then correctly ignores weak-only inline content).
-function effectiveBashInput(content, bashPaths, exemptPaths) {
-  if (allPathsExempt(bashPaths, exemptPaths)) {
-    return { content: stripPaths(content, bashPaths), bashPaths: [] };
+// When every Bash source resolves into an exempt folder, the final decision
+// runs on the command text stripped of BOTH the original tokens and their
+// resolved forms (a relative exempt source must not leave a
+// privileged-looking basename in the residual text), without the exempt
+// paths as discriminators (round 4: an exempt filename like
+// riserbatissimo.txt must not distort the decision).
+// sources: [{ raw, resolved }].
+function effectiveBashInput(content, sources, exemptPaths) {
+  if (sources.length && sources.every((s) => isExemptPath(s.resolved, exemptPaths))) {
+    let stripped = String(content || '');
+    for (const s of sources) {
+      stripped = stripped.split(s.resolved).join(' ').split(s.raw).join(' ');
+    }
+    return { content: stripped, bashPaths: [] };
   }
-  return { content, bashPaths };
+  return { content, bashPaths: sources.map((s) => s.resolved) };
 }
 
 // ---------------------------------------------------------------------------
@@ -455,12 +463,22 @@ function extractBashFilePaths(cmd) {
     // cat, head, tail, ... followed by one or more paths (absolute or relative)
     { rx: new RegExp('\\b(?:cat|head|tail|less|base64|xxd|strings|file|wc)((?:\\s+(?:' + REL + '))+)', 'g'), many: true },
   ];
+  // A token like `a.md..fascicoli/rossi.doc` glues two sources together:
+  // splitting on '..' tracks the second one so it cannot hide from the
+  // privileged-directory check (Devin PR #63).
+  function expandBashToken(tok) {
+    if (tok.includes('..') && !/^\.\.?\//.test(tok)) {
+      return tok.split('..').filter(Boolean).filter((t) => relTest.test(t));
+    }
+    return relTest.test(tok) ? [tok] : [];
+  }
+
   for (const { rx, many } of patterns) {
     let m;
     while ((m = rx.exec(cmd)) !== null) {
       if (many) {
         for (const tok of m[1].trim().split(/\s+/)) {
-          if (relTest.test(tok)) paths.push(tok);
+          for (const t of expandBashToken(tok)) paths.push(t);
         }
       } else {
         paths.push(m[1]);
