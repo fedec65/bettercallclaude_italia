@@ -105,16 +105,14 @@ function main() {
       : [];
 
     // v2.4.6: Bash uploads whose every source file lives in an exempt folder
-    // are exempt too (Devin PR #62); mixed sources still go through checks.
-    // Privileged inline data alongside an exempt source must NOT be hidden
-    // (Devin PR #62 round 3): strip the referenced paths and re-classify.
-    if (allPathsExempt(bashPaths, exemptPaths)) {
-      if (!classify(stripPaths(content, bashPaths), '')) { process.exit(0); }
-    }
+    // (Devin PR #62, rounds 3-4): the final decision runs on the stripped
+    // content without the exempt paths — inline privileged data is still
+    // caught and exempt filenames do not distort the decision.
+    const effective = effectiveBashInput(content, bashPaths, exemptPaths);
 
-    if (!content.trim() && !bashPaths.length && mode !== 'strict') { process.exit(0); }
+    if (!effective.content.trim() && !effective.bashPaths.length && mode !== 'strict') { process.exit(0); }
 
-    const result = decide(content, pathHint, mode, bashPaths, { toolName });
+    const result = decide(effective.content, pathHint, mode, effective.bashPaths, { toolName });
     if (!result) { process.exit(0); }
 
     process.stdout.write(JSON.stringify({
@@ -238,6 +236,18 @@ function stripPaths(content, paths) {
   return out;
 }
 
+// When every Bash source path is exempt, the final decision runs on the
+// command text stripped of those paths (round 3: inline privileged data must
+// not be hidden) and without the exempt paths as discriminators (round 4: an
+// exempt filename like riserbatissimo.txt must not distort the decision —
+// cloud mode then correctly ignores weak-only inline content).
+function effectiveBashInput(content, bashPaths, exemptPaths) {
+  if (allPathsExempt(bashPaths, exemptPaths)) {
+    return { content: stripPaths(content, bashPaths), bashPaths: [] };
+  }
+  return { content, bashPaths };
+}
+
 // ---------------------------------------------------------------------------
 // Local tool detection
 // ---------------------------------------------------------------------------
@@ -265,7 +275,7 @@ function isLocalWriteTool(toolName) {
 // Everything else (cat, grep, sed, redirects to local files) does not
 // exfiltrate and is skipped unless scan_local_writes is on.
 const NETWORK_COMMANDS =
-  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b(?:\s+-[A-Za-z]+\s+[^\s|;]+|\s+--[A-Za-z-]+=[^\s|;]+)*\s+push\b|\bgh\s+api\b|\bpython[0-9.]*\b\s+-c\s+(?:"[^"]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^"]*"|'[^']*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^']*')/i;
+  /\b(?:curl|wget|nc|ncat|netcat|ssh|scp|sftp|ftp|rsync|socat|telnet)\b|\bgit\b(?:\s+-[A-Za-z]+\s+[^\s|;]+|\s+--[A-Za-z-]+=[^\s|;]+)*\s+push\b|\bgh\s+api\b|\bpython[0-9.]*\b(?:\s+-[A-Za-z]+)*\s+-c\s+(?:"[^"]*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^"]*"|'[^']*\b(?:requests|httpx|urllib3?|aiohttp|http\.client)\b[^']*')/i;
 
 /**
  * Decide whether a tool call enters content scanning at all.
@@ -564,6 +574,7 @@ module.exports = {
   exemptsToolPath,
   allPathsExempt,
   stripPaths,
+  effectiveBashInput,
   envOption,
   isLocalTool,
   isLocalWriteTool,
