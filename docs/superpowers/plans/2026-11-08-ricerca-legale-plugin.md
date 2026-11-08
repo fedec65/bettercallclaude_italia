@@ -776,7 +776,7 @@ module.exports = {
 
 Run: `node bettercallclaude_italia/skills/italgiure-search/scripts/italgiure-query.test.js`
 
-Expected: 14 `ok`, `14 passed, 0 failed`.
+Expected: 15 `ok`, `15 passed, 0 failed`.
 
 - [ ] **Step 5: verifica la CLI a mano**
 
@@ -793,10 +793,21 @@ echo '{"response":{"numFound":1,"docs":[{"id":"x1","szdec":"III","tipoprov":"Sen
 ```
 Expected: JSON con `"totale": 1` e `"estremi": "Sez. III Sentenza n. 17006 del 2025"`.
 
-- [ ] **Step 6: committa**
+- [ ] **Step 6: collega il test a `npm test`**
+
+Il test dello script deve girare nella CI, altrimenti non presidia niente.
+Aggiungi lo script del task 1 alla stringa `test` di `package.json`:
+
+```json
+"test": "node bettercallclaude_italia/scripts/privacy-check.test.js && node scripts/check-tool-names.test.js && node bettercallclaude_italia/skills/italgiure-search/scripts/italgiure-query.test.js"
+```
+
+Verifica con `npm test`: devono girare tutte e tre le suite.
+
+- [ ] **Step 7: committa**
 
 ```bash
-git add bettercallclaude_italia/skills/italgiure-search/scripts/
+git add package.json bettercallclaude_italia/skills/italgiure-search/scripts/
 git commit -m "feat(italgiure-search): script puro di costruzione query e mappatura risposta
 
 Lo script non fa rete di proposito: la gamba di rete e' curl, che l'hook
