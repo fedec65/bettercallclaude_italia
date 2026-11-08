@@ -7,7 +7,7 @@
     "build:ollama": "cd bettercallclaude_italia/mcp-servers/ollama && npm install && npm run build:bundle",
     "package": "bash scripts/package-plugin.sh",
     "validate": "node scripts/validate-plugin.js",
-    "test": "node bettercallclaude_italia/scripts/privacy-check.test.js && node scripts/check-tool-names.test.js"
+    "test": "node bettercallclaude_italia/scripts/privacy-check.test.js && node scripts/check-tool-names.test.js && node bettercallclaude_italia/skills/italgiure-search/scripts/italgiure-query.test.js"
   },
   "repository": {
     "type": "git",
