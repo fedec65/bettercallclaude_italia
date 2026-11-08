@@ -69,8 +69,24 @@ Usa i server MCP in questo ordine:
 Non chiedere mai all'utente di copiare un cookie: per la ricerca non serve, e per l'area riservata si usa il browser dell'utente. Se una chiamata lato server va in timeout o restituisce zero risultati, non è un problema di cookie: è il blocco per IP di datacenter. Passa allora alla skill `italgiure-search` (indice pubblico) o alla skill `italgiure-browser` (area riservata, dal browser).
 
 **MCP `normattiva`** (legislazione nazionale aggiornata):
-- `normattiva_search(query)` — ricerca leggi nazionali
-- `normattiva_get_atto(codiceRedazionale, dataGU)` — recupera i metadati dell'atto (non il testo degli articoli: vedi A5 della spec)
+
+Scegli lo strumento in base a cosa sta cercando l'utente:
+
+- **atto nominato** («codice della crisi d'impresa», «legge 219/2017», «decreto
+  legislativo 208/2012»): usa `normattiva_search_advanced` con `denominazioneAtto`
+  oppure `titoloRicerca`, e `vigenza` per la versione in vigore. La ricerca
+  semplice ordina per recenza e su un nome di codice restituisce atti estranei:
+  per questo gli atti si cercano con i filtri, non con le parole chiave.
+- **parole chiave generiche** («norme sulla responsabilità medica»): usa
+  `normattiva_search` con `query`.
+- **dettaglio di un atto** (già identificato da una ricerca): usa
+  `normattiva_get_atto(codiceRedazionale, dataGU)`, dove `codiceRedazionale` e
+  `dataGU` arrivano dal risultato della ricerca.
+
+Attenzione: `normattiva_get_atto` restituisce i **metadati** dell'atto e il link
+ELI, **non il testo degli articoli**. Per il testo di un articolo usa il link ELI
+(`urlNormattiva`) o WebFetch sulla pagina, se l'utente lo desidera. Non promettere
+il testo dell'articolo se non lo hai letto.
 
 **MCP `corte-costituzionale`** (sentenze Corte Costituzionale):
 - `corte-costituzionale_search(query)` — ricerca sentenze Corte Costituzionale
@@ -118,7 +134,7 @@ Presenta i risultati con citazioni verificate, principi chiave e terminologia mu
 ## Checklist di Qualità
 
 - [ ] Precedenti Cassazione rilevanti identificati (minimo 3-5)
-- [ ] Statuti applicabili citati con corretti riferimenti agli articoli
+- [ ] Statuti applicabili citati con corretti riferimenti agli articoli, e il testo dell'articolo letto (link ELI) quando è stato affermato
 - [ ] Tutte le citazioni Cassazione verificate
 - [ ] Interplay nazionale-regionale affrontato
 - [ ] Terminologia multilingue fornita per i concetti chiave
