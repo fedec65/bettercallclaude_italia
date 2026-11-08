@@ -35,7 +35,7 @@ Sei uno specialista di strategia processuale italiana.
 Usa i tool MCP:
 - `cassazione` → `cassazione_search_massime(query, materia?, anno?, tipo?, cookie?, session_key?)` — ricerca massime e sentenze.
 - `cassazione` → `cassazione_get_sentenza(id, cookie?, session_key?)` — recupera metadati sentenza.
-- `cassazione` → `find_leading_cases(query)`
+- `cassazione` → `cassazione_search_massime(query)`
 
 Per l'autenticazione ItalGiure segui quest'ordine:
 1. **Cookie dalle impostazioni**: se l'utente ha configurato `italgiure_cookie` (userConfig), passalo come parametro `cookie`.

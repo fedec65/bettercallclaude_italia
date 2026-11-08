@@ -15,8 +15,13 @@
  * from generate-tool-frontmatter.js — single source of truth). Parity alone would
  * accept a typo duplicated in both conventions (review Devin, PR #47).
  *
+ * The same catalog is applied to the prose of every file: a tool cited in the body
+ * of a skill (e.g. `get_article(statute_number, article)`) is invoked by the model
+ * exactly like one from the frontmatter, so a name that does not exist in
+ * SERVER_TOOLS is the same runtime failure, one layer deeper.
+ *
  * Usage:
- *   node scripts/check-tool-names.js            # check (exit 1 on violation)
+ *   node scripts/check-tool-names.js [plugin-dir]  # check (exit 1 on violation)
  *
  * To regenerate a file's tools: block, see scripts/generate-tool-frontmatter.js.
  */
@@ -25,7 +30,16 @@ const fs = require('fs');
 const path = require('path');
 
 const root = path.resolve(__dirname, '..');
-const pluginDir = path.join(root, 'bettercallclaude_italia');
+// La directory del plugin da validare puo' essere indicata come argomento
+// posizionale (usata dai test con fixture temporanee).
+const pluginDir = process.argv[2]
+  ? path.resolve(process.argv[2])
+  : path.join(root, 'bettercallclaude_italia');
+
+if (!fs.existsSync(pluginDir)) {
+  console.error(`ERRORE: la directory del plugin "${pluginDir}" non esiste.`);
+  process.exit(1);
+}
 
 const TARGETS = [
   path.join(pluginDir, 'agents'),
@@ -33,13 +47,47 @@ const TARGETS = [
   path.join(pluginDir, 'skills'),
 ];
 
+// ---------------------------------------------------------------------------
+// Controllo prosa: nomi di tool citati nel corpo dei file.
+//
+// Il controllo sul frontmatter non basta: le skill invocano tool anche nel
+// corpo del testo (es. `get_article(statute_number, article)`) e quei
+// riferimenti non compaiono in nessun allowlist -- il modello li chiama e
+// riceve "No such tool available" a runtime.
+//
+// Criterio: token racchiusi tra backtick con la forma `nome(`, dove nome e' in
+// minuscolo e contiene almeno un underscore. L'underscore e' il discriminante:
+// tutti i nomi del catalogo SERVER_TOOLS lo contengono, mentre le chiamate a
+// funzione generiche citate in prosa (filter(...), parse(...)) no.
+// ---------------------------------------------------------------------------
+
+const PROSE_TOOL_RE = /`([a-z][a-z0-9_-]*_[a-z0-9_-]*)\(/g;
+
+function collectProseTools(content) {
+  // La prosa e' tutto cio' che segue il frontmatter.
+  const fm = content.match(/^---\n([\s\S]*?)\n---\n/);
+  const body = fm ? content.slice(fm[0].length) : content;
+  const found = new Set();
+  let m;
+  PROSE_TOOL_RE.lastIndex = 0;
+  while ((m = PROSE_TOOL_RE.exec(body)) !== null) {
+    found.add(m[1]);
+  }
+  return found;
+}
+
 const SCOPED_PREFIX = 'mcp__plugin_bettercallclaude-italia_';
 const BARE_PREFIX = 'mcp__';
 
 // Catalog: servers registered in .mcp.json + per-server tool inventory from the
 // generator's SERVER_TOOLS (parsed from source so there is one source of truth).
 function loadCatalog() {
-  const mcp = JSON.parse(fs.readFileSync(path.join(pluginDir, '.mcp.json'), 'utf8'));
+  // Il catalogo e' quello del repo. Se la directory validata non ha un
+  // .mcp.json proprio (fixture temporanee dei test), si usa quello canonico.
+  const mcpPath = fs.existsSync(path.join(pluginDir, '.mcp.json'))
+    ? path.join(pluginDir, '.mcp.json')
+    : path.join(root, 'bettercallclaude_italia', '.mcp.json');
+  const mcp = JSON.parse(fs.readFileSync(mcpPath, 'utf8'));
   const registeredServers = new Set(Object.keys(mcp.mcpServers || {}));
   const genSrc = fs.readFileSync(path.join(root, 'scripts', 'generate-tool-frontmatter.js'), 'utf8');
   const m = genSrc.match(/const SERVER_TOOLS = (\{[\s\S]*?\n\});/);
@@ -49,6 +97,13 @@ function loadCatalog() {
 }
 
 const { registeredServers, serverTools } = loadCatalog();
+
+// Unione dei nomi di tool di tutti i server: un token di prosa e' valido se
+// esiste in QUALSIASI server, non solo in quelli citati dal file.
+const ALL_TOOL_NAMES = new Set();
+for (const tools of Object.values(serverTools)) {
+  for (const name of tools) ALL_TOOL_NAMES.add(name);
+}
 
 function collectFiles(dir) {
   const out = [];
@@ -109,11 +164,19 @@ let filesChecked = 0;
 let mcpEntries = 0;
 const violations = [];
 const unknown = [];
+const proseViolations = [];
 
 for (const dir of TARGETS) {
   if (!fs.existsSync(dir)) continue;
   for (const file of collectFiles(dir)) {
-    const tools = extractToolsList(fs.readFileSync(file, 'utf8'));
+    const content = fs.readFileSync(file, 'utf8');
+    const tools = extractToolsList(content);
+    const proseTools = collectProseTools(content);
+    for (const name of proseTools) {
+      if (!ALL_TOOL_NAMES.has(name)) {
+        proseViolations.push({ file: path.relative(root, file), tool: name });
+      }
+    }
     if (!tools) continue;
     filesChecked++;
     const set = new Set(tools);
@@ -157,6 +220,17 @@ if (unknown.length) {
   }
   console.error('\nEvery entry must reference a server registered in .mcp.json and a tool in SERVER_TOOLS.');
   console.error('Fix: correct the name, or add the tool to SERVER_TOOLS in generate-tool-frontmatter.js (if real) and regenerate.');
+}
+
+if (proseViolations.length) {
+  failed = true;
+  console.error(`FAIL: ${proseViolations.length} riferimenti a tool inesistenti nella prosa:\n`);
+  for (const v of proseViolations) {
+    console.error(`ERRORE PROSA: ${v.file} — "${v.tool}" non esiste nel catalogo SERVER_TOOLS`);
+  }
+  console.error('\nOgni tool citato in prosa come `nome(...)` deve esistere in SERVER_TOOLS.');
+  console.error('Fix: correggi il nome nella prosa, oppure aggiungi il tool a SERVER_TOOLS in');
+  console.error('generate-tool-frontmatter.js (se esiste davvero) e rigenera.');
 }
 
 if (failed) process.exit(1);

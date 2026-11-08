@@ -74,19 +74,19 @@ Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (Sente
 
 **MCP `normattiva`** (legislazione nazionale aggiornata):
 - `normattiva_search(query)` — ricerca leggi nazionali
-- `get_article(statute_number, article)` — recupera testo articolo
+- `normattiva_get_atto(codiceRedazionale, dataGU)` — recupera i metadati dell'atto (non il testo degli articoli: vedi A5 della spec)
 
 **MCP `corte-costituzionale`** (sentenze Corte Costituzionale):
 - `corte-costituzionale_search(query)` — ricerca sentenze Corte Costituzionale
-- `get_decision(id)` — recupera testo sentenza
+- `corte-costituzionale_get_sentenza(id)` — recupera testo sentenza
 
 **MCP `giustizia-amministrativa`** (TAR e Consiglio di Stato):
 - `giustizia-amministrativa_search(query, court?)` — ricerca decisioni giustizia amministrativa
-- `get_decision(id)` — recupera testo decisione
+- `giustizia-amministrativa_get_sentenza(id)` — recupera testo decisione
 
 **MCP `eur-lex-ita`** (diritto UE in italiano):
 - `eur-lex-ita_search(query)` — ricerca atti UE in italiano
-- `get_article(act_number, article)` — recupera testo articolo
+- `eur-lex-ita_get_atto_celex(celex)` — recupera l'atto UE in italiano
 
 ### Passo 3: Analisi dei Precedenti
 Applica questo framework a 5 punti a ogni decisione Cassazione rilevante:
@@ -104,8 +104,8 @@ Applica questo framework a 5 punti a ogni decisione Cassazione rilevante:
 ### Passo 4: Verifica Citazioni
 Usa MCP `legal-citations-ita`:
 - `legal-citations-ita_validate(citation)` — verifica esistenza e formato
-- `format_citation(citation, target_language)` — converte IT/EN
-- `parse_citation(citation)` — scompone i componenti
+- `legal-citations-ita_format(citation, target_language)` — converte IT/EN
+- `legal-citations-ita_parse(citation)` — scompone i componenti
 
 Target: >95% accuratezza citazioni.
 
