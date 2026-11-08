@@ -34,7 +34,10 @@ BetterCallClaude**. Il termine di ricerca va diretto al Ministero della Giustizi
 - quando l'utente chiede direttamente un precedente di Cassazione e il canale
   server non risponde;
 - per verificare l'esistenza di una sentenza conoscendo gli estremi (numero e
-  anno), in alternativa a `citation-verify-ita` per le sentenze.
+  anno): il tool MCP `citation-verify-ita_check_existence` (server
+  `citation-verify-ita`) verifica l'esistenza delle citazioni, ma per le sentenze
+  non raggiunge ItalGiure dal lato server, quindi la via client-side di questa
+  skill e' quella che funziona.
 
 Per l'**area riservata** (massime complete, Rv., conformi e difformi) usa
 `italgiure-browser`. Per la **legislazione** usa `italian-legal-research`.
@@ -71,6 +74,12 @@ I valori ammessi sono rigidi: `--materia` accetta solo `civile` o `penale`,
 `--tipo` accetta solo `sentenza`, `ordinanza` o `decreto`. Un valore diverso da
 questi fa fallire lo script: usa solo i valori elencati.
 
+Anche `--anno` deve essere un anno di quattro cifre, ma lo script non lo
+valida: un valore non numerico o non positivo viene **ignorato in silenzio**
+(nessun filtro `anno` applicato, quindi la ricerca copre tutti gli anni), mentre
+un anno abbreviato come `24` produce il filtro `anno:"24"`, che non
+corrisponde ad alcun anno reale.
+
 Se lo script non e' disponibile, costruisci la query con queste regole:
 
 - testo libero: racchiudilo in parentesi e escapa i caratteri speciali Solr
@@ -93,10 +102,12 @@ comporta in modo inatteso.
 ### Passo 2 — Interroga l'indice
 
 ```bash
+Q=$(node <SCRIPT> build --query "TERMINE DI RICERCA" --materia civile)
+
 curl -sS -k -m 30 -X POST \
   "https://www.italgiure.giustizia.it/sncass/isapi/hc.dll/sn.solr/sn-collection/select?app.query" \
   -H "Content-Type: application/x-www-form-urlencoded" \
-  --data-urlencode "q=QUERY" \
+  --data-urlencode "q=$Q" \
   --data "rows=20&start=0&wt=json&fl=id,filename,szdec,tipoprov,datdec,numdec,anno,kind,datdep&sort=pd desc,datdec desc" \
   | node <SCRIPT> format
 ```
@@ -110,9 +121,13 @@ Note sulla invocazione:
 - `curl` e non `node script.js`: l'hook privacy del plugin intercetta `curl` e i
   comandi di rete, e lascia passare i file locali. Usando `curl` la ricerca resta
   dentro il perimetro di controllo del segreto professionale.
+- `q=$Q`: la query passa **sempre** tramite la variabile di shell, mai incollata
+  come testo dentro le virgolette. Incollata letteralmente, la shell elimina le
+  virgolette interne (`kind:"snciv"` diventerebbe `kind:snciv`) e gli escape
+  `\"` perdono la barra rovesciata.
 
-Sostituisci `QUERY` con l'output del Passo 1, e `rows`/`start` con la
-paginazione richiesta (20 risultati per pagina, `start = (pagina - 1) * 20`).
+Assegna l'output del Passo 1 alla variabile `Q`, e sostituisci `rows`/`start` con
+la paginazione richiesta (20 risultati per pagina, `start = (pagina - 1) * 20`).
 
 Se lo script non e' disponibile, ometti la pipe finale: la `curl` restituisce il
 JSON grezzo di Solr, e mappalo con la tabella sotto.
@@ -137,20 +152,23 @@ La forma standard e':
 
 ```json
 {
-  "totale": 42,
+  "totale": <numero>,
   "massime": [
     {
-      "id": "snciv2025332127S",
-      "estremi": "Sez. III Sentenza n. 17006 del 2025",
-      "sezione": "III",
-      "tipo": "Sentenza",
-      "dataDecisione": "2025-06-12",
-      "dataDeposito": "2025-09-01",
-      "urlPdf": "https://www.italgiure.giustizia.it/sncass/..."
+      "id": "snciv<anno><numero>",
+      "estremi": "Sez. <sezione> Sentenza n. <numero> del <anno>",
+      "sezione": "<sezione>",
+      "tipo": "<tipo>",
+      "dataDecisione": "<YYYY-MM-DD>",
+      "dataDeposito": "<YYYY-MM-DD>",
+      "urlPdf": "https://www.italgiure.giustizia.it/sncass/<percorso>"
     }
   ]
 }
 ```
+
+I valori qui sono segnaposto: nella risposta reale contengono i dati del
+documento, non dei valori di esempio.
 
 Per ogni precedente, indica la provenienza: `Fonte: ItalGiure (SentenzeWeb pubblico)`.
 Non attribuire a questa ricerca le **massime** (il testo della massima): l'indice
@@ -160,7 +178,7 @@ pubblico non le espone. Se servono le massime o gli Rv., serve l'area riservata.
 
 | Sintomo | Cosa significa | Cosa fare |
 |---|---|---|
-| `curl` va in timeout | l'IP corrente non e' ammesso da ItalGiure | offri la modalita' browser (`italgiure-browser`) e i link di ricerca manuale; l'errore di JSON che segue e' una conseguenza del timeout, non un problema diverso |
+| `curl` va in timeout | l'IP corrente non e' ammesso da ItalGiure | leggi prima lo stderr di `curl`: se riporta `(28)` e' un timeout (canale bloccato), non un problema di formato; poi offri la modalita' browser (`italgiure-browser`) e i link di ricerca manuale. L'errore di JSON che segue e' una conseguenza del timeout, non un problema diverso |
 | `curl` restituisce HTML invece di JSON | la risposta non e' del Solr (redirection o blocco) | verifica l'URL, prova `-k` senza flag di header, e offri la modalita' browser |
 | `totale: 0` | la ricerca e' andata a buon fine, non ci sono risultati | nessun errore: riporta che non ci sono precedenti per quei termini, e prova con la ricerca per estremi |
 | errore di JSON (la `curl` ha risposto) | risposta troncata o non-JSON | riprova con `rows` piu' piccolo |
