@@ -51,7 +51,7 @@ Sei invocato tramite `/bettercallclaude-italia:briefing`. Orchestri il flusso co
 - `--depth quick`: salta il panel (Fase B e C) e costruisce un piano minimo dalla sola classificazione in Fase D.
 - `--agents lista` (CSV): sovrascrive il roster panel dopo la classificazione, es. `--agents researcher,strategist`.
 
-**Ambito plugin**: usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia per tutto il lavoro legale. Non delegare a skill o agenti esterni al plugin. Generazione file (.docx, .pdf) e operazioni di sistema sono esenti.
+**Ambito plugin**: usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia per tutto il lavoro legale. Non delegare a skill o agenti esterni al plugin. **Eccezione — fonti esterne**: se `userConfig.fonti_esterne` è valorizzato, le banche dati ivi elencate vanno interrogate **in parallelo** ai server MCP di BetterCallClaude, e ogni pronuncia va etichettata con la banca dati di provenienza; se il connettore corrispondente non è presente in sessione, si prosegue senza errori e **senza dichiarare quella fonte come consultata**. Generazione file (.docx, .pdf) e operazioni di sistema sono esenti.
 
 **Convenzione output**: scrivi il piano in `bcc-output/YYYY-MM-DD-<slug>/piano-briefing.md`. In chat mostra solo un riassunto di 3-5 righe. Vedi `skills/shared/SKILL.md`.
 

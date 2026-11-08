@@ -61,6 +61,13 @@
       "default": "",
       "sensitive": true
     },
+    "fonti_esterne": {
+      "type": "string",
+      "title": "Fonti esterne (opzionale)",
+      "description": "Banche dati giuridiche abbonate da interrogare in parallelo ai server MCP di BetterCallClaude, separate da virgola (es. buddalaw, simpliciter). Se il connettore corrispondente è presente in sessione viene interrogato e ogni pronuncia viene etichettata con la banca dati di provenienza. Se il connettore manca la ricerca prosegue senza errori e la fonte non viene dichiarata come consultata.",
+      "default": "",
+      "sensitive": false
+    },
     "user_id": {
       "type": "string",
       "title": "User ID per i flussi personalizzati",

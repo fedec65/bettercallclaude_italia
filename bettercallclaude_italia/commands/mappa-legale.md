@@ -106,7 +106,7 @@ lista dei ticket per nome con tipo, conteggio nebbia). Vedi `skills/shared/SKILL
 
 Per tutti i compiti di charting, usa **esclusivamente** agenti, skill e server MCP di
 BetterCallClaude Italia. Non delegare lavoro legale a skill, agenti o strumenti generici o
-esterni al plugin.
+esterni al plugin. **Eccezione — fonti esterne**: se `userConfig.fonti_esterne` è valorizzato, le banche dati ivi elencate vanno interrogate **in parallelo** ai server MCP di BetterCallClaude, e ogni pronuncia va etichettata con la banca dati di provenienza; se il connettore corrispondente non è presente in sessione, si prosegue senza errori e **senza dichiarare quella fonte come consultata**.
 
 ## Query Utente
 
