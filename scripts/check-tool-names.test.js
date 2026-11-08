@@ -34,9 +34,24 @@ function t(name, fn) {
   }
 }
 
+// Directory temporanee create dai test: vengono rimosse alla fine della
+// sessione di test, cosi' non si accumulano in /tmp.
+const tempDirs = [];
+
+function cleanupTempDirs() {
+  for (const dir of tempDirs) {
+    try {
+      fs.rmSync(dir, { recursive: true, force: true });
+    } catch (e) {
+      // Pulizia best-effort: la directory temporanea non e' un problema del test.
+    }
+  }
+}
+
 /** Crea una directory temporanea con i file indicati e la restituisce. */
 function fixture(files) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bcc-toolnames-'));
+  tempDirs.push(dir);
   for (const rel of Object.keys(files)) {
     const p = path.join(dir, rel);
     fs.mkdirSync(path.dirname(p), { recursive: true });
@@ -59,47 +74,50 @@ function run(dir) {
   }
 }
 
-const SKILL_WITH_BROKEN_TOOL = [
-  '---',
-  'name: fixture-skill',
-  'description: "Fixture di test per il validatore dei nomi di tool."',
-  'tools:',
-  '  - Read',
-  '---',
-  '',
-  '# Fixture',
-  '',
-  'Usa `get_article(statute_number, article)` per recuperare il testo.',
-  '',
-].join('\n');
+/** Riga di fixture con frontmatter e corpo libero. */
+function skill(body) {
+  return [
+    '---',
+    'name: fixture-skill',
+    'description: "Fixture di test per il validatore dei nomi di tool."',
+    'tools:',
+    '  - Read',
+    '---',
+    '',
+    '# Fixture',
+    '',
+    body,
+    '',
+  ].join('\n');
+}
 
-const SKILL_WITH_VALID_TOOL = [
-  '---',
-  'name: fixture-skill',
-  'description: "Fixture di test per il validatore dei nomi di tool."',
-  'tools:',
-  '  - Read',
-  '---',
-  '',
-  '# Fixture',
-  '',
-  'Usa `normattiva_search(query)` per cercare.',
-  '',
-].join('\n');
+const SKILL_WITH_BROKEN_TOOL = skill(
+  'Usa `get_article(statute_number, article)` per recuperare il testo.'
+);
 
-const SKILL_WITH_GENERIC_CALL = [
-  '---',
-  'name: fixture-skill',
-  'description: "Fixture di test per il validatore dei nomi di tool."',
-  'tools:',
-  '  - Read',
-  '---',
-  '',
-  '# Fixture',
-  '',
-  'La funzione `filter(items)` ordina i risultati.',
-  '',
-].join('\n');
+const SKILL_WITH_VALID_TOOL = skill(
+  'Usa `normattiva_search(query)` per cercare.'
+);
+
+const SKILL_WITH_GENERIC_CALL = skill(
+  'La funzione `filter(items)` ordina i risultati.'
+);
+
+const SKILL_WITH_BROKEN_BARE_NAME = skill(
+  'Usa il tool `compute_deadlines` per calcolare i termini processuali.'
+);
+
+const SKILL_WITH_BARE_TOOL_NAME = skill(
+  'Il tool `normattiva_search` e\' quello per la ricerca normativa.'
+);
+
+const SKILL_WITH_USER_CONFIG_KEY = skill(
+  'L\'utente configura `user_id` nelle impostazioni del plugin.'
+);
+
+const SKILL_WITH_QUALIFIED_MCP_NAME = skill(
+  'Il tool `mcp__ollama__ollama_check_status(` verifica lo stato del modello.'
+);
 
 console.log('check-tool-names: prosa');
 
@@ -110,6 +128,17 @@ t('rifiuta un tool inesistente citato in prosa', () => {
   assert.ok(
     r.output.includes('get_article'),
     'l\'output deve nominare il tool rotto, got:\n' + r.output
+  );
+});
+
+t('la riga di errore della prosa rispetta il contratto', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_BROKEN_TOOL });
+  const r = run(dir);
+  const expected =
+    'ERRORE PROSA: skills/fixture-skill/SKILL.md — "get_article" non esiste nel catalogo SERVER_TOOLS';
+  assert.ok(
+    r.output.includes(expected),
+    'l\'output deve contenere la riga di contratto:\n' + expected + '\ngot:\n' + r.output
   );
 });
 
@@ -125,12 +154,59 @@ t('non segnala le chiamate a funzione generiche', () => {
   assert.strictEqual(r.code, 0, 'i nomi senza underscore non sono tool, output:\n' + r.output);
 });
 
+console.log('check-tool-names: prosa, nomi nudi');
+
+t('rifiuta un nome nudo che e\' la coda di un tool del catalogo', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_BROKEN_BARE_NAME });
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il validatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('compute_deadlines'),
+    'l\'output deve nominare il nome rotto, got:\n' + r.output
+  );
+  assert.ok(
+    r.output.includes('legal-persona-ita_compute_deadlines'),
+    'l\'output deve suggerire il nome completo del tool, got:\n' + r.output
+  );
+});
+
+t('accetta un nome nudo che e\' gia\' un tool del catalogo', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_BARE_TOOL_NAME });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'il validatore deve accettare, output:\n' + r.output);
+});
+
+t('non segnala una chiave di userConfig che coincide con la coda di un tool', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_USER_CONFIG_KEY });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'le chiavi di userConfig non sono tool, output:\n' + r.output);
+});
+
+t('non segnala un nome gia\' qualificato con il prefisso MCP', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_QUALIFIED_MCP_NAME });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'i nomi mcp__ sono gia\' qualificati, output:\n' + r.output);
+});
+
+console.log('check-tool-names: argomenti');
+
+t('rifiuta una directory inesistente', () => {
+  const r = run(path.join(os.tmpdir(), 'bcc-toolnames-does-not-exist-' + Date.now()));
+  assert.strictEqual(r.code, 1, 'il validatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('non esiste'),
+    'l\'output deve dire che la directory non esiste, got:\n' + r.output
+  );
+});
+
 console.log('check-tool-names: corpus reale');
 
 t('il corpus reale del plugin non ha riferimenti rotti in prosa', () => {
   const r = run(path.join(ROOT, 'bettercallclaude_italia'));
   assert.strictEqual(r.code, 0, 'output:\n' + r.output);
 });
+
+cleanupTempDirs();
 
 console.log('');
 console.log(passed + ' passed, ' + failed + ' failed');

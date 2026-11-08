@@ -15,10 +15,11 @@
  * from generate-tool-frontmatter.js — single source of truth). Parity alone would
  * accept a typo duplicated in both conventions (review Devin, PR #47).
  *
- * The same catalog is applied to the prose of every file: a tool cited in the body
- * of a skill (e.g. `get_article(statute_number, article)`) is invoked by the model
- * exactly like one from the frontmatter, so a name that does not exist in
- * SERVER_TOOLS is the same runtime failure, one layer deeper.
+ * Lo stesso catalogo vale per la prosa dei file scansionati (agents/, commands/,
+ * skills/), e soltanto per il corpo che segue il frontmatter: un tool citato nel
+ * corpo di una skill (es. `get_article(statute_number, article)`) viene invocato
+ * dal modello esattamente come uno del frontmatter, quindi un nome che non esiste
+ * in SERVER_TOOLS e' lo stesso fallimento a runtime, un livello piu' in basso.
  *
  * Usage:
  *   node scripts/check-tool-names.js [plugin-dir]  # check (exit 1 on violation)
@@ -59,18 +60,50 @@ const TARGETS = [
 // minuscolo e contiene almeno un underscore. L'underscore e' il discriminante:
 // tutti i nomi del catalogo SERVER_TOOLS lo contengono, mentre le chiamate a
 // funzione generiche citate in prosa (filter(...), parse(...)) no.
+//
+// Il look-ahead `(?!mcp__)` esclude i nomi gia' qualificati con il prefisso
+// MCP: sono riferimenti corretti, non nomi da catalogo.
 // ---------------------------------------------------------------------------
 
-const PROSE_TOOL_RE = /`([a-z][a-z0-9_-]*_[a-z0-9_-]*)\(/g;
+const PROSE_TOOL_RE = /`((?!mcp__)[a-z][a-z0-9_-]*_[a-z0-9_-]*)\(/g;
+
+// Secondo controllo, piu' stretto: nomi nudi tra backtick (nessuna
+// parentesi di chiamata) che sono la *coda* di un tool del catalogo, cioe' un
+// nome troncato per errore (es. `compute_deadlines` invece di
+// `legal-persona-ita_compute_deadlines`). Non basta pero' la sola coda: nel
+// corpus i nomi nudi con underscore sono decine e quasi tutti sono chiavi di
+// JSON, di configurazione o identificativi di flusso, non tool. Percio' un
+// nome viene segnalato solo se:
+//   1. non e' un tool del catalogo;
+//   2. e' la coda di almeno un tool del catalogo;
+//   3. non e' una chiave di userConfig del manifest del plugin.
+// La condizione 3 evita il falso positivo su `user_id`, che e' insieme una
+// chiave di userConfig e la coda del tool `claim_user_id`.
+const PROSE_BARE_NAME_RE = /`((?!mcp__)[a-z][a-z0-9_-]*_[a-z0-9_-]*)`/g;
+
+// Corpo del file: tutto cio' che segue il frontmatter.
+function proseBody(content) {
+  const fm = content.match(/^---\n([\s\S]*?)\n---\n/);
+  return fm ? content.slice(fm[0].length) : content;
+}
 
 function collectProseTools(content) {
-  // La prosa e' tutto cio' che segue il frontmatter.
-  const fm = content.match(/^---\n([\s\S]*?)\n---\n/);
-  const body = fm ? content.slice(fm[0].length) : content;
+  const body = proseBody(content);
   const found = new Set();
   let m;
   PROSE_TOOL_RE.lastIndex = 0;
   while ((m = PROSE_TOOL_RE.exec(body)) !== null) {
+    found.add(m[1]);
+  }
+  return found;
+}
+
+function collectProseBareNames(content) {
+  const body = proseBody(content);
+  const found = new Set();
+  let m;
+  PROSE_BARE_NAME_RE.lastIndex = 0;
+  while ((m = PROSE_BARE_NAME_RE.exec(body)) !== null) {
     found.add(m[1]);
   }
   return found;
@@ -82,8 +115,10 @@ const BARE_PREFIX = 'mcp__';
 // Catalog: servers registered in .mcp.json + per-server tool inventory from the
 // generator's SERVER_TOOLS (parsed from source so there is one source of truth).
 function loadCatalog() {
-  // Il catalogo e' quello del repo. Se la directory validata non ha un
-  // .mcp.json proprio (fixture temporanee dei test), si usa quello canonico.
+  // I server registrati vengono letti dal .mcp.json della directory validata;
+  // se la directory non ne ha uno (fixture temporanee dei test) si ricade su
+  // quello canonico del repo. L'inventario dei tool, invece, e' sempre quello
+  // del repo: SERVER_TOOLS in generate-tool-frontmatter.js.
   const mcpPath = fs.existsSync(path.join(pluginDir, '.mcp.json'))
     ? path.join(pluginDir, '.mcp.json')
     : path.join(root, 'bettercallclaude_italia', '.mcp.json');
@@ -96,13 +131,53 @@ function loadCatalog() {
   return { registeredServers, serverTools };
 }
 
+// Chiavi di userConfig dichiarate dal manifest del plugin. Sono nomi che
+// l'utente configura, non tool: non vanno segnalati anche quando coincidono
+// con la coda di un tool del catalogo (es. `user_id`).
+function loadUserConfigKeys() {
+  const candidates = [
+    path.join(pluginDir, '.claude-plugin', 'plugin.json'),
+    path.join(root, 'bettercallclaude_italia', '.claude-plugin', 'plugin.json'),
+  ];
+  for (const p of candidates) {
+    if (!fs.existsSync(p)) continue;
+    try {
+      const manifest = JSON.parse(fs.readFileSync(p, 'utf8'));
+      return new Set(Object.keys(manifest.userConfig || {}));
+    } catch (e) {
+      // Manifest illeggibile: nessuna esclusione.
+    }
+  }
+  return new Set();
+}
+
 const { registeredServers, serverTools } = loadCatalog();
+const userConfigKeys = loadUserConfigKeys();
 
 // Unione dei nomi di tool di tutti i server: un token di prosa e' valido se
 // esiste in QUALSIASI server, non solo in quelli citati dal file.
 const ALL_TOOL_NAMES = new Set();
 for (const tools of Object.values(serverTools)) {
   for (const name of tools) ALL_TOOL_NAMES.add(name);
+}
+
+// Mappa coda di un tool -> nomi completi che terminano con quella coda.
+// Es. "compute_deadlines" -> ["legal-persona-ita_compute_deadlines"].
+const TOOL_TAILS = new Map();
+for (const name of ALL_TOOL_NAMES) {
+  for (let i = name.indexOf('_'); i !== -1; i = name.indexOf('_', i + 1)) {
+    const tail = name.slice(i + 1);
+    if (!tail) continue;
+    if (!TOOL_TAILS.has(tail)) TOOL_TAILS.set(tail, []);
+    TOOL_TAILS.get(tail).push(name);
+  }
+}
+
+// Path leggibile nei messaggi: relativo alla directory del plugin, con
+// fallback al path assoluto se il file sta fuori da quella directory.
+function displayPath(file) {
+  const rel = path.relative(pluginDir, file);
+  return rel.startsWith('..') ? file : rel;
 }
 
 function collectFiles(dir) {
@@ -174,8 +249,22 @@ for (const dir of TARGETS) {
     const proseTools = collectProseTools(content);
     for (const name of proseTools) {
       if (!ALL_TOOL_NAMES.has(name)) {
-        proseViolations.push({ file: path.relative(root, file), tool: name });
+        proseViolations.push({ file: displayPath(file), tool: name });
       }
+    }
+    // Nomi nudi che sono la coda di un tool del catalogo: quasi sempre sono
+    // chiavi di configurazione, vanno segnalati solo se non sono ne' tool ne'
+    // chiavi di userConfig.
+    for (const name of collectProseBareNames(content)) {
+      if (ALL_TOOL_NAMES.has(name)) continue;
+      if (userConfigKeys.has(name)) continue;
+      const matches = TOOL_TAILS.get(name);
+      if (!matches) continue;
+      proseViolations.push({
+        file: displayPath(file),
+        tool: name,
+        fullTool: matches.join(' / '),
+      });
     }
     if (!tools) continue;
     filesChecked++;
@@ -186,12 +275,12 @@ for (const dir of TARGETS) {
       mcpEntries++;
       const twin = twinOf(parsed);
       if (!set.has(twin)) {
-        violations.push({ file: path.relative(root, file), entry, twin });
+        violations.push({ file: displayPath(file), entry, twin });
       }
       if (!registeredServers.has(parsed.server)) {
-        unknown.push({ file: path.relative(root, file), entry, problem: `server "${parsed.server}" non registrato in .mcp.json` });
+        unknown.push({ file: displayPath(file), entry, problem: `server "${parsed.server}" non registrato in .mcp.json` });
       } else if (!(serverTools[parsed.server] || []).includes(parsed.tool)) {
-        unknown.push({ file: path.relative(root, file), entry, problem: `tool "${parsed.tool}" non nel catalogo SERVER_TOOLS del server "${parsed.server}"` });
+        unknown.push({ file: displayPath(file), entry, problem: `tool "${parsed.tool}" non nel catalogo SERVER_TOOLS del server "${parsed.server}"` });
       }
     }
   }
@@ -226,9 +315,11 @@ if (proseViolations.length) {
   failed = true;
   console.error(`FAIL: ${proseViolations.length} riferimenti a tool inesistenti nella prosa:\n`);
   for (const v of proseViolations) {
-    console.error(`ERRORE PROSA: ${v.file} — "${v.tool}" non esiste nel catalogo SERVER_TOOLS`);
+    const suggestion = v.fullTool ? ` (nome completo: "${v.fullTool}")` : '';
+    console.error(`ERRORE PROSA: ${v.file} — "${v.tool}" non esiste nel catalogo SERVER_TOOLS${suggestion}`);
   }
   console.error('\nOgni tool citato in prosa come `nome(...)` deve esistere in SERVER_TOOLS.');
+  console.error('Se il nome e\' la coda di un tool del catalogo, va scritto per intero.');
   console.error('Fix: correggi il nome nella prosa, oppure aggiungi il tool a SERVER_TOOLS in');
   console.error('generate-tool-frontmatter.js (se esiste davvero) e rigenera.');
 }
