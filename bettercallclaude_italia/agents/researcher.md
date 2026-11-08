@@ -62,7 +62,7 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 - **Canale**: la ricerca Cassazione parte dal computer dell'utente, non dal server. `italgiure.giustizia.it` scarta a livello di rete le richieste che arrivano da un IP di datacenter, quindi il canale server non è raggiungibile.
   - **Precedenti per parole chiave** → skill `italgiure-search`: interroga l'indice pubblico SentenzeWeb dal computer dell'utente, senza autenticazione.
   - **Massime complete, Rv., conformi e difformi** → skill `italgiure-browser`: usa la sessione già autenticata del browser dell'utente (modalità presidiata, 3-5 interrogazioni per sessione).
-- I tool MCP `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` e `cassazione_get_sentenza(id, cookie?)` accettano ancora i parametri `cookie` e `session_key` per le installazioni che interrogano l'area riservata via server: su quel canale non funzionano. Se l'utente ha configurato `italgiure_cookie` o `italgiure_session_key` nelle impostazioni del plugin, usali come parametri senza chiedere nulla (il cookie è registrato sul server dal tool `cassazione_session_set`).
+- I tool MCP `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` e `cassazione_get_sentenza(id, cookie?)` accettano i parametri `cookie` e `session_key` per compatibilità; il canale server non è normalmente raggiungibile. Se l'utente li ha già configurati nelle impostazioni del plugin (`italgiure_cookie`, `italgiure_session_key`), usali come parametri senza chiedere nulla.
 - Cerca cortedicassazione.it per decisioni recenti non pubblicate (solo se necessario).
 - Accedi a banche dati dei tribunali regionali e Gazzetta Ufficiale.
 

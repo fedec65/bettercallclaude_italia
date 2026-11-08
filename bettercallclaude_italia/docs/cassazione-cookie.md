@@ -106,7 +106,7 @@ temporaneo. Resta comunque sulla tua macchina. Non condividerlo pubblicamente.
 **«Posso non fornire il cookie?»**
 Sì. La ricerca per parole funziona senza autenticazione.
 
-**«Perché su some host funziona e su altri no?»**
+**«Perché su alcuni host funziona e su altri no?»**
 Gli host italiani del settore giustizia usano whitelist di indirizzi e
 protezione anti-bot. Un IP di datacenter è tipicamente escluso; un IP residenziale
 italiano no. Per questo la ricerca gira dal computer dell'utente.
