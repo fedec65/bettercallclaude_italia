@@ -796,7 +796,7 @@ Expected: JSON con `"totale": 1` e `"estremi": "Sez. III Sentenza n. 17006 del 2
 - [ ] **Step 6: collega il test a `npm test`**
 
 Il test dello script deve girare nella CI, altrimenti non presidia niente.
-Aggiungi lo script del task 1 alla stringa `test` di `package.json`:
+Aggiungi lo script di questo task alla stringa `test` di `package.json`:
 
 ```json
 "test": "node bettercallclaude_italia/scripts/privacy-check.test.js && node scripts/check-tool-names.test.js && node bettercallclaude_italia/skills/italgiure-search/scripts/italgiure-query.test.js"
