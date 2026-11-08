@@ -651,6 +651,13 @@ funzionare. Il design è robusto a questo.
 - **AS1** — La skill `italgiure-search` viene eseguita sulla macchina dell'utente, e
   l'IP di quell'utente è ammesso da ItalGiure. Confermato per l'utente che ha
   segnalato il problema; non garantito in generale (vedi R1).
+
+  **Decisione dell'utente (2026-11-08): l'assunzione viene mantenuta.** Il canale
+  client-side copre gli utenti su IP ammesso — oggi, gli utenti in Italia. Coprire
+  anche gli utenti fuori dall'Italia richiede l'egress italiano del server, che resta
+  un'opzione futura documentata, fuori dal perimetro di questo intervento. La
+  skill deve degradare in modo esplicito quando l'IP corrente non è ammesso, e il
+  messaggio deve nominare l'opzione futura.
 - **AS2** — L'endpoint Solr pubblico accetta richieste anonime senza `Cookie`.
   Fondamentale perché A2 non gestisce il cookie; l'evidenza indiretta è che lo stesso
   endpoint è quello che l'utente ha interrogato con successo dal proprio browser.
