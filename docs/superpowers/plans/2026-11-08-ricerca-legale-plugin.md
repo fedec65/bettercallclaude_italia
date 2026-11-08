@@ -867,15 +867,43 @@ Per l'**area riservata** (massime complete, Rv., conformi e difformi) usa
 
 ## Procedura
 
+### Passo 0 — Individua lo script
+
+Lo script sta nella stessa skill, in `scripts/italgiure-query.js`. **La directory
+di lavoro della shell non e' la directory della skill**, quindi un percorso
+relativo non risolve. Individualo con un Glob:
+
+```
+**/italgiure-search/scripts/italgiure-query.js
+```
+
+Usa il percorso assoluto trovato, indicato qui come `<SCRIPT>`.
+
+Se il Glob non trova nulla, non insistere: applica direttamente le regole del
+Passo 1 e leggi la risposta JSON applicando la tabella dei campi del Passo 3. La
+skill deve funzionare anche senza lo script.
+
 ### Passo 1 — Costruisci la query
 
 ```bash
-node scripts/italgiure-query.js build --query "TERMINE DI RICERCA" --materia civile --anno 2024
+node <SCRIPT> build --query "TERMINE DI RICERCA" --materia civile --anno 2024
 ```
 
 Flag opzionali: `--materia civile|penale`, `--anno YYYY`, `--tipo sentenza|ordinanza|decreto`.
 Il termine di ricerca **non** deve contenere il testo della bozza o dati del
 fascicolo: solo i termini giuridici da cercare.
+
+Se lo script non e' disponibile, costruisci la query con queste regole:
+
+- testo libero: racchiudilo in parentesi e escapa i caratteri speciali Solr
+  (`+ - ! ( ) { } [ ] ^ " ~ * ? : \ /`);
+- materia civile aggiunge ` AND kind:"snciv"`, penale aggiunge ` AND kind:"snpen"`;
+- anno aggiunge ` AND anno:"YYYY"`;
+- tipo aggiunge ` AND tipoprov:"Sentenza"` (o "Ordinanza", "Decreto", con l'iniziale
+  maiuscola);
+- le clausole si uniscono con ` AND `;
+- se il testo contiene gia' sintassi Solr (parentesi iniziali, `:`, `~`, AND, OR)
+  usalo cosi' com'e'.
 
 ### Passo 2 — Interroga l'indice
 
@@ -885,7 +913,7 @@ curl -sS -k -m 30 -X POST \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "q=QUERY" \
   --data "rows=20&start=0&wt=json&fl=id,filename,szdec,tipoprov,datdec,numdec,anno,kind,datdep&sort=pd desc,datdec desc" \
-  | node scripts/italgiure-query.js format
+  | node <SCRIPT> format
 ```
 
 Note sulla invocazione:
@@ -901,9 +929,26 @@ Note sulla invocazione:
 Sostituisci `QUERY` con l'output del Passo 1, e `rows`/`start` con la
 paginazione richiesta (20 risultati per pagina, `start = (pagina - 1) * 20`).
 
+Se lo script non e' disponibile, ometti la pipe finale: la `curl` restituisce il
+JSON grezzo di Solr, e mappalo con la tabella sotto.
+
 ### Passo 3 — Presenta i risultati
 
-La risposta e' gia' nella forma standard:
+Se hai usato lo script, la risposta e' gia' nella forma standard. Se hai letto il
+JSON grezzo, mappalo con questa tabella:
+
+| Campo Solr | Campo standard | Regola |
+|---|---|---|
+| `response.numFound` | `totale` | il numero totale dei risultati |
+| `response.docs[].id` | `id` | identificativo del documento |
+| `szdec`, `tipoprov`, `numdec`, `anno` | `estremi` | `Sez. {szdec} {tipoprov} n. {numdec} del {anno}`; se manca un pezzo, usa `id` |
+| `szdec` | `sezione` | |
+| `tipoprov` | `tipo` | |
+| `datdec` | `dataDecisione` | |
+| `datdep[0]` | `dataDeposito` | solo se presente |
+| `filename[0]` | `urlPdf` | `https://www.italgiure.giustizia.it/sncass/{filename[0] senza il ./ iniziale}` |
+
+La forma standard e':
 
 ```json
 {
