@@ -7,6 +7,11 @@ tools:
   - Grep
   - Glob
   - WebFetch
+  - WebSearch
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
 ---
 
 # Area riservata ItalGiure dal browser
@@ -36,6 +41,15 @@ questa skill per le massime complete e gli estremi.
 3. **L'utente risulta autenticato.** Verificalo guardando lo stato reale della
    pagina: il form di ricerca dell'area riservata deve essere presente e
    utilizzabile. Non lo presumere.
+
+Il connettore e' un componente **di host**, non del plugin: i suoi strumenti
+non compaiono nel blocco `tools:` di questa skill, perche' quel blocco accetta
+solo i server MCP del plugin e gli strumenti generici. La skill quindi
+**rileva il connettore a runtime**, guardando gli strumenti effettivamente
+disponibili nella sessione. Se la sessione non espone strumenti di browser —
+perche' non c'e' un connettore, oppure perche' l'host limita la skill agli
+strumenti elencati — dichiaralo esattamente cosi' e offri il fallback
+`italgiure-search`: non dichiarare di aver cercato.
 
 Se una precondizione manca, spiega quale e offri l'alternativa: la skill
 `italgiure-search` per l'indice pubblico, o i link di ricerca manuale.
@@ -127,7 +141,9 @@ Indica per ogni precedente la provenienza: `Fonte: ItalGiure (area riservata)`.
 ## Se la ricerca fallisce
 
 - **La maschera non risponde o la pagina non si apre**: l'utente non e'
-  autenticato, oppure il connettore non funziona. Riportalo e offri la skill
+  autenticato, oppure il connettore non funziona — o non e' nemmeno
+  disponibile, perche' l'host limita la skill agli strumenti elencati e il
+  connettore non e' fra questi. Riporta quale dei due casi e' e offri la skill
   `italgiure-search`.
 - **Il captcha o un blocco anti-bot compare**: fermati immediatamente. Non
   ripetere le richieste e non tentare di aggirare il blocco. Riporta il fatto

@@ -6,6 +6,14 @@ tools:
   - Read
   - Grep
   - Glob
+  - WebSearch
+  - WebFetch
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_search_massime
+  - mcp__plugin_bettercallclaude-italia_cassazione__cassazione_get_sentenza
+  - mcp__plugin_bettercallclaude-italia_citation-verify-ita__citation-verify-ita_check_existence
+  - mcp__cassazione__cassazione_search_massime
+  - mcp__cassazione__cassazione_get_sentenza
+  - mcp__citation-verify-ita__citation-verify-ita_check_existence
 ---
 
 # Ricerca Cassazione lato client
