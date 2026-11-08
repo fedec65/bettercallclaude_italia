@@ -1,103 +1,120 @@
-# Come accedere al server della Cassazione
+# Come accedere ai contenuti della Cassazione
 
-Istruzioni per l'utente del plugin BetterCallClaude — Come usare il server Cassazione
+Istruzioni per l'utente del plugin BetterCallClaude — accesso alla
+giurisprudenza della Corte di Cassazione.
 
-> **Aggiornato ottobre 2026** — rifatto sulle prove della nuova area riservata ItalGiure (app Angular, percorsi `/new/...`). Le vecchie istruzioni basate su `document.cookie` e sul cookie `ASPSESSIONID...` **non funzionano più** e sono state sostituite.
-
----
-
-## Cosa devi fare, in 3 passi (una volta sola)
-
-### Passo 1: Ottenere il cookie di sessione ItalGiure
-
-1. Apri il tuo browser (Chrome, Firefox, Safari, Edge).
-2. Vai sull'area riservata ItalGiure: [https://www.italgiure.giustizia.it/new/archives](https://www.italgiure.giustizia.it/new/archives)
-3. Fai login con **SPID** oppure con **nome utente e password** (per esempio le credenziali della convenzione Cassa Forense).
-4. **Prima di fare qualsiasi ricerca**, apri gli Strumenti per sviluppatori:
-   - **Windows/Linux**: F12 o Ctrl+Shift+I
-   - **macOS**: Cmd+Option+I
-5. Vai sulla scheda **"Network"** (Rete) — deve essere aperta *prima* della ricerca, altrimenti le richieste non vengono registrate.
-6. Ora **fai una ricerca qualsiasi** nell'area riservata (il motore di ricerca sentenze). Se la pagina era già aperta prima di attivare Network, ricaricala (F5/Cmd+R).
-7. Nell'elenco delle richieste registrate, individua una chiamata dati dell'**area riservata** (un percorso `/new/...`): aprila e nella sezione **Request Headers → Cookie** trovi la stringa completa dei cookie inviati (tipo `PHPSESSID=...; sessonly=1; lang=it; cookiesession1=...`).
-8. Verifica che nella stringa compaia **`PHPSESSID`**: è il cookie che attesta il login. Se lo vedi, seleziona e copia **tutto** il valore del campo `Cookie`.
-
-**Perché non più `document.cookie`?** I cookie di sessione della nuova area riservata sono marcati **HttpOnly**: JavaScript non può leggerli, quindi la Console restituisce una stringa vuota. L'unico punto da cui si vedono è la scheda Network. Inoltre il vecchio cookie `ASPSESSIONID...` **non esiste più**: oggi i cookie sono `PHPSESSID`, `sessonly`, `lang`, più quelli del firewall FortiWeb (`cookiesession1`) e di Akamai Bot Manager (`_abck`, `bm_sz`, `ak_bmsc`, `bm_sv`).
-
-**Conserva questa stringa**: è il tuo "biglietto d'ingresso" per il server Cassazione.
-
-### Passo 2: Salvare il cookie nelle impostazioni del plugin
-
-Inserisci il cookie nelle **impostazioni del plugin**, alla voce **"Cookie sessione ItalGiure"** (`userConfig.italgiure_cookie`). Il valore è marcato come sensibile e resta sulla tua macchina.
-
-Da questo momento il plugin passa automaticamente il cookie a ogni chiamata Cassazione, in tutte le conversazioni: **non devi più incollarlo a ogni richiesta**.
-
-> Se preferisci non salvarlo, puoi ancora fornirlo manualmente quando l'agente lo richiede: varrà solo per quella conversazione.
-
-### Passo 3: Gestire il cookie quando scade
-
-Non esiste una durata garantita: secondo l'informativa privacy di ItalGiure i cookie di sessione svaniscono **alla chiusura del browser** e comunque scadono per inattività (tempo variabile). Quando il server risponde con `cookieValido: false`:
-
-1. Torna su ItalGiure e rifai il login (se la sessione è scaduta).
-2. Ripeti il Passo 1 (copia un nuovo cookie dalla scheda Network).
-3. Aggiorna il valore nelle impostazioni del plugin.
-
-In pratica: aspettati di rinnovarlo **ogni volta che smette di funzionare**, non su un calendario fisso.
+> **Aggiornato novembre 2026** — rifatto sul canale realmente funzionante.
+> Le vecchie istruzioni basate su `document.cookie`, sul cookie `PHPSESSID` e sui
+> percorsi `/new/...` descrivevano un'interfaccia che non esiste più e sono state
+> sostituite.
 
 ---
 
-## Attenzione: timeout e protezione anti-bot
+## Il quadro in breve
 
-Le richieste del connettore partono da un server in data center, senza il JavaScript di verifica usato dal browser. Il firewall **FortiWeb** (e la protezione **Akamai Bot Manager**) possono quindi bloccare o rallentare queste richieste: in tal caso la chiamata va in **timeout** anche con un cookie perfettamente valido, mentre la stessa ricerca dal browser funziona. Questo è un limite noto, lato infrastruttura ItalGiure, non un errore del tuo cookie.
+| Cosa vuoi | Serve | Autenticazione |
+|---|---|---|
+| Precedenti per parole chiave, estremi, sezione, data | skill **italgiure-search** | **nessuna** |
+| Massime complete, Rv., conformi e difformi | skill **italgiure-browser** | login già attivo nel tuo browser |
+| Il server BetterCallClaude risponde | — | non risponde: vedi «Perché il server non funziona» |
 
-Se incontri timeout ripetuti:
+La ricerca **non richiede autenticazione**. Non c'è alcun cookie da copiare per
+fare una ricerca.
 
-- riprova dopo qualche minuto (a volte è un rallentamento temporaneo);
-- verifica che la ricerca funzioni dal tuo browser: se lì funziona ma il tool va in timeout, è il blocco anti-bot del server;
-- usa i link di fallback (SentenzeWeb, Google, ECLI) che il tool restituisce comunque.
+---
 
-> **Nota su SentenzeWeb**: la ricerca libera su `https://www.italgiure.giustizia.it/sncass/` ("Sentenze Cassazione") **non richiede login**. Nell'area riservata l'unico cookie inviato nelle richieste `sn.solr` è `cookiesession1` (FortiWeb). Per molte ricerche il cookie di login non serve affatto.
+## 1. La ricerca per parole (quello che serve di solito)
+
+Nessuna preparazione: chiedi al plugin «cerca i precedenti su [argomento]» e la
+skill italgiure-search interroga l'indice pubblico SentenzeWeb **dal tuo
+computer**. L'area riservata è necessaria solo per i contenuti che l'indice
+pubblico non espone.
+
+L'indice pubblico contiene il testo delle decisioni e i dati essenziali
+(sezione, numero, data, tipo di provvedimento, link al PDF). **Non** contiene
+le massime complete.
+
+## 2. L'area riservata (massime complete, Rv., conformi e difformi)
+
+L'area riservata si usa **dal browser che hai già aperto e autenticato**, con la
+skill italgiure-browser. Non devi copiare cookie: le credenziali restano nel
+browser, non escono dal tuo computer.
+
+La modalità è **presidiata**: l'utente deve essere presente, le interrogazioni
+sono poche (3-5 per sessione) e non si scarica nulla in blocco. È un limite
+voluto: l'area riservata è un servizio a pagamento con condizioni d'uso e
+protezione anti-bot, e un uso automatizzato indiscriminato non è accettabile.
+
+### Come si fa il login
+
+1. Apri il browser e vai su
+   [https://www.italgiure.giustizia.it/new/archives](https://www.italgiure.giustizia.it/new/archives)
+2. Autenticati con **SPID** oppure con **nome utente e password** (per esempio la
+   convenzione Cassa Forense).
+3. Verifica che la pagina del massimario civile sia raggiungibile: quello è il
+   segnale che la sessione è attiva.
+
+### Perché non automatizziamo il login
+
+Lo SPID richiede la presenza dell'utente e quasi sempre un secondo fattore
+(OTP o app), e le regole AGID vietano la delega automatizzata delle
+credenziali. Il plugin non chiede e non riceve mai la tua password.
+
+## 3. Perché il server BetterCallClaude non funziona
+
+I server MCP di BetterCallClaude sono ospitati su un indirizzo IP di datacenter.
+`www.italgiure.giustizia.it` **scarta a livello di rete** le richieste che
+arrivano da quel tipo di indirizzo: la connessione va in timeout, con o senza
+cookie.
+
+Non è quindi un problema di cookie mancante, né di cookie scaduto, né di
+autenticazione: è il punto di partenza della connessione. Per questo la ricerca
+Cassazione è stata spostata sul computer dell'utente, dove l'IP è ammesso.
+
+Coprire anche gli utenti fuori dall'Italia richiederebbe al server un'uscita in
+Italia: non è una funzionalità del plugin.
+
+## 4. Il cookie: a cosa serve, in sintesi
+
+Il cookie di sessione serve **solo** all'area riservata, e si usa **dal browser**:
+
+- i cookie di sessione dell'area riservata sono marcati **HttpOnly**: non si
+  leggono dalla Console, `document.cookie` restituisce una stringa vuota;
+- l'unico punto in cui si vedono è la scheda **Network** degli strumenti per
+  sviluppatori, su una richiesta dati dell'area riservata;
+- l'area riservata invia anche un header di autorizzazione di tipo **Basic**: è il
+  meccanismo di autenticazione dell'area riservata, e il plugin non lo riproduce
+  né deve riceverlo.
+
+Il plugin **non** ti chiede di incollare cookie, e non li trasmette a server di
+terzi.
 
 ---
 
 ## Domande frequenti
 
-**"Perché non automate il login con SPID?"**
-Non è possibile né consentito: l'autenticazione SPID richiede la presenza dell'utente e quasi sempre un secondo fattore (OTP/app), e le regole AGID vietano la delega automatizzata delle credenziali. Il cookie salvato nelle impostazioni è la modalità persistente supportata.
+**«Devo configurare un cookie nelle impostazioni del plugin?»**
+No, per la ricerca. La voce «Cookie sessione ItalGiure» nelle impostazioni è
+riservata alle installazioni che interrogano l'area riservata via server, e non
+è il canale consigliato: il server non è raggiungibile. La ricerca normale non
+usa cookie.
 
-**"Il cookie è sicuro da salvare?"**
-È un cookie di sessione standard: non contiene la tua password, solo un identificativo temporaneo di sessione. Nelle impostazioni del plugin è trattato come valore sensibile e non lascia la tua macchina se non come parametro delle chiamate al server Cassazione. Non condividerlo pubblicamente.
+**«Il cookie è sicuro da salvare?»**
+Un cookie di sessione non contiene la password, solo un identificativo
+temporaneo. Resta comunque sulla tua macchina. Non condividerlo pubblicamente.
 
-**"Posso non fornire il cookie?"**
-Sì. Senza cookie, i tool restituiranno solo link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI) e istruzioni su come configurare il cookie. Non vedrai i risultati completi di ItalGiure.
+**«Posso non fornire il cookie?»**
+Sì. La ricerca per parole funziona senza autenticazione.
 
-**"Cosa succede se sbaglio cookie?"**
-Il server risponde con `cookieValido: false` e un messaggio che ti guida all'aggiornamento.
-
-**"Esiste un'alternativa al salvataggio del cookie sul mio computer?"**
-Sì: la **sessione registrata lato server**. Chiedi all'agente di registrare il cookie con il tool `cassazione_session_set` scegliendo una passphrase (min 8 caratteri): il cookie viene salvato cifrato sul server e mantenuto vivo da un keep-alive automatico (che ne segnala la scadenza). Salva poi la passphrase nelle impostazioni del plugin alla voce **"Chiave sessione ItalGiure"** (`userConfig.italgiure_session_key`): da quel momento le ricerche useranno la sessione registrata senza passare il cookie a ogni chiamata. Puoi verificarne lo stato con `cassazione_session_status` ed eliminarla con `cassazione_session_delete`.
-
----
-
-## Esempio pratico (cosa succede)
-
-**Scenario A — Cookie configurato nelle impostazioni:**
-Chiedi al plugin: "Cerca massime sulla responsabilità medica"
-→ Il plugin chiama `cassazione_search_massime` con il tuo cookie (letto dalle impostazioni, senza chiederti nulla)
-→ Ricevi i risultati strutturati da ItalGiure (estremi, sezione, data, link PDF)
-
-**Scenario B — Cookie mancante o scaduto:**
-Chiedi al plugin: "Cerca massime sulla responsabilità medica"
-→ Il plugin chiama `cassazione_search_massime` senza cookie valido
-→ Ricevi un messaggio che spiega come ottenere il cookie e link di fallback per la ricerca manuale
-→ Se salvi il cookie nelle impostazioni, alle richieste successive vale lo Scenario A
-
----
+**«Perché su some host funziona e su altri no?»**
+Gli host italiani del settore giustizia usano whitelist di indirizzi e
+protezione anti-bot. Un IP di datacenter è tipicamente escluso; un IP residenziale
+italiano no. Per questo la ricerca gira dal computer dell'utente.
 
 ## Riepilogo rapido
 
-| Cosa | Dove | Come |
-|------|------|------|
-| **Ottenere il cookie** | Browser su ItalGiure area riservata | Login (SPID o credenziali) → DevTools → **Network** → Request Headers → **Cookie** (NON Console/`document.cookie`: i cookie sono HttpOnly) |
-| **Salvare il cookie** | Impostazioni del plugin | Voce "Cookie sessione ItalGiure" — una volta sola |
-| **Rinnovare il cookie** | Browser + impostazioni | Quando il server segnala `cookieValido: false`: login fresco e nuovo cookie dalla scheda Network |
-| **Timeout ripetuti** | — | Protezione anti-bot lato ItalGiure: riprova più tardi o usa i link di fallback |
+| Cosa | Come |
+|---|---|
+| Precedenti per parole | chiedi al plugin: usa la skill italgiure-search. Nessuna preparazione |
+| Massime complete, Rv. | skill italgiure-browser, con login già fatto nel browser |
+| Il server non risponde | è il blocco per IP: usa il canale dal computer, non il server |

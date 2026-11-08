@@ -50,7 +50,7 @@
     "italgiure_cookie": {
       "type": "string",
       "title": "Cookie sessione ItalGiure (opzionale)",
-      "description": "Cookie di sessione ItalGiure per accesso avanzato alla Cassazione (massime complete). Ottenere il cookie: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense); apri DevTools (F12/Cmd+Option+I) sulla scheda Network PRIMA di fare la ricerca; fai una ricerca e copia da Request Headers - Cookie il valore che contiene PHPSESSID (i cookie sono HttpOnly: document.cookie in Console restituisce stringa vuota). Lasciare vuoto per usare solo SentenzeWeb (gratuito, senza login).",
+      "description": "Non necessario per la ricerca: l'indice pubblico SentenzeWeb si interroga dal computer dell'utente senza autenticazione (skill italgiure-search). Voce riservata alle installazioni che interrogano l'area riservata via server; il server non è normalmente raggiungibile perché italgiure.giustizia.it scarta a livello di rete le richieste dagli IP di datacenter. Se la usi: prendi l'intestazione Cookie completa da una richiesta dati dell'area riservata (DevTools, scheda Network) -- i cookie sono HttpOnly, la Console restituisce una stringa vuota.",
       "default": "",
       "sensitive": true
     },

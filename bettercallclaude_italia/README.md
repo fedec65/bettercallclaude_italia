@@ -205,18 +205,13 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 
 Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazione) restituiscono URL fallback anziche dati strutturati, il plugin fornisce automaticamente link per consultazione diretta tramite ECLI, Google o portale istituzionale.
 
-### Cookie Cassazione
+### Ricerca Cassazione
 
-Per accedere alle **massime complete** della Cassazione (banca dati ItalGiure), il plugin richiede un cookie di sessione ItalGiure.
+La ricerca dei precedenti della Cassazione **non richiede autenticazione**: la skill `italgiure-search` interroga l'indice pubblico SentenzeWeb dal computer dell'utente. Il canale server non è disponibile: `www.italgiure.giustizia.it` scarta a livello di rete le richieste che arrivano da IP di datacenter, quindi il server BetterCallClaude non lo raggiunge.
 
-**Come funziona:**
-1. **Ottieni il cookie**: Accedi all'area riservata [ItalGiure](https://www.italgiure.giustizia.it/new/archives) con SPID o credenziali (es. convenzione Cassa Forense), apri DevTools (F12/Cmd+Option+I), vai sulla scheda **Network**, apri una richiesta dati e copia il valore del campo **Cookie** in Request Headers. Nella Console `document.cookie` restituisce una stringa vuota: i cookie sono HttpOnly.
-2. **Salvalo una volta sola**: inseriscilo nelle impostazioni del plugin alla voce **"Cookie sessione ItalGiure"** (`userConfig.italgiure_cookie`). Il plugin lo passerà automaticamente a ogni chiamata Cassazione, in tutte le conversazioni.
-3. **Rinnovo**: il cookie scade con la chiusura del browser o per inattività (non esiste una durata garantita); quando il server segnala `cookieValido: false`, riferai il login e copia un nuovo cookie dalla scheda Network. Timeout ripetuti anche con cookie valido indicano il blocco anti-bot lato ItalGiure (FortiWeb/Akamai): riprova più tardi o usa i link di fallback.
+Le **massime complete** (e Rv., conformi e difformi) richiedono l'area riservata, che si usa dal browser già autenticato con la skill `italgiure-browser` ([ItalGiure area riservata](https://www.italgiure.giustizia.it/new/archives), login con SPID o credenziali). La modalità è presidiata: poche interrogazioni per sessione, nessun download in blocco. **Non serve copiare alcun cookie**: i cookie di sessione sono HttpOnly e la richiesta dati dell'area riservata porta anche un header di autorizzazione Basic, che il plugin non riproduce.
 
-**Senza cookie**: I tool restituiscono link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI) e istruzioni per configurarlo.
-
-> **Nota**: L'automazione del login SPID non è possibile (richiede la presenza dell'utente e il secondo fattore, per regole AGID): il cookie salvato nelle impostazioni è la modalità persistente supportata.
+La voce **"Cookie sessione ItalGiure"** nelle impostazioni è riservata alle installazioni che interrogano l'area riservata via server; non è il canale consigliato.
 
 Per istruzioni dettagliate: [docs/cassazione-cookie.md](docs/cassazione-cookie.md)
 

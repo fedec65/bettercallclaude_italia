@@ -68,7 +68,7 @@ Usa i server MCP in questo ordine:
 3. **Conversazione corrente**: se non configurato nelle impostazioni ma l'utente lo ha fornito nella conversazione, usa quello.
 4. **Solo se assente in tutti i casi**, chiedilo una sola volta:
 
-> "Per accedere alle massime complete della Cassazione serve il tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense); apri DevTools (F12/Cmd+Option+I) sulla scheda Network PRIMA di fare la ricerca; fai una ricerca nell'area riservata e copia da Request Headers - Cookie di una richiesta /new/... il valore che contiene PHPSESSID (i cookie sono HttpOnly: document.cookie in Console restituisce stringa vuota). Per non ripetere questa operazione a ogni conversazione, salvalo nelle impostazioni del plugin alla voce 'Cookie sessione ItalGiure'. Il cookie scade alla chiusura del browser o per inattivita': rinnovalo quando il server segnala cookieValido: false."
+> "Per le massime complete della Cassazione serve l'area riservata ItalGiure, e si usa dal browser che l'utente ha già aperto e autenticato (skill italgiure-browser): accedi a https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense) e verifica che il massimario civile sia raggiungibile. Non serve copiare alcun cookie: i cookie di sessione sono HttpOnly e la richiesta dati porta anche un header di autorizzazione Basic, che il plugin non riproduce. Per la ricerca dei precedenti per parole non serve autenticazione: usa la skill italgiure-search, che interroga l'indice pubblico direttamente dal computer dell'utente (il server non può raggiungere italgiure.giustizia.it dal proprio IP di datacenter)."
 
 Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo (stessa procedura). Se le chiamate vanno in timeout anche con cookie valido mentre la ricerca funziona dal browser, segnala il probabile blocco anti-bot lato ItalGiure (FortiWeb/Akamai) e suggerisci di riprovare più tardi o usare i link di fallback.
 
@@ -158,7 +158,7 @@ Quando i server MCP non sono disponibili, la skill funziona in modalita ridotta:
 
 | Funzionalita | Con MCP | Senza MCP |
 |-------------|---------|-----------|
-| Ricerca precedenti Cassazione | Automatica via cassazione | Manuale: [ItalGiure SentenzeWeb](https://sentenzeweb.italgiure.giustizia.it) + Google `site:cortedicassazione.it` |
+| Ricerca precedenti Cassazione | Automatica via cassazione | Manuale: [ItalGiure SentenzeWeb](https://www.italgiure.giustizia.it/sncass/) + Google `site:cortedicassazione.it` |
 | Ricerca legislazione | Automatica via normattiva | Manuale: [Normattiva](https://www.normattiva.it) |
 | Sentenze Corte Costituzionale | Automatica via corte-costituzionale | Manuale: [Corte Costituzionale Open Data](https://www.cortecostituzionale.it/actionPronuncia.do) |
 | Giustizia amministrativa | Automatica via giustizia-amministrativa | Manuale: [Giustizia Amministrativa](https://www.giustizia-amministrativa.it) |
