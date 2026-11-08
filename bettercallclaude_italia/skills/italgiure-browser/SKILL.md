@@ -87,7 +87,9 @@ risultato.
 
 Compila i campi della maschera di ricerca e invia. La ricerca **per parole**
 funziona; quella **per estremi** non e' confermata: se fallisce, non insistere e
-passa al fallback della ricerca per parole, cioe' la skill `italgiure-search`.
+prova la ricerca per parole **nella stessa area riservata**, cosi' mantieni
+l'accesso alla massima. Il fallback completo e' la skill `italgiure-search`, ma
+lavora sull'indice pubblico e non restituisce le massime.
 
 ### Passo 3 — Estrai
 
@@ -99,9 +101,10 @@ copiali insieme al testo, non aggiungerli come campi.
 
 ### Passo 4 — Presenta
 
-Restituisci la stessa forma del tool `cassazione_search_massime`, cosi' tutto a
-valle (`citation-content-verify`, `legal-evaluator`, `legal-5step-framework` e
-il comando `/legale-5step`) funziona senza sapere da dove arrivano i dati.
+Restituisci la stessa forma del tool `cassazione_search_massime` piu' i due campi
+opzionali `numeroMassima` e `rv`, cosi' tutto a valle (`citation-content-verify`,
+`legal-evaluator`, `legal-5step-framework` e il comando `/legale-5step`)
+funziona senza sapere da dove arrivano i dati.
 
 **Non chiamare quel tool**: lato server non funziona — l'IP di datacenter e'
 scartato da italgiure.giustizia.it — e restituirebbe zero risultati senza
@@ -135,8 +138,10 @@ documento, non dei valori di esempio. `dataDeposito`, `urlPdf`, `numeroMassima` 
 Il **testo della massima** non e' un campo di questa forma: presentselo nella
 conversazione **accanto al JSON**, un blocco di testo per ogni `id`
 (intestato con l'`id` e gli estremi). Il JSON e i blocchi di testo sono due
-cose distinte: non aggiungere il testo come campo della forma standard, che
-deve restare identica a quella del tool `cassazione_search_massime`.
+cose distinte: non aggiungere il testo come campo della forma standard. La
+forma e' quella del tool `cassazione_search_massime` piu' i due campi opzionali
+`numeroMassima` e `rv`: sono un'aggiunta, non una modifica della forma
+standard.
 
 Mappa i dati dell'interfaccia sui campi standard con questa tabella:
 
