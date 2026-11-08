@@ -107,6 +107,14 @@ const SKILL_WITH_BROKEN_BARE_NAME = skill(
   'Usa il tool `compute_deadlines` per calcolare i termini processuali.'
 );
 
+const SKILL_WITH_COMMON_WORD_ID = skill(
+  'Il campo `id` identificativo del ricorso.'
+);
+
+const SKILL_WITH_COMMON_WORD_SEARCH = skill(
+  'Il parametro `search` filtra i risultati.'
+);
+
 const SKILL_WITH_BARE_TOOL_NAME = skill(
   'Il tool `normattiva_search` e\' quello per la ricerca normativa.'
 );
@@ -118,6 +126,10 @@ const SKILL_WITH_USER_CONFIG_KEY = skill(
 const SKILL_WITH_QUALIFIED_MCP_NAME = skill(
   'Il tool `mcp__ollama__ollama_check_status(` verifica lo stato del modello.'
 );
+
+// Manifest di un plugin che non dichiara userConfig: le esclusioni devono
+// comunque arrivare dal manifest canonico del repo.
+const MANIFEST_WITHOUT_USER_CONFIG = JSON.stringify({ name: 'fixture-plugin' });
 
 console.log('check-tool-names: prosa');
 
@@ -176,8 +188,29 @@ t('accetta un nome nudo che e\' gia\' un tool del catalogo', () => {
   assert.strictEqual(r.code, 0, 'il validatore deve accettare, output:\n' + r.output);
 });
 
+t('non segnala un nome nudo di una sola parola, anche se e\' una coda di tool', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_COMMON_WORD_ID });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'una coda di una sola parola non e\' un tool troncato, output:\n' + r.output);
+});
+
+t('non segnala un nome nudo di una sola parola che e\' coda di piu\' tool', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_COMMON_WORD_SEARCH });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'una coda di una sola parola non e\' un tool troncato, output:\n' + r.output);
+});
+
 t('non segnala una chiave di userConfig che coincide con la coda di un tool', () => {
   const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_WITH_USER_CONFIG_KEY });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'le chiavi di userConfig non sono tool, output:\n' + r.output);
+});
+
+t('le chiavi di userConfig arrivano da tutti i manifest, non solo dal primo', () => {
+  const dir = fixture({
+    'skills/fixture-skill/SKILL.md': SKILL_WITH_USER_CONFIG_KEY,
+    '.claude-plugin/plugin.json': MANIFEST_WITHOUT_USER_CONFIG,
+  });
   const r = run(dir);
   assert.strictEqual(r.code, 0, 'le chiavi di userConfig non sono tool, output:\n' + r.output);
 });

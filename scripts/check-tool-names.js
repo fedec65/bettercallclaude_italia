@@ -134,21 +134,26 @@ function loadCatalog() {
 // Chiavi di userConfig dichiarate dal manifest del plugin. Sono nomi che
 // l'utente configura, non tool: non vanno segnalati anche quando coincidono
 // con la coda di un tool del catalogo (es. `user_id`).
+//
+// Le chiavi vengono raccolte da TUTTI i manifest candidati, non dal primo
+// trovato: un manifest senza `userConfig` non deve far perdere le esclusioni
+// dichiarate dal manifest canonico del repo.
 function loadUserConfigKeys() {
   const candidates = [
     path.join(pluginDir, '.claude-plugin', 'plugin.json'),
     path.join(root, 'bettercallclaude_italia', '.claude-plugin', 'plugin.json'),
   ];
+  const keys = new Set();
   for (const p of candidates) {
     if (!fs.existsSync(p)) continue;
     try {
       const manifest = JSON.parse(fs.readFileSync(p, 'utf8'));
-      return new Set(Object.keys(manifest.userConfig || {}));
+      for (const key of Object.keys(manifest.userConfig || {})) keys.add(key);
     } catch (e) {
-      // Manifest illeggibile: nessuna esclusione.
+      // Manifest illeggibile: nessuna esclusione da questo manifest.
     }
   }
-  return new Set();
+  return keys;
 }
 
 const { registeredServers, serverTools } = loadCatalog();
@@ -163,11 +168,17 @@ for (const tools of Object.values(serverTools)) {
 
 // Mappa coda di un tool -> nomi completi che terminano con quella coda.
 // Es. "compute_deadlines" -> ["legal-persona-ita_compute_deadlines"].
+//
+// Si conservano solo le code *composte*, cioe' quelle che contengono ancora
+// un underscore: una coda di una sola parola ("id", "search", "status",
+// "format", "parse") e' troppo generica per essere un segnale utile -- un
+// backtick su `id` in un testo legale e' normale, non un riferimento a tool
+// troncato. Restano cosi' "compute_deadlines" e "user_id".
 const TOOL_TAILS = new Map();
 for (const name of ALL_TOOL_NAMES) {
   for (let i = name.indexOf('_'); i !== -1; i = name.indexOf('_', i + 1)) {
     const tail = name.slice(i + 1);
-    if (!tail) continue;
+    if (!tail.includes('_')) continue;
     if (!TOOL_TAILS.has(tail)) TOOL_TAILS.set(tail, []);
     TOOL_TAILS.get(tail).push(name);
   }
