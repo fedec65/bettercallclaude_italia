@@ -263,8 +263,11 @@ funzioni e li verifica contro `SERVER_TOOLS`.
 Il controllo è definito come segue, in modo da non generare falsi positivi:
 
 1. si cercano in tutto il corpo (fuori dal frontmatter) i token del tipo
-   backtick + identificatore in minuscolo (con `_` o `-`) + parentesi tonda aperta,
-   chiuso da backtick — cioè un nome di tool invocato come una funzione;
+   backtick + identificatore in minuscolo contenente **almeno un underscore** +
+   parentesi tonda aperta, chiuso da backtick — cioè un nome di tool invocato come
+   una funzione. L'underscore è il discriminante: tutti i 13 nomi di tool del
+   catalogo lo contengono, mentre le chiamate a funzione generiche citate in prosa
+   (filter(...), parse(...)) non lo hanno e non vengono segnalate;
 2. ogni token va verificato contro l'unione dei nomi presenti in `SERVER_TOOLS`
    (tutti i server, non solo quelli del file in esame);
 3. un token assente dal catalogo è un errore.
