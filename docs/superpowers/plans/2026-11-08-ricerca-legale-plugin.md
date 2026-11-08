@@ -871,7 +871,9 @@ BetterCallClaude**. Il termine di ricerca va diretto al Ministero della Giustizi
 - quando l'utente chiede direttamente un precedente di Cassazione e il canale
   server non risponde;
 - per verificare l'esistenza di una sentenza conoscendo gli estremi (numero e
-  anno), in alternativa a `citation-verify-ita` per le sentenze.
+  anno), in alternativa al tool `citation-verify-ita_check_existence` del server MCP
+  `citation-verify-ita` (per le sentenze non e' raggiungibile dal server: vedi il
+  piano Track B).
 
 Per l'**area riservata** (massime complete, Rv., conformi e difformi) usa
 `italgiure-browser`. Per la **legislazione** usa `italian-legal-research`.
