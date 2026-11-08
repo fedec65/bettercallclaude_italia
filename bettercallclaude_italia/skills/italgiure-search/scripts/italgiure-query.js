@@ -18,6 +18,11 @@
 
 const ITALGIURE_BASE = 'https://www.italgiure.giustizia.it/sncass';
 
+// Valori ammessi dai filtri: un valore fuori elenco deve fallire, non
+// allargare la ricerca in silenzio.
+const MATERIA_VALUES = ['civile', 'penale'];
+const TIPO_VALUES = ['sentenza', 'ordinanza', 'decreto'];
+
 /**
  * Costruisce il parametro `q` della query Solr.
  *
@@ -25,6 +30,11 @@ const ITALGIURE_BASE = 'https://www.italgiure.giustizia.it/sncass';
  * (mcp-servers/cassazione/src/tools/italgiure-client.ts): se la query
  * contiene gia' sintassi Solr viene usata cosi', altrimenti e' trattata come
  * testo libero con prossimita' implicita.
+ *
+ * `materia` e `tipo` sono validati contro i rispettivi elenchi: un valore
+ * sconosciuto fa fallire la costruzione invece di produrre una ricerca
+ * piu' larga del richiesto. Se il filtro e' assente non viene emessa alcuna
+ * clausola.
  */
 function buildSolrQuery(opts) {
   const input = opts || {};
@@ -43,10 +53,14 @@ function buildSolrQuery(opts) {
     clauses.push('(' + escaped + ')');
   }
 
-  if (input.materia === 'civile') {
-    clauses.push('kind:"snciv"');
-  } else if (input.materia === 'penale') {
-    clauses.push('kind:"snpen"');
+  if (input.materia) {
+    if (MATERIA_VALUES.indexOf(input.materia) === -1) {
+      throw new Error(
+        'buildSolrQuery: materia non valida "' + input.materia +
+        '" (valori ammessi: ' + MATERIA_VALUES.join(', ') + ')'
+      );
+    }
+    clauses.push('kind:"' + (input.materia === 'civile' ? 'snciv' : 'snpen') + '"');
   }
 
   if (input.anno && input.anno > 0) {
@@ -54,7 +68,14 @@ function buildSolrQuery(opts) {
   }
 
   if (input.tipo) {
-    const tipo = input.tipo.charAt(0).toUpperCase() + input.tipo.slice(1).toLowerCase();
+    const tipoMin = String(input.tipo).toLowerCase();
+    if (TIPO_VALUES.indexOf(tipoMin) === -1) {
+      throw new Error(
+        'buildSolrQuery: tipo non valido "' + input.tipo +
+        '" (valori ammessi: ' + TIPO_VALUES.join(', ') + ')'
+      );
+    }
+    const tipo = tipoMin.charAt(0).toUpperCase() + tipoMin.slice(1);
     clauses.push('tipoprov:"' + tipo + '"');
   }
 

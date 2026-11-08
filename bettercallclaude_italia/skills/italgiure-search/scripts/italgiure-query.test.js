@@ -7,7 +7,11 @@
 'use strict';
 
 const assert = require('node:assert');
-const { buildSolrQuery, formatResponse } = require('./italgiure-query.js');
+const { execFileSync } = require('node:child_process');
+const path = require('node:path');
+const { buildSolrQuery, formatResponse, parseArgs } = require('./italgiure-query.js');
+
+const SCRIPT = path.join(__dirname, 'italgiure-query.js');
 
 let passed = 0;
 let failed = 0;
@@ -34,6 +38,24 @@ t('escape dei caratteri speciali Solr', () => {
   const q = buildSolrQuery({ query: 'test (special) [chars]' });
   assert.ok(q.includes('\\('), 'deve escapare la parentesi aperta, got: ' + q);
   assert.ok(q.includes('\\)'), 'deve escapare la parentesi chiusa, got: ' + q);
+});
+
+// La classe di escape e' /([+\-!(){}[\]^"~*?:\\/])/: 17 caratteri. ':' e '~'
+// fanno pero' scattare prima il riconoscimento della sintassi Solr (la query
+// grezza ha la precedenza, come sul server), quindi per loro si verifica che
+// la query passi invariata invece di essere escapata.
+const CARATTERI_ESCAPATI = ['+', '-', '!', '(', ')', '{', '}', '[', ']', '^', '"', '~', '*', '?', ':', '\\', '/'];
+const CARATTERI_RAMO_GREZZO = [':', '~'];
+
+t('escape di ogni carattere della classe speciale', () => {
+  for (const c of CARATTERI_ESCAPATI) {
+    const q = buildSolrQuery({ query: 'x' + c + 'y' });
+    if (CARATTERI_RAMO_GREZZO.indexOf(c) !== -1) {
+      assert.strictEqual(q, 'x' + c + 'y', 'la query con sintassi Solr deve passare invariata: ' + q);
+      continue;
+    }
+    assert.strictEqual(q, '(x\\' + c + 'y)', 'carattere non escapato: ' + c + ' -> ' + q);
+  }
 });
 
 t('usa la query grezza quando contiene sintassi Solr', () => {
@@ -64,6 +86,93 @@ t('tutti i filtri insieme', () => {
 
 t('rifiuta una query vuota', () => {
   assert.throws(() => buildSolrQuery({ query: '   ' }), /query/i);
+});
+
+console.log('validazione degli enum');
+
+t('rifiuta una materia sconosciuta', () => {
+  assert.throws(() => buildSolrQuery({ query: 'danno', materia: 'civileX' }), /materia/i);
+  assert.throws(() => buildSolrQuery({ query: 'danno', materia: 'commerciale' }), /civile, penale/);
+});
+
+t('rifiuta un tipo sconosciuto', () => {
+  assert.throws(() => buildSolrQuery({ query: 'danno', tipo: 'sentenzaX' }), /tipo/i);
+  assert.throws(() => buildSolrQuery({ query: 'danno', tipo: 'massima' }), /sentenza, ordinanza, decreto/);
+});
+
+t('i valori validi di materia e tipo funzionano', () => {
+  assert.strictEqual(buildSolrQuery({ query: 'danno', materia: 'civile' }), '(danno) AND kind:"snciv"');
+  assert.strictEqual(buildSolrQuery({ query: 'danno', materia: 'penale' }), '(danno) AND kind:"snpen"');
+  assert.strictEqual(buildSolrQuery({ query: 'danno', tipo: 'decreto' }), '(danno) AND tipoprov:"Decreto"');
+});
+
+t('materia e tipo assenti non emettono alcuna clausola', () => {
+  assert.strictEqual(buildSolrQuery({ query: 'danno' }), '(danno)');
+  assert.strictEqual(buildSolrQuery({ query: 'danno', materia: '', tipo: '' }), '(danno)');
+});
+
+console.log('parseArgs');
+
+t('estrae il valore di --query', () => {
+  assert.strictEqual(parseArgs(['--query', 'danno']).query, 'danno');
+});
+
+t('estrae --anno come numero', () => {
+  assert.strictEqual(parseArgs(['--anno', '2024']).anno, 2024);
+});
+
+t('estrae --materia e --tipo', () => {
+  const opts = parseArgs(['--materia', 'civile', '--tipo', 'ordinanza']);
+  assert.strictEqual(opts.materia, 'civile');
+  assert.strictEqual(opts.tipo, 'ordinanza');
+});
+
+t('estrae tutti i flag insieme', () => {
+  const opts = parseArgs(['--query', 'danno', '--materia', 'penale', '--anno', '2023', '--tipo', 'decreto']);
+  assert.deepStrictEqual(opts, { query: 'danno', materia: 'penale', anno: 2023, tipo: 'decreto' });
+});
+
+t('senza flag restituisce un oggetto vuoto', () => {
+  assert.deepStrictEqual(parseArgs([]), {});
+});
+
+console.log('CLI');
+
+t('la CLI build stampa il parametro q', () => {
+  const out = execFileSync(
+    process.execPath,
+    [SCRIPT, 'build', '--query', 'responsabilita medica', '--materia', 'civile'],
+    { encoding: 'utf8' }
+  );
+  assert.strictEqual(out.trim(), '(responsabilita medica) AND kind:"snciv"');
+});
+
+t('la CLI format legge lo stdin e stampa la forma standard', () => {
+  const payload = JSON.stringify({
+    response: {
+      numFound: 1,
+      docs: [{ id: 'x1', szdec: 'III', tipoprov: 'Sentenza', numdec: '17006', anno: '2025', datdec: '2025-06-12' }],
+    },
+  });
+  const out = execFileSync(process.execPath, [SCRIPT, 'format'], { encoding: 'utf8', input: payload });
+  const parsed = JSON.parse(out);
+  assert.strictEqual(parsed.totale, 1);
+  assert.strictEqual(parsed.massime[0].estremi, 'Sez. III Sentenza n. 17006 del 2025');
+});
+
+t('la CLI build con materia non valida esce con codice 1', () => {
+  assert.throws(
+    () => execFileSync(
+      process.execPath,
+      [SCRIPT, 'build', '--query', 'danno', '--materia', 'commerciale'],
+      { encoding: 'utf8', stdio: 'pipe' }
+    ),
+    (err) => {
+      assert.strictEqual(err.status, 1);
+      assert.ok(/civile, penale/.test(String(err.stderr)), 'stderr inatteso: ' + err.stderr);
+      return true;
+    }
+  );
 });
 
 console.log('formatResponse');
