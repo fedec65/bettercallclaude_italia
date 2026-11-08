@@ -12,7 +12,9 @@ mapping sembra cambiato.
 
 ## Procedura
 
-1. Apri l'area riservata e arriva alla pagina del massimario civile.
+1. Apri l'area riservata — la scheda che l'utente ha gia' aperto, oppure
+   `https://www.italgiure.giustizia.it/new/archives` — e arriva alla pagina del
+   massimario civile.
 2. Fai uno snapshot della pagina (`take_snapshot` del connettore browser, o
    equivalente).
 3. Identifica e annota:
@@ -21,10 +23,13 @@ mapping sembra cambiato.
    - il campo per il numero e per l'anno, se presenti;
    - il pulsante di invio;
    - la struttura di una riga di risultato: dove compaiono estremi, data,
-     tipo di provvedimento, eventuale numero di massima.
+     tipo di provvedimento, eventuale numero di massima;
+   - dove compare il numero di **Rv.** della massima, se presente;
+   - dove compaiono i rimandi alle massime **conformi e difformi**.
 4. **Conferma con l'utente**: mostragli la mappatura e chiedi se i campi
    identificati sono quelli giusti. Non proseguire con una mappatura indovinata.
-5. Aggiorna la tabella qui sotto e committa.
+5. Aggiorna la tabella qui sotto e **proponi la modifica all'utente**: non
+   scrivere file e non committare nulla senza il suo consenso.
 
 ## Mappatura corrente
 
@@ -38,6 +43,8 @@ Da compilare alla prima esecuzione.
 | Campo anno | _da compilare_ | |
 | Pulsante invio | _da compilare_ | |
 | Riga risultato | _da compilare_ | |
+| Numero di Rv. | _da compilare_ | |
+| Conformi / difformi | _da compilare_ | |
 
 ## Cosa e' gia' noto
 

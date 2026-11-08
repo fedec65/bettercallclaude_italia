@@ -56,13 +56,16 @@ Se una precondizione manca, spiega quale e offri l'alternativa: la skill
 
 ## Regole di condotta
 
-- **Pochissime interrogazioni**: massimo 3-5 per sessione, ritmo umano, nessun
-  parallelismo. Lo scopo e' non urtare l'anti-bot ne' le condizioni d'uso del
-  servizio.
+- **Pochissime interrogazioni**: massimo 3-5 per sessione, nessun parallelismo.
+  Attendi almeno qualche secondo tra una richiesta e la successiva, e fermati
+  dopo la quinta qualunque cosa succeda. Lo scopo e' non urtare l'anti-bot ne'
+  le condizioni d'uso del servizio.
 - **Nessuno scaricamento massivo**: nessuna estrazione di interi corpus, nessun
   loop su un elenco di cause.
 - **Nessuna credenziale**: non chiedere mai username o password, non leggerle, non
-  trasmetterle. Non usare `document.cookie`.
+  trasmetterle. Non usare `document.cookie`. Non riprodurre da Bash la richiesta
+  `/api` dell'area riservata: porta con se' i cookie di sessione e l'header di
+  autorizzazione, e ogni richiesta deve uscire dal browser dell'utente.
 - **Non salvare nulla**: i risultati stanno nella conversazione.
 
 ## Procedura
@@ -71,7 +74,10 @@ Se una precondizione manca, spiega quale e offri l'alternativa: la skill
 
 1. Verifica che ci sia un connettore browser.
 2. Chiedi l'autorizzazione esplicita, se non c'e'.
-3. Apri l'area riservata e verifica che il form di ricerca sia presente.
+3. Cerca la scheda che l'utente ha gia' aperto sull'area riservata e usa quella:
+   e' la sessione autenticata. Se non c'e' alcuna scheda gia' aperta, naviga a
+   `https://www.italgiure.giustizia.it/new/archives` e verifica che il form di
+   ricerca sia presente.
 
 Al primo uso la mappatura dei campi della nuova interfaccia non e' nota: esegui
 la procedura di discovery descritta in `references/discovery.md` e annota il
@@ -81,20 +87,25 @@ risultato.
 
 Compila i campi della maschera di ricerca e invia. La ricerca **per parole**
 funziona; quella **per estremi** non e' confermata: se fallisce, non insistere e
-passa al fallback.
+passa al fallback della ricerca per parole, cioe' la skill `italgiure-search`.
 
 ### Passo 3 — Estrai
 
 Per ogni risultato estrai: estremi (sezione, numero, anno), tipo di provvedimento,
 data della decisione, numero della massima, Rv., e il link al testo integrale.
 Il testo della massima si copia dall'area riservata: l'indice pubblico non lo
-espone.
+espone. Nel testo compaiono anche i rimandi alle massime conformi e difformi:
+copiali insieme al testo, non aggiungerli come campi.
 
 ### Passo 4 — Presenta
 
-Restituisci la stessa forma di `cassazione_search_massime`, cosi' tutto a valle
-(`citation-content-verify`, `legal-evaluator`, `legal-5step-framework` e il
-comando `/legale-5step`) funziona senza sapere da dove arrivano i dati.
+Restituisci la stessa forma del tool `cassazione_search_massime`, cosi' tutto a
+valle (`citation-content-verify`, `legal-evaluator`, `legal-5step-framework` e
+il comando `/legale-5step`) funziona senza sapere da dove arrivano i dati.
+
+**Non chiamare quel tool**: lato server non funziona — l'IP di datacenter e'
+scartato da italgiure.giustizia.it — e restituirebbe zero risultati senza
+motivo. Qui il suo nome serve solo da riferimento per la forma da produrre.
 
 La forma standard e':
 
@@ -103,7 +114,7 @@ La forma standard e':
   "totale": <numero>,
   "massime": [
     {
-      "id": "<identificativo>",
+      "id": "snciv<anno><numero>",
       "estremi": "Sez. <sezione> Sentenza n. <numero> del <anno>",
       "sezione": "<sezione>",
       "tipo": "<tipo>",
@@ -121,12 +132,18 @@ I valori qui sono segnaposto: nella risposta reale contengono i dati del
 documento, non dei valori di esempio. `dataDeposito`, `urlPdf`, `numeroMassima` e
 `rv` si omettono quando non disponibili.
 
+Il **testo della massima** non e' un campo di questa forma: presentselo nella
+conversazione **accanto al JSON**, un blocco di testo per ogni `id`
+(intestato con l'`id` e gli estremi). Il JSON e i blocchi di testo sono due
+cose distinte: non aggiungere il testo come campo della forma standard, che
+deve restare identica a quella del tool `cassazione_search_massime`.
+
 Mappa i dati dell'interfaccia sui campi standard con questa tabella:
 
 | Elemento nell'area riservata | Campo standard | Regola |
 |---|---|---|
 | numero totale di risultati | `totale` | il numero restituito dalla ricerca |
-| identificativo del documento | `id` | se assente, compongilo da sezione, numero e anno |
+| identificativo del documento | `id` | usa l'identificativo mostrato dall'interfaccia; se assente compongilo come `snciv<anno><numero>`, come nella skill `italgiure-search` |
 | sezione, tipo, numero, anno | `estremi` | `Sez. {sezione} {tipo} n. {numero} del {anno}`; se manca un pezzo, usa `id` |
 | sezione | `sezione` | |
 | tipo di provvedimento | `tipo` | |
