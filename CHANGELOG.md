@@ -4,6 +4,20 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.5.0] - 2026-11-08
+
+### Fixed
+- **La ricerca di legittimità riparte**: il server MCP non raggiunge `italgiure.giustizia.it` dal proprio IP di datacenter (la connessione viene scartata a livello TCP, con o senza cookie). La ricerca Cassazione ora gira dal computer dell'utente, con la nuova skill **italgiure-search**, che interroga l'indice pubblico SentenzeWeb con `curl` e restituisce la stessa forma di `cassazione_search_massime`. La rete passa da `curl` perché l'hook privacy intercetta `curl` ma non un `node script.js` con HTTP: il perimetro di controllo del segreto professionale non si allarga.
+- **Tool inesistenti citati nelle skill**: 7 riferimenti (`get_article`, `get_decision`, `format_citation`, `parse_citation`, `find_leading_cases`) sono stati corretti con i nomi reali. `scripts/check-tool-names.js` ora valida anche i nomi di tool citati **nella prosa** delle skill, non solo nel frontmatter `tools:`: era cieco proprio dove si erano infiltrati.
+- **Istruzioni del cookie contraddittorie**: il server suggeriva di eseguire `document.cookie` su cookie HttpOnly, mentre la documentazione diceva il contrario. La guida è stata riscritta sul canale reale: la ricerca non richiede autenticazione, il cookie serve solo all'area riservata e si usa dal browser.
+- **`normattiva_search` impreciso**: su un nome di codice restituiva gli ultimi decreti in Gazzetta. La skill ora usa `normattiva_search_advanced` con `denominazioneAtto`/`titoloRicerca` e `vigenza` per gli atti nominati, e dichiara che `normattiva_get_atto` restituisce metadati e link ELI, non il testo degli articoli.
+- **Link morto nella tabella Reduced Mode**: `sentenzeweb.italgiure.giustizia.it` non risolve; l'host valido è `www.italgiure.giustizia.it/sncass/`.
+
+### Added
+- **Skill `italgiure-search`**: ricerca dei precedenti della Cassazione dall'indice pubblico SentenzeWeb, eseguita dal computer dell'utente. Include `scripts/italgiure-query.js`, puro e testato, che costruisce la query Solr e mappa la risposta nella forma standard del plugin.
+- **Skill `italgiure-browser`**: accesso all'area riservata ItalGiure dalla sessione già autenticata del browser, in modalità presidiata (connettore presente, autorizzazione esplicita, login verificato; massimo 3-5 interrogazioni per sessione). Non chiede credenziali e non le trasmette.
+- **`userConfig.fonti_esterne`**: l'utente può dichiarare le banche dati giuridiche in abbonamento (es. `buddalaw, simpliciter`). Le skill le interrogano in parallelo ai server MCP e etichettano la provenienza di ogni pronuncia; una fonte non disponibile in sessione non viene dichiarata consultata. L'eccezione è stata aggiunta inline alla clausola di perimetro dei 24 comandi che la contengono.
+
 ## [2.4.11] - 2026-11-01
 
 ### Fixed
