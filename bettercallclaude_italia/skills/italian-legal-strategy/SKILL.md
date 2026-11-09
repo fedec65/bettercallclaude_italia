@@ -64,7 +64,7 @@ Per l'autenticazione ItalGiure segui quest'ordine:
 1. **Cookie dalle impostazioni**: se l'utente ha configurato `italgiure_cookie` (userConfig), passalo come parametro `cookie`.
 2. **Sessione registrata sul server**: se l'utente ha configurato `italgiure_session_key` (userConfig), passala come parametro `session_key` al posto del cookie — il cookie è registrato sul server (tool `cassazione_session_set`) e non va richiesto.
 3. **Conversazione corrente**: se non configurato nelle impostazioni ma l'utente lo ha fornito nella conversazione, usa quello.
-4. **Solo se assente in tutti i casi**, chiedilo una sola volta (procedura DevTools: vedi `docs/cassazione-cookie.md`). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo.
+4. **Non chiedere mai all'utente di copiare un cookie**: per la ricerca non serve — usa la skill `italgiure-search` (indice pubblico SentenzeWeb, dal computer dell'utente); per le massime complete dell'area riservata usa la skill `italgiure-browser` (sessione già autenticata nel browser, modalità presidiata). Se una chiamata lato server va in timeout o restituisce zero risultati, non è un problema di cookie: è il blocco per IP di datacenter. Passa alla skill `italgiure-search` o `italgiure-browser` (vedi `docs/cassazione-cookie.md`).
 
 ### Passo 3: Valuta Onere della Prova
 **Regola generale (Art. 2697 CC)**: Ciascuna parte deve provare i fatti su cui fondare le sue pretese.

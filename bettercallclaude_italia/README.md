@@ -197,7 +197,7 @@ Tutti i server si connettono automaticamente dopo l'installazione. Nessuna confi
 | eur-lex-ita | Alta | SPARQL su EUR-Lex |
 | legal-citations-ita | Alta | Funziona localmente |
 | legal-persona-ita | Alta | Funziona localmente (calcolo termini deterministico) |
-| citation-verify-ita | Media | Dipende da ItalGiure (cookie) e Normattiva |
+| citation-verify-ita | Media | Dipende da ItalGiure e Normattiva |
 | workflows-ita | Alta | Se assente, i flussi salvati sono omessi senza errori |
 | corte-costituzionale | Bassa | Protezione anti-bot (DataDome) |
 | giustizia-amministrativa | Bassa | Portale instabile, timeout frequenti |
