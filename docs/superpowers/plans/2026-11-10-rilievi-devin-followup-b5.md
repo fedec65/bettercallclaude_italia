@@ -750,14 +750,18 @@ npm run typecheck
 
 Expected: entrambi verdi, exit 0. Il typecheck richiede il build precedente: `dist/` è gitignored e sul disco può essere stantio.
 
-- [ ] **Step 4: lint**
+- [ ] **Step 4: lint (stato del repo, non bloccante)**
 
 ```bash
 cd ~/Dev/BetterCallClaudeMCP_Italy
 npm run lint
 ```
 
-Expected: exit 0.
+Expected: il comando **fallisce** per una condizione preesistente del repo: ESLint 9
+senza `eslint.config.js` (non esiste alcun file di configurazione). Non è un difetto
+di questa PR: il job `lint` della CI in realtà esegue `npm run typecheck --workspaces`
+dopo il build, ed è quello il gate che conta. Verifica che il fallimento sia
+esattamente quello (config mancante) e non altro, e riportalo nel report.
 
 - [ ] **Step 5: committa**
 
@@ -873,3 +877,4 @@ Nel repo plugin, aggiorna `.claude/session-state.md` (sezione «Prossimi passi»
 - **Non** risolve il modello di autenticazione dell'area riservata (header `Authorization: Basic` invece del cookie): la ricerca Cassazione resta sul canale client.
 - **Non** affronta i Minor già archiviati (build di `dist/` in CI, «Prova SentenzeWeb» a `italgiure-client.ts:403`, accenti nei nomi dei test, duplicazione descrizioni↔costanti, narrativa di `AGENTS.md`): restano in lista.
 - **Non** modifica le descrizioni degli altri tool oltre a quella rettificata in Task 2.
+- **Non** ripara lo script `npm run lint` del repo (ESLint 9 senza `eslint.config.js`): il job `lint` della CI in realtà esegue il typecheck.
