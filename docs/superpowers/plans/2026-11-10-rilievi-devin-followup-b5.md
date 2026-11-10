@@ -731,6 +731,8 @@ In `CHANGELOG.md`, nella sezione `## [Unreleased]`, aggiungi in cima a `### Fixe
 - **I messaggi del server cassazione dichiarano solo ciò che è stato osservato**: il ramo «senza cookie» non attribuisce più al blocco per IP un timeout che non è mai avvenuto (nessuna richiesta viene inviata), gli errori di trasporto sono distinti dagli errori di autenticazione e da quelli generici, `citation-verify-ita` non ripete la diagnosi due volte nello stesso errore `SOURCE_UNAVAILABLE` e la guida di setup nel README non suggerisce più `document.cookie` (cookie HttpOnly) né un nome di cookie non verificato.
 ```
 
+Poi **correggi la voce esistente** nella stessa sezione `### Fixed` (riga 13 del file): dice che l'errore `SOURCE_UNAVAILABLE` «nomina il blocco per IP e il percorso alternativo», ma dopo i task 1-3 quello è vero solo nel ramo di fallimento di trasporto — nel ramo «senza cookie» l'errore riporta «nessuna richiesta è stata inviata al servizio» e non nomina il blocco per IP. Riformulala: il messaggio riporta la diagnosi del ramo effettivamente verificato.
+
 - [ ] **Step 2: esegui la suite completa**
 
 ```bash
