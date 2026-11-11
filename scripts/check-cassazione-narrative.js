@@ -36,32 +36,29 @@ if (!fs.existsSync(pluginDir)) {
 }
 
 // ---------------------------------------------------------------------------
-// Regola 1 — la formula obsoleta non può tornare sul canale server.
+// Regola 1 — la formula obsoleta non può tornare sul canale Cassazione.
 //
-// Le formule sono bandite solo dove descrivono il CANALE SERVER: il canale
-// client continua a usare "zero risultati" e "totale: 0" — lì una ricerca
-// che non trova nulla è un risultato, non un errore.
+// La formula è bandita solo dove descrive il canale SERVER che interroga
+// ItalGiure:
 //
-// "Canale server" = la frase nomina il canale server o un suo tool ("canale
-// server", "lato server", "dal server", "server MCP", `cassazione_search_massime`,
-// …). Il marker è volutamente specifico: un "server" generico (i flussi
-// salvati, il gateway MCP) descrive l'infrastruttura, non la narrazione
-// Cassazione, e va lasciato stare.
+//   1. la frase deve nominare il canale server o la connessione verso
+//      ItalGiure (marker `server`, `connessione`, i due tool del server);
+//   2. la frase, o la sezione in cui si trova, deve nominare la FONTE
+//      (Cassazione, ItalGiure, massime, sentenze, datacenter, …).
+//
+// Le due condizioni insieme tengono fuori i falsi positivi: la prosa
+// generica su un altro server MCP ("se il server MCP non funziona…") parla
+// di canale server ma non della fonte Cassazione, e il canale client continua
+// a poter dire "zero risultati" e "totale: 0" — lì una ricerca che non trova
+// nulla è un risultato, non un errore.
 //
 // La verifica guarda la FRASE, non la riga: il markdown avvolge le frasi su
 // più righe, e "non restituisce risultati" spezzato dopo "non restituisce"
-// sfuggirebbe al controllo.
+// sfuggirebbe al controllo. Per lo stesso motivo i marker sono scelti senza
+// spazi fissi: "canale⏎ server" deve contare come "canale server".
 // ---------------------------------------------------------------------------
 
-// Formule sempre vietate: descrivono la connessione del server verso
-// ItalGiure con parole che il canale client non usa mai (lì il timeout è
-// attribuito alla `curl`, non a "la connessione").
-const ALWAYS_OBSOLETE = [
-  { re: /la\s+connessione\s+va\s+in\s+timeout/gi, label: 'la connessione va in timeout' },
-];
-
-// Formule vietate quando la frase in cui compaiono parla del canale server.
-const SERVER_OBSOLETE = [
+const OBSOLETE_FORMULAS = [
   { re: /restituisce\s+zero\s+risultati/gi, label: 'restituisce zero risultati' },
   { re: /restituito\s+zero\s+risultati/gi, label: 'restituito zero risultati' },
   { re: /restituirebbe\s+zero\s+risultati/gi, label: 'restituirebbe zero risultati' },
@@ -72,10 +69,16 @@ const SERVER_OBSOLETE = [
   { re: /non\s+funziona/gi, label: 'non funziona' },
   { re: /non\s+risponde/gi, label: 'non risponde' },
   { re: /va\s+in\s+timeout/gi, label: 'va in timeout' },
+  { re: /la\s+connessione\s+va\s+in\s+timeout/gi, label: 'la connessione va in timeout' },
 ];
 
-// Riferimenti al canale server (o a un suo tool) dentro la stessa frase.
-const SERVER_CHANNEL_RE = /(canale server|lato server|dal server|server MCP|server\s+`?cassazione|server BetterCallClaude|cassazione_search_massime|cassazione_get_sentenza)/i;
+// Il canale server (o la connessione verso ItalGiure) nominato dalla frase.
+// "server" è una parola sola: resta valido anche se il markdown la separa dal
+// nome che segue ("canale⏎ server", "server⏎ MCP").
+const SERVER_CHANNEL_RE = /\bserver\b|\bconnessione\b|cassazione_search_massime|cassazione_get_sentenza/i;
+
+// La fonte Cassazione: senza questo riferimento la frase parla d'altro.
+const CASSAZIONE_RE = /cassazione|italgiure|massime|sentenze|datacenter|blocco\s+per\s+IP|precedent/i;
 
 // ---------------------------------------------------------------------------
 // Regola 2 — chi descrive il fallback del server deve dire come il tool lo
@@ -87,8 +90,10 @@ const SERVER_CHANNEL_RE = /(canale server|lato server|dal server|server MCP|serv
 // prima, e il modello non avrebbe modo di distinguere un errore da una ricerca
 // senza risultati.
 //
-// Un file sorvegliato che sparisce è una violazione: la regola deve valere
-// anche per i file che verranno aggiunti in futuro.
+// Un file sorvegliato che sparisce è una violazione: altrimenti la regola per
+// quel file si disattiverebbe in silenzio. (Un NUOVO file che descrive il
+// fallback va aggiunto a questo elenco: finché non c'è, la Regola 2 non lo
+// controlla.)
 // ---------------------------------------------------------------------------
 
 const SERVER_CHANNEL_FILES = [
@@ -143,9 +148,10 @@ function displayPath(file) {
 function flatten(content) {
   const normalized = content.replace(/\r\n/g, '\n');
   const flat = normalized.replace(/\n/g, ' ');
+  const lines = normalized.split('\n');
   const lineStarts = [];
   let offset = 0;
-  for (const line of normalized.split('\n')) {
+  for (const line of lines) {
     lineStarts.push(offset);
     offset += line.length + 1;
   }
@@ -155,7 +161,7 @@ function flatten(content) {
     let found = 0;
     while (lo <= hi) {
       const mid = (lo + hi) >> 1;
-      if (lineStarts[mid] <= at) {
+      if (lineStartAt(mid, lineStarts, at)) {
         found = mid;
         lo = mid + 1;
       } else {
@@ -164,7 +170,11 @@ function flatten(content) {
     }
     return found + 1;
   };
-  return { flat, lineOf };
+  return { flat, lines, lineStarts, lineOf };
+}
+
+function lineStartAt(index, lineStarts, at) {
+  return lineStarts[index] <= at;
 }
 
 const SENTENCE_END = /[.!?;]/;
@@ -189,24 +199,48 @@ function sentenceAt(flat, offset) {
 }
 
 /**
+ * Sezioni del file: un titolo apre una sezione che dura fino al titolo
+ * successivo (l'inizio del file è la prima sezione). La sezione è il contesto
+ * in cui la frase cerca la fonte: un riepilogo la nomina nel titolo della
+ * tabella, non nella riga che parla del server.
+ */
+function sections(lines) {
+  const sectionOf = new Array(lines.length).fill(0);
+  const hasCassazione = [];
+  let current = 0;
+  lines.forEach((line, i) => {
+    if (/^\s{0,3}#{1,6}\s/.test(line)) current += 1;
+    sectionOf[i] = current;
+    if (hasCassazione[current] === undefined) hasCassazione[current] = false;
+    if (CASSAZIONE_RE.test(line)) hasCassazione[current] = true;
+  });
+  return { sectionOf, hasCassazione };
+}
+
+/**
  * Registra le occorrenze di una formula obsoleta.
  * Ogni riga colpevole viene segnalata una volta sola, con tutte le formule
  * che vi compaiono.
  */
-function scanPattern(pattern, flat, lineOf, file, violations) {
+function scanPattern(pattern, flat, lineOf, file, context, violations) {
   pattern.re.lastIndex = 0;
   let match;
   while ((match = pattern.re.exec(flat)) !== null) {
     const offset = match.index;
-    if (!pattern.always && !SERVER_CHANNEL_RE.test(sentenceAt(flat, offset))) continue;
+    const sentence = sentenceAt(flat, offset);
+    // La frase deve parlare del canale server...
+    if (!SERVER_CHANNEL_RE.test(sentence)) continue;
+    // ...e della fonte Cassazione: nella frase stessa o nella sezione.
     const line = lineOf(offset);
+    const section = context.sectionOf[line - 1];
+    if (!CASSAZIONE_RE.test(sentence) && !context.hasCassazione[section]) continue;
     const key = `${file}:${line}`;
     if (!violations.has(key)) {
       violations.set(key, {
         file,
         line,
         labels: new Set(),
-        text: sentenceAt(flat, offset).trim(),
+        text: sentence.trim(),
       });
     }
     violations.get(key).labels.add(pattern.label);
@@ -218,12 +252,10 @@ const files = collectFiles(pluginDir);
 const formulaViolations = new Map();
 for (const file of files) {
   const content = fs.readFileSync(file, 'utf8');
-  const { flat, lineOf } = flatten(content);
-  for (const pattern of ALWAYS_OBSOLETE) {
-    scanPattern({ ...pattern, always: true }, flat, lineOf, displayPath(file), formulaViolations);
-  }
-  for (const pattern of SERVER_OBSOLETE) {
-    scanPattern({ ...pattern, always: false }, flat, lineOf, displayPath(file), formulaViolations);
+  const { flat, lines, lineOf } = flatten(content);
+  const context = sections(lines);
+  for (const pattern of OBSOLETE_FORMULAS) {
+    scanPattern(pattern, flat, lineOf, displayPath(file), context, formulaViolations);
   }
 }
 

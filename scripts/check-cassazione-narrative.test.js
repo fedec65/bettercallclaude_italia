@@ -105,12 +105,16 @@ function run(dir) {
   }
 }
 
-/** Riga di fixture con frontmatter e corpo libero. */
+/**
+ * Riga di fixture con frontmatter e corpo libero.
+ * La descrizione non nomina la fonte Cassazione: è il corpo a dire di chei
+ * canale si parla, e i testi generici devono restare accettati.
+ */
 function skill(body) {
   return [
     '---',
     'name: fixture-skill',
-    'description: "Fixture di test per il verificatore della narrativa Cassazione."',
+    'description: "Fixture di test per il verificatore della narrativa."',
     'tools:',
     '  - Read',
     '---',
@@ -122,16 +126,17 @@ function skill(body) {
   ].join('\n');
 }
 
+// Le formule obsolete, ciascuna nel contesto della ricerca Cassazione.
 const SKILL_OBSOLETE_TIMEOUT = skill(
-  'Se una chiamata lato server va in timeout o restituisce zero risultati, non è un problema di cookie.'
+  'La ricerca Cassazione con una chiamata lato server va in timeout o restituisce zero risultati.'
 );
 
 const SKILL_OBSOLETE_RESTITUITO = skill(
-  'La ricerca con il server MCP ha restituito zero risultati o un timeout.'
+  'La ricerca Cassazione con il server MCP ha restituito zero risultati o un timeout.'
 );
 
 const SKILL_OBSOLETE_RESTITUIREBBE = skill(
-  'Lato server non funziona: restituirebbe zero risultati senza motivo.'
+  'La ricerca Cassazione lato server non funziona: restituirebbe zero risultati senza motivo.'
 );
 
 const SKILL_OBSOLETE_NON_RESTITUISCE = skill(
@@ -139,19 +144,25 @@ const SKILL_OBSOLETE_NON_RESTITUISCE = skill(
 );
 
 const SKILL_OBSOLETE_CONNESSIONE = skill(
-  'Da quel tipo di indirizzo la connessione va in timeout, con o senza cookie di sessione.'
+  'La ricerca Cassazione da quel tipo di indirizzo: la connessione va in timeout, con o senza cookie.'
 );
 
 const SKILL_OBSOLETE_NON_RAGGIUNGIBILE = skill(
-  'Il canale server non è raggiungibile: la ricerca parte dal computer dell\'utente.'
+  'La ricerca Cassazione: il canale server non è raggiungibile, la ricerca parte dal computer dell\'utente.'
 );
 
 const SKILL_OBSOLETE_NON_NORMALMENTE_RAGGIUNGIBILE = skill(
-  'Il canale server non è normalmente raggiungibile e il tool non restituisce nulla di utile.'
+  'La ricerca Cassazione: il canale server non è normalmente raggiungibile e il tool non restituisce nulla di utile.'
 );
 
 const SKILL_OBSOLETE_NON_FUNZIONA = skill(
-  'Lato server non funziona: l\'IP di datacenter è scartato da italgiure.giustizia.it.'
+  'La ricerca Cassazione: lato server non funziona perché l\'IP di datacenter è scartato da italgiure.giustizia.it.'
+);
+
+// Il marker del canale spezzato a capo: il markdown avvolge le frasi e il
+// controllo deve vederlo lo stesso.
+const SKILL_OBSOLETE_WRAPPED = skill(
+  'La ricerca Cassazione con il canale\n  server non risponde;'
 );
 
 const SKILL_NARRATIVA_NUOVA = skill(
@@ -174,10 +185,24 @@ const SKILL_CLIENT_TIMEOUT_CURL = skill(
   'Se la `curl` va in timeout, l\'IP corrente non è ammesso da ItalGiure: offri la modalità browser.'
 );
 
+const SKILL_CLIENT_CONNESSIONE = skill(
+  'Se la connessione va in timeout, prova un altro termine.'
+);
+
+// La prosa generica su un altro server MCP: non parla del canale Cassazione
+// e non deve essere segnalata.
+const SKILL_GENERIC_MCP = skill(
+  'Se il server MCP non funziona, la skill degrada in Reduced Mode.'
+);
+
+const SKILL_GENERIC_MCP_ALTRO_SERVER = skill(
+  'Se il server MCP `normattiva` non risponde, usa il fallback.'
+);
+
 const AGENT_RESEARCHER_SENZA_DICHIARAZIONE = [
   '---',
   'name: italian-legal-researcher',
-  'description: "Fixture di test per il verificatore della narrativa Cassazione."',
+  'description: "Fixture di test per il verificatore della narrativa."',
   'tools:',
   '  - Read',
   '---',
@@ -189,7 +214,7 @@ const AGENT_RESEARCHER_SENZA_DICHIARAZIONE = [
 const AGENT_RESEARCHER_CON_DICHIARAZIONE = [
   '---',
   'name: italian-legal-researcher',
-  'description: "Fixture di test per il verificatore della narrativa Cassazione."',
+  'description: "Fixture di test per il verificatore della narrativa."',
   'tools:',
   '  - Read',
   '---',
@@ -288,6 +313,16 @@ t('rifiuta la formula «lato server non funziona»', () => {
   );
 });
 
+t('rifiuta la formula anche se il marker è spezzato a capo', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_WRAPPED });
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il verificatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('non risponde'),
+    'l\'output deve nominare la formula obsoleta, got:\n' + r.output
+  );
+});
+
 t('l\'errore indica il file e la riga', () => {
   const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_NON_RESTITUISCE });
   const r = run(dir);
@@ -327,6 +362,26 @@ t('accetta il timeout della `curl` del canale client', () => {
   const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_CLIENT_TIMEOUT_CURL });
   const r = run(dir);
   assert.strictEqual(r.code, 0, 'il timeout della curl è la semantica del canale client, output:\n' + r.output);
+});
+
+t('accetta il timeout della connessione sul canale client', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_CLIENT_CONNESSIONE });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'il timeout della connessione è la semantica del canale client, output:\n' + r.output);
+});
+
+console.log('check-cassazione-narrative: prosa generica di altri server');
+
+t('non segnala la prosa generica su un server MCP', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_GENERIC_MCP });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'la prosa di un altro server MCP non è la narrativa Cassazione, output:\n' + r.output);
+});
+
+t('non segnala la prosa generica che nomina un altro server', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_GENERIC_MCP_ALTRO_SERVER });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'la prosa di un altro server MCP non è la narrativa Cassazione, output:\n' + r.output);
 });
 
 console.log('check-cassazione-narrative: dichiarazione del fallback');
