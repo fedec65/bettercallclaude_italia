@@ -9,9 +9,10 @@
  * fonte. Non è un timeout e non è una ricerca senza risultati.
  *
  * La formula obsoleta ("va in timeout o restituisce zero risultati", "non
- * restituisce risultati") è falsa: un modello che la legge conclude che la
- * ricerca non abbia prodotto nulla e lo riferisce all'avvocato, invece di
- * passare al canale client (`italgiure-search` / `italgiure-browser`).
+ * restituisce risultati", "il canale server non è raggiungibile") è falsa: un
+ * modello che la legge conclude che la ricerca non abbia prodotto nulla e lo
+ * riferisce all'avvocato, invece di passare al canale client
+ * (`italgiure-search` / `italgiure-browser`).
  *
  * Usage:
  *   node scripts/check-cassazione-narrative.js [plugin-dir]  # check (exit 1 on violation)
@@ -35,22 +36,46 @@ if (!fs.existsSync(pluginDir)) {
 }
 
 // ---------------------------------------------------------------------------
-// Regola 1 — la formula obsoleta non può tornare.
+// Regola 1 — la formula obsoleta non può tornare sul canale server.
 //
-// È bandita la formula che descrive il *canale server*. Il canale client
-// conserva invece "totale: 0" e "nessun risultato": lì una ricerca che non
-// trova nulla è un risultato, non un errore, e la distinzione va conservata.
+// Le formule sono bandite solo dove descrivono il CANALE SERVER: il canale
+// client continua a usare "zero risultati" e "totale: 0" — lì una ricerca
+// che non trova nulla è un risultato, non un errore.
+//
+// "Canale server" = la frase nomina il canale server o un suo tool ("canale
+// server", "lato server", "dal server", "server MCP", `cassazione_search_massime`,
+// …). Il marker è volutamente specifico: un "server" generico (i flussi
+// salvati, il gateway MCP) descrive l'infrastruttura, non la narrazione
+// Cassazione, e va lasciato stare.
+//
+// La verifica guarda la FRASE, non la riga: il markdown avvolge le frasi su
+// più righe, e "non restituisce risultati" spezzato dopo "non restituisce"
+// sfuggirebbe al controllo.
 // ---------------------------------------------------------------------------
 
-const OBSOLETE_FORMULAS = [
-  { re: /restituisce\s+zero\s+risultati/i, label: 'restituisce zero risultati' },
-  { re: /restituito\s+zero\s+risultati/i, label: 'restituito zero risultati' },
-  { re: /restituirebbe\s+zero\s+risultati/i, label: 'restituirebbe zero risultati' },
-  { re: /non\s+restituisce\s+risultati/i, label: 'non restituisce risultati' },
-  { re: /non\s+restituiscono\s+risultati/i, label: 'non restituiscono risultati' },
-  { re: /la\s+connessione\s+va\s+in\s+timeout/i, label: 'la connessione va in timeout' },
-  { re: /lato\s+server\s+va\s+in\s+timeout/i, label: 'lato server va in timeout' },
+// Formule sempre vietate: descrivono la connessione del server verso
+// ItalGiure con parole che il canale client non usa mai (lì il timeout è
+// attribuito alla `curl`, non a "la connessione").
+const ALWAYS_OBSOLETE = [
+  { re: /la\s+connessione\s+va\s+in\s+timeout/gi, label: 'la connessione va in timeout' },
 ];
+
+// Formule vietate quando la frase in cui compaiono parla del canale server.
+const SERVER_OBSOLETE = [
+  { re: /restituisce\s+zero\s+risultati/gi, label: 'restituisce zero risultati' },
+  { re: /restituito\s+zero\s+risultati/gi, label: 'restituito zero risultati' },
+  { re: /restituirebbe\s+zero\s+risultati/gi, label: 'restituirebbe zero risultati' },
+  { re: /restituiscono\s+zero\s+risultati/gi, label: 'restituiscono zero risultati' },
+  { re: /non\s+restituisce\s+risultati/gi, label: 'non restituisce risultati' },
+  { re: /non\s+restituiscono\s+risultati/gi, label: 'non restituiscono risultati' },
+  { re: /non\s+(?:è|e')\s+(?:normalmente\s+)?raggiungibile/gi, label: 'non è raggiungibile' },
+  { re: /non\s+funziona/gi, label: 'non funziona' },
+  { re: /non\s+risponde/gi, label: 'non risponde' },
+  { re: /va\s+in\s+timeout/gi, label: 'va in timeout' },
+];
+
+// Riferimenti al canale server (o a un suo tool) dentro la stessa frase.
+const SERVER_CHANNEL_RE = /(canale server|lato server|dal server|server MCP|server\s+`?cassazione|server BetterCallClaude|cassazione_search_massime|cassazione_get_sentenza)/i;
 
 // ---------------------------------------------------------------------------
 // Regola 2 — chi descrive il fallback del server deve dire come il tool lo
@@ -61,6 +86,9 @@ const OBSOLETE_FORMULAS = [
 // quel fallback senza citare `cookieValido` tornerebbe al "non funziona" di
 // prima, e il modello non avrebbe modo di distinguere un errore da una ricerca
 // senza risultati.
+//
+// Un file sorvegliato che sparisce è una violazione: la regola deve valere
+// anche per i file che verranno aggiunti in futuro.
 // ---------------------------------------------------------------------------
 
 const SERVER_CHANNEL_FILES = [
@@ -108,48 +136,124 @@ function displayPath(file) {
   return rel.startsWith('..') ? file : rel;
 }
 
-const files = collectFiles(pluginDir);
-
-const formulaViolations = [];
-for (const file of files) {
-  const content = fs.readFileSync(file, 'utf8');
-  content.split('\n').forEach((line, i) => {
-    for (const { re, label } of OBSOLETE_FORMULAS) {
-      if (re.test(line)) {
-        formulaViolations.push({
-          file: displayPath(file),
-          line: i + 1,
-          label,
-          text: line.trim(),
-        });
+/**
+ * Testo del file su un'unica riga, con la mappa degli offset sulle righe.
+ * Il markdown avvolge le frasi: il controllo deve guardare il testo continuo.
+ */
+function flatten(content) {
+  const normalized = content.replace(/\r\n/g, '\n');
+  const flat = normalized.replace(/\n/g, ' ');
+  const lineStarts = [];
+  let offset = 0;
+  for (const line of normalized.split('\n')) {
+    lineStarts.push(offset);
+    offset += line.length + 1;
+  }
+  const lineOf = (at) => {
+    let lo = 0;
+    let hi = lineStarts.length - 1;
+    let found = 0;
+    while (lo <= hi) {
+      const mid = (lo + hi) >> 1;
+      if (lineStarts[mid] <= at) {
+        found = mid;
+        lo = mid + 1;
+      } else {
+        hi = mid - 1;
       }
     }
-  });
+    return found + 1;
+  };
+  return { flat, lineOf };
+}
+
+const SENTENCE_END = /[.!?;]/;
+
+/** La frase che contiene l'offset indicato (basta la frase: è lei che dice di chei canale si parla). */
+function sentenceAt(flat, offset) {
+  let start = 0;
+  for (let i = offset - 1; i >= 0; i--) {
+    if (SENTENCE_END.test(flat[i])) {
+      start = i + 1;
+      break;
+    }
+  }
+  let end = flat.length;
+  for (let i = offset; i < flat.length; i++) {
+    if (SENTENCE_END.test(flat[i])) {
+      end = i;
+      break;
+    }
+  }
+  return flat.slice(start, end);
+}
+
+/**
+ * Registra le occorrenze di una formula obsoleta.
+ * Ogni riga colpevole viene segnalata una volta sola, con tutte le formule
+ * che vi compaiono.
+ */
+function scanPattern(pattern, flat, lineOf, file, violations) {
+  pattern.re.lastIndex = 0;
+  let match;
+  while ((match = pattern.re.exec(flat)) !== null) {
+    const offset = match.index;
+    if (!pattern.always && !SERVER_CHANNEL_RE.test(sentenceAt(flat, offset))) continue;
+    const line = lineOf(offset);
+    const key = `${file}:${line}`;
+    if (!violations.has(key)) {
+      violations.set(key, {
+        file,
+        line,
+        labels: new Set(),
+        text: sentenceAt(flat, offset).trim(),
+      });
+    }
+    violations.get(key).labels.add(pattern.label);
+  }
+}
+
+const files = collectFiles(pluginDir);
+
+const formulaViolations = new Map();
+for (const file of files) {
+  const content = fs.readFileSync(file, 'utf8');
+  const { flat, lineOf } = flatten(content);
+  for (const pattern of ALWAYS_OBSOLETE) {
+    scanPattern({ ...pattern, always: true }, flat, lineOf, displayPath(file), formulaViolations);
+  }
+  for (const pattern of SERVER_OBSOLETE) {
+    scanPattern({ ...pattern, always: false }, flat, lineOf, displayPath(file), formulaViolations);
+  }
 }
 
 const cookieViolations = [];
 let channelChecked = 0;
 for (const rel of SERVER_CHANNEL_FILES) {
   const file = path.join(pluginDir, rel);
-  if (!fs.existsSync(file)) continue;
+  if (!fs.existsSync(file)) {
+    cookieViolations.push({ file: rel, missing: true });
+    continue;
+  }
   channelChecked++;
   const content = fs.readFileSync(file, 'utf8');
   if (!body(content).includes(COOKIE_VALIDO)) {
-    cookieViolations.push({ file: rel });
+    cookieViolations.push({ file: rel, missing: false });
   }
 }
 
 let failed = false;
 
-if (formulaViolations.length) {
+if (formulaViolations.size) {
   failed = true;
-  console.error(`FAIL: ${formulaViolations.length} occorrenze della formula obsoleta sul canale Cassazione:\n`);
-  for (const v of formulaViolations) {
-    console.error(`ERRORE NARRATIVA: ${v.file}:${v.line} — «${v.label}»`);
+  console.error(`FAIL: ${formulaViolations.size} righe con la formula obsoleta sul canale Cassazione:\n`);
+  for (const v of formulaViolations.values()) {
+    console.error(`ERRORE NARRATIVA: ${v.file}:${v.line} — «${[...v.labels].join('» / «')}»`);
     console.error(`  ${v.text}`);
   }
   console.error('\nIl server non va in timeout e non restituisce zero risultati: dichiara il fallimento');
   console.error('con `autenticazione.cookieValido: false` e spiega il motivo in `autenticazione.messaggio`.');
+  console.error('Il canale server non è "irraggiungibile": non può interrogare la fonte e lo dichiara.');
   console.error('Fix: riscrivi il testo con la narrativa del tool e passa al canale client `italgiure-search`.');
 }
 
@@ -157,10 +261,15 @@ if (cookieViolations.length) {
   failed = true;
   console.error(`\nFAIL: ${cookieViolations.length} file descrivono il fallback del server senza dichiararlo:\n`);
   for (const v of cookieViolations) {
-    console.error(`ERRORE NARRATIVA: ${v.file} — manca \`${COOKIE_VALIDO}\``);
-    console.error('  il file descrive il fallback del server ma non dice come il tool lo dichiara');
+    if (v.missing) {
+      console.error(`ERRORE NARRATIVA: ${v.file} — file sorvegliato mancante`);
+      console.error('  il file che descrive il fallback del server non esiste più: la regola resterebbe senza controllo');
+    } else {
+      console.error(`ERRORE NARRATIVA: ${v.file} — manca \`${COOKIE_VALIDO}\``);
+      console.error('  il file descrive il fallback del server ma non dice come il tool lo dichiara');
+    }
   }
-  console.error(`\nOgni file che descrive il fallback del server deve citare \`${COOKIE_VALIDO}\`.`);
+  console.error(`\nOgni file che descrive il fallback del server deve esistere e citare \`${COOKIE_VALIDO}\`.`);
   console.error('Fix: aggiungi la dichiarazione del tool (valore `false` + messaggio).');
 }
 

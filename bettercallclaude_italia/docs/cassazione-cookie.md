@@ -16,7 +16,7 @@ giurisprudenza della Corte di Cassazione.
 |---|---|---|
 | Precedenti per parole chiave, estremi, sezione, data | skill **italgiure-search** | **nessuna** |
 | Massime complete, Rv., conformi e difformi | skill **italgiure-browser** | login già attivo nel tuo browser |
-| Il server BetterCallClaude interroga la fonte | — | in hosting non può e lo dichiara con `autenticazione.cookieValido: false`: vedi «Perché il server non funziona» |
+| Il server BetterCallClaude interroga la fonte | — | in hosting non può e lo dichiara con `autenticazione.cookieValido: false`: vedi «Perché il server non può interrogare la fonte» |
 
 La ricerca **non richiede autenticazione**. Non c'è alcun cookie da copiare per
 fare una ricerca.
@@ -60,21 +60,21 @@ Lo SPID richiede la presenza dell'utente e quasi sempre un secondo fattore
 (OTP o app), e le regole AGID vietano la delega automatizzata delle
 credenziali. Il plugin non chiede e non riceve mai la tua password.
 
-## 3. Perché il server BetterCallClaude non funziona
+## 3. Perché il server BetterCallClaude non può interrogare la fonte
 
 I server MCP di BetterCallClaude sono ospitati su un indirizzo IP di datacenter.
 `www.italgiure.giustizia.it` **scarta a livello di rete** le richieste che
-arrivano da quel tipo di indirizzo: la connessione non raggiunge il servizio,
-con o senza cookie.
+arrivano da quel tipo di indirizzo.
 
 Il tool lo dichiara: la chiamata va a buon fine (`success: true`), ma
 `data.autenticazione.cookieValido` vale `false` e
 `data.autenticazione.messaggio` spiega il motivo. Non è un errore e non c'è un
 timeout da aspettare.
 
-Non è quindi un problema di cookie mancante, né di cookie scaduto, né di
-autenticazione: è il punto di partenza della connessione. Per questo la ricerca
-Cassazione è stata spostata sul computer dell'utente, dove l'IP è ammesso.
+Il messaggio distingue le cause: senza cookie la richiesta non parte nemmeno;
+con un cookie la connessione non raggiunge il servizio, perché l'IP di datacenter
+è scartato. In entrambi i casi il rimedio è lo stesso: la ricerca Cassazione
+parte dal computer dell'utente, dove l'IP è ammesso.
 
 Coprire anche gli utenti fuori dall'Italia richiederebbe al server un'uscita in
 Italia: non è una funzionalità del plugin.

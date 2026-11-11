@@ -81,7 +81,7 @@ fascicolo: solo i termini di ricerca.
 Usa i server MCP in questo ordine:
 
 **MCP `cassazione`** (ricerca strutturata Cassazione):
-- `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Il canale server non è raggiungibile: la ricerca parte dal computer dell'utente. I parametri `cookie` e `session_key` esistono per compatibilità: usali solo se l'utente li ha già configurati nelle impostazioni del plugin (`italgiure_cookie`, `italgiure_session_key`), senza chiedere nulla.
+- `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Il canale server ospitato non può interrogare la fonte e lo dichiara con `autenticazione.cookieValido: false`: la ricerca parte dal computer dell'utente. I parametri `cookie` e `session_key` esistono per compatibilità: usali solo se l'utente li ha già configurati nelle impostazioni del plugin (`italgiure_cookie`, `italgiure_session_key`), senza chiedere nulla.
 - `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Come sopra.
 
 **Per le massime complete della Cassazione:**

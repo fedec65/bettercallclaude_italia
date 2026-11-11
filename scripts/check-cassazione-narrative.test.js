@@ -48,14 +48,45 @@ function cleanupTempDirs() {
   }
 }
 
-/** Crea una directory temporanea con i file indicati e la restituisce. */
-function fixture(files) {
+// File che il verificatore sorveglia: ciascuno di essi descrive il fallback
+// del server e deve quindi dichiarare `cookieValido`. La fixture li contiene
+// tutti, già validi: il file sotto prova ne sovrascrive uno.
+const WATCHED_FILES = [
+  'CONNECTORS.md',
+  'README.md',
+  'agents/researcher.md',
+  'docs/cassazione-cookie.md',
+  'skills/italgiure-browser/SKILL.md',
+  'skills/italgiure-search/SKILL.md',
+  'skills/italian-legal-research/SKILL.md',
+  'skills/italian-legal-strategy/SKILL.md',
+];
+
+const WATCHED_CONTENT = [
+  '# Fixture',
+  '',
+  'Il canale client dichiara il fallimento del server con `cookieValido`.',
+  '',
+].join('\n');
+
+/**
+ * Crea una directory temporanea con i file indicati e la restituisce.
+ * I file sorvegliati sono presenti di default (validi), salvo `omit`.
+ */
+function fixture(files, options = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bcc-cassazione-narrative-'));
   tempDirs.push(dir);
-  for (const rel of Object.keys(files)) {
+  const content = { ...files };
+  for (const rel of WATCHED_FILES) {
+    if (!(rel in content)) content[rel] = WATCHED_CONTENT;
+  }
+  for (const rel of Object.keys(content)) {
     const p = path.join(dir, rel);
     fs.mkdirSync(path.dirname(p), { recursive: true });
-    fs.writeFileSync(p, files[rel], 'utf8');
+    fs.writeFileSync(p, content[rel], 'utf8');
+  }
+  for (const rel of options.omit || []) {
+    fs.rmSync(path.join(dir, rel), { force: true });
   }
   return dir;
 }
@@ -111,15 +142,36 @@ const SKILL_OBSOLETE_CONNESSIONE = skill(
   'Da quel tipo di indirizzo la connessione va in timeout, con o senza cookie di sessione.'
 );
 
+const SKILL_OBSOLETE_NON_RAGGIUNGIBILE = skill(
+  'Il canale server non è raggiungibile: la ricerca parte dal computer dell\'utente.'
+);
+
+const SKILL_OBSOLETE_NON_NORMALMENTE_RAGGIUNGIBILE = skill(
+  'Il canale server non è normalmente raggiungibile e il tool non restituisce nulla di utile.'
+);
+
+const SKILL_OBSOLETE_NON_FUNZIONA = skill(
+  'Lato server non funziona: l\'IP di datacenter è scartato da italgiure.giustizia.it.'
+);
+
 const SKILL_NARRATIVA_NUOVA = skill(
   'Il tool `cassazione_search_massime` lato server lo dichiara: la chiamata va a buon fine, ' +
   'ma `autenticazione.cookieValido` vale `false` e `autenticazione.messaggio` spiega perché. ' +
-  'Passa allora alla skill `italgiure-search` dal computer dell’utente.'
+  'Passa allora alla skill `italgiure-search` dal computer dell\'utente.'
 );
 
 const SKILL_SEMANTICA_CLIENT = skill(
   '| `totale: 0` | la ricerca è andata a buon fine, non ci sono risultati | nessun errore: ' +
   'riporta che non ci sono precedenti per quei termini |'
+);
+
+const SKILL_CLIENT_RISULTATO_VUOTO = skill(
+  'Se la ricerca lato client restituisce zero risultati, i termini sono troppo generici: ' +
+  'restringi la ricerca per estremi.'
+);
+
+const SKILL_CLIENT_TIMEOUT_CURL = skill(
+  'Se la `curl` va in timeout, l\'IP corrente non è ammesso da ItalGiure: offri la modalità browser.'
 );
 
 const AGENT_RESEARCHER_SENZA_DICHIARAZIONE = [
@@ -142,7 +194,7 @@ const AGENT_RESEARCHER_CON_DICHIARAZIONE = [
   '  - Read',
   '---',
   '',
-  'Il canale server non può interrogare la fonte e lo dichiara con `autenticazione.cookieValido: false`.',
+  'Il canale server ospitato non può interrogare la fonte e lo dichiara con `autenticazione.cookieValido: false`.',
   '',
 ].join('\n');
 
@@ -206,6 +258,36 @@ t('rifiuta la formula «la connessione va in timeout»', () => {
   );
 });
 
+t('rifiuta la formula «il canale server non è raggiungibile»', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_NON_RAGGIUNGIBILE });
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il verificatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('non è raggiungibile'),
+    'l\'output deve nominare la formula obsoleta, got:\n' + r.output
+  );
+});
+
+t('rifiuta la formula «il canale server non è normalmente raggiungibile»', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_NON_NORMALMENTE_RAGGIUNGIBILE });
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il verificatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('non è raggiungibile'),
+    'l\'output deve nominare la formula obsoleta, got:\n' + r.output
+  );
+});
+
+t('rifiuta la formula «lato server non funziona»', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_NON_FUNZIONA });
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il verificatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('non funziona'),
+    'l\'output deve nominare la formula obsoleta, got:\n' + r.output
+  );
+});
+
 t('l\'errore indica il file e la riga', () => {
   const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_NON_RESTITUISCE });
   const r = run(dir);
@@ -214,6 +296,13 @@ t('l\'errore indica il file e la riga', () => {
     r.output.includes(expected),
     'l\'output deve contenere la riga di contratto:\n' + expected + '\ngot:\n' + r.output
   );
+});
+
+t('ogni riga colpevole è segnalata una volta sola', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_OBSOLETE_TIMEOUT });
+  const r = run(dir);
+  const lines = r.output.split('\n').filter((l) => l.startsWith('ERRORE NARRATIVA:'));
+  assert.strictEqual(lines.length, 1, 'la riga deve essere segnalata una volta sola, got:\n' + r.output);
 });
 
 t('accetta la narrativa nuova', () => {
@@ -226,6 +315,18 @@ t('non segnala «totale: 0» né «non ci sono risultati» del canale client', (
   const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_SEMANTICA_CLIENT });
   const r = run(dir);
   assert.strictEqual(r.code, 0, 'la semantica del canale client non è la formula obsoleta, output:\n' + r.output);
+});
+
+t('accetta una frase sul canale client che parla di risultato vuoto', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_CLIENT_RISULTATO_VUOTO });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'il canale client può restituire zero risultati, output:\n' + r.output);
+});
+
+t('accetta il timeout della `curl` del canale client', () => {
+  const dir = fixture({ 'skills/fixture-skill/SKILL.md': SKILL_CLIENT_TIMEOUT_CURL });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'il timeout della curl è la semantica del canale client, output:\n' + r.output);
 });
 
 console.log('check-cassazione-narrative: dichiarazione del fallback');
@@ -248,6 +349,16 @@ t('accetta il file che descrive il fallback dichiarando `cookieValido`', () => {
   const dir = fixture({ 'agents/researcher.md': AGENT_RESEARCHER_CON_DICHIARAZIONE });
   const r = run(dir);
   assert.strictEqual(r.code, 0, 'il verificatore deve accettare, output:\n' + r.output);
+});
+
+t('rifiuta un file sorvegliato che non esiste più', () => {
+  const dir = fixture({}, { omit: ['agents/researcher.md'] });
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il verificatore deve uscire con codice 1');
+  assert.ok(
+    r.output.includes('agents/researcher.md') && r.output.includes('manca'),
+    'l\'output deve dire che il file sorvegliato manca, got:\n' + r.output
+  );
 });
 
 console.log('check-cassazione-narrative: argomenti');

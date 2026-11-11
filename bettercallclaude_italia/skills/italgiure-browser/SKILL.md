@@ -106,10 +106,10 @@ opzionali `numeroMassima` e `rv`, cosi' tutto a valle (`citation-content-verify`
 `legal-evaluator`, `legal-5step-framework` e il comando `/legale-5step`)
 funziona senza sapere da dove arrivano i dati.
 
-**Non chiamare quel tool**: lato server non funziona — l'IP di datacenter e'
-scartato da italgiure.giustizia.it — e risponderebbe con
-`autenticazione.cookieValido: false` e il messaggio che lo dichiara. Qui il suo
-nome serve solo da riferimento per la forma da produrre.
+**Non chiamare quel tool**: lato server l'IP di datacenter è scartato da
+italgiure.giustizia.it, quindi non può interrogare la fonte e lo dichiara con
+`autenticazione.cookieValido: false` e il messaggio che spiega il perché. Qui il
+suo nome serve solo da riferimento per la forma da produrre.
 
 La forma standard e':
 

@@ -44,7 +44,12 @@ Il codice `ofid_` identifica un flusso di connessione fallito lato client. Causa
 3. Se il problema persiste, segnalalo: i limiti attuali sono 300 chiamate tool / 15 min per IP (i metodi di handshake non contano), configurabili lato server via `MCP_RATE_LIMIT_MAX`.
 
 **Il server `cassazione` risponde `cookieValido: false`**
-In hosting il server non può interrogare la fonte e lo dichiara: `autenticazione.cookieValido` vale `false` e `autenticazione.messaggio` spiega il motivo (IP di datacenter scartato). Non è un cookie mancante: è il blocco per IP. Il canale supportato è la skill `italgiure-search` (dal computer dell'utente) o `italgiure-browser` (area riservata). Guida: `docs/cassazione-cookie.md`.
+Il sintomo è il valore `autenticazione.cookieValido: false`; la causa la dice `autenticazione.messaggio`:
+
+- se il messaggio parla di IP di datacenter → blocco per IP: passa al canale client (`italgiure-search` dal computer dell'utente, `italgiure-browser` per l'area riservata);
+- se il messaggio parla di cookie assente o di sessione scaduta → rinnova il cookie: procedura in `docs/cassazione-cookie.md`.
+
+Il messaggio del tool distingue le due cause: leggilo prima di agire.
 
 ---
 

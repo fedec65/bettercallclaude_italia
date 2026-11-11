@@ -1,6 +1,6 @@
 ---
 name: italgiure-search
-description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al PDF. Attivazione quando serve un precedente di legittimita' e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
+description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al PDF. Attivazione quando serve un precedente di legittimità e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
 tools:
   - Bash
   - Read
@@ -24,11 +24,12 @@ Interroga l'indice pubblico **SentenzeWeb** del CED Ministero della Giustizia.
 
 Il server MCP di BetterCallClaude e' deployato su un indirizzo IP di datacenter.
 `www.italgiure.giustizia.it` **scarta a livello TCP** le richieste che arrivano da
-quel tipo di indirizzo: la connessione non raggiunge il servizio, con o senza
-cookie di sessione. Il tool `cassazione_search_massime` lato server lo dichiara:
-la chiamata va a buon fine, ma `autenticazione.cookieValido` vale `false` e
-`autenticazione.messaggio` spiega perche'. Non e' un problema di cookie mancante,
-e non e' un timeout da aspettare: e' il blocco per IP del datacenter.
+quel tipo di indirizzo. Il tool `cassazione_search_massime` lato server lo
+dichiara: la chiamata va a buon fine, ma `autenticazione.cookieValido` vale
+`false` e `autenticazione.messaggio` spiega perché — senza cookie la richiesta
+non parte nemmeno, con un cookie la connessione non raggiunge il servizio. Non è
+un timeout da aspettare: in entrambi i casi la ricerca va fatta dal computer
+dell'utente.
 
 Questa skill esegue la **stessa identica query** dalla macchina dell'utente, dove
 l'IP e' ammesso. La risposta ha la stessa forma del tool server, cosi tutto a
