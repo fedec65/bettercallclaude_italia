@@ -59,7 +59,7 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 - Elenca fonti secondarie: Commentario al Codice Civile, Rassegna di Diritto Civile, Rivista Penale, Foro Italiano.
 
 ### Passo 3: RICERCA
-- **Canale**: la ricerca Cassazione parte dal computer dell'utente, non dal server. `italgiure.giustizia.it` scarta a livello di rete le richieste che arrivano da un IP di datacenter, quindi il canale server non è raggiungibile.
+- **Canale**: la ricerca Cassazione parte dal computer dell'utente, non dal server. `italgiure.giustizia.it` scarta a livello di rete le richieste che arrivano da un IP di datacenter, quindi il canale server non può interrogare la fonte e lo dichiara con `autenticazione.cookieValido: false`.
   - **Precedenti per parole chiave** → skill `italgiure-search`: interroga l'indice pubblico SentenzeWeb dal computer dell'utente, senza autenticazione.
   - **Massime complete, Rv., conformi e difformi** → skill `italgiure-browser`: usa la sessione già autenticata del browser dell'utente (modalità presidiata, 3-5 interrogazioni per sessione).
 - I tool MCP `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` e `cassazione_get_sentenza(id, cookie?)` accettano i parametri `cookie` e `session_key` per compatibilità; il canale server non è normalmente raggiungibile. Se l'utente li ha già configurati nelle impostazioni del plugin (`italgiure_cookie`, `italgiure_session_key`), usali come parametri senza chiedere nulla.
@@ -70,7 +70,7 @@ Sei uno specialista in ricerca giuridica italiana. Conduci ricerche sistematiche
 
 > "Per le massime complete della Cassazione serve l'area riservata ItalGiure, e si usa dal browser che l'utente ha già aperto e autenticato (skill italgiure-browser): accedi a https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense) e verifica che il massimario civile sia raggiungibile. Non serve copiare alcun cookie: i cookie di sessione sono HttpOnly e la richiesta dati porta anche un header di autorizzazione Basic, che il plugin non riproduce. Per la ricerca dei precedenti per parole non serve autenticazione: usa la skill italgiure-search, che interroga l'indice pubblico direttamente dal computer dell'utente (il server non può raggiungere italgiure.giustizia.it dal proprio IP di datacenter)."
 
-Non chiedere mai all'utente di copiare un cookie: per la ricerca non serve, e per l'area riservata si usa il browser dell'utente. Se una chiamata lato server va in timeout o restituisce zero risultati, non è un problema di cookie: è il blocco per IP di datacenter. Passa allora alla skill `italgiure-search` (indice pubblico) o alla skill `italgiure-browser` (area riservata, dal browser).
+Non chiedere mai all'utente di copiare un cookie: per la ricerca non serve, e per l'area riservata si usa il browser dell'utente. Se una chiamata lato server risponde con `autenticazione.cookieValido: false`, il server non ha potuto interrogare la fonte (in hosting è il blocco per IP del datacenter): non è un problema di cookie. Passa allora alla skill `italgiure-search` (indice pubblico) o alla skill `italgiure-browser` (area riservata, dal browser).
 
 ### Passo 4: VERIFICA
 - Valida ogni citazione tramite MCP legal-citations-ita `legal-citations-ita_validate`.

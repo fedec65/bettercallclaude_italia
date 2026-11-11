@@ -1,6 +1,6 @@
 ---
 name: italgiure-search
-description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al PDF. Attivazione quando serve un precedente di legittimita' e la ricerca con il server MCP ha restituito zero risultati o un timeout. NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
+description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al PDF. Attivazione quando serve un precedente di legittimita' e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
 tools:
   - Bash
   - Read
@@ -24,9 +24,11 @@ Interroga l'indice pubblico **SentenzeWeb** del CED Ministero della Giustizia.
 
 Il server MCP di BetterCallClaude e' deployato su un indirizzo IP di datacenter.
 `www.italgiure.giustizia.it` **scarta a livello TCP** le richieste che arrivano da
-quel tipo di indirizzo: la connessione va in timeout, con o senza cookie di
-sessione. Percio' il tool `cassazione_search_massime` lato server non restituisce
-risultati, e non e' un problema di cookie mancante.
+quel tipo di indirizzo: la connessione non raggiunge il servizio, con o senza
+cookie di sessione. Il tool `cassazione_search_massime` lato server lo dichiara:
+la chiamata va a buon fine, ma `autenticazione.cookieValido` vale `false` e
+`autenticazione.messaggio` spiega perche'. Non e' un problema di cookie mancante,
+e non e' un timeout da aspettare: e' il blocco per IP del datacenter.
 
 Questa skill esegue la **stessa identica query** dalla macchina dell'utente, dove
 l'IP e' ammesso. La risposta ha la stessa forma del tool server, cosi tutto a
@@ -37,10 +39,11 @@ BetterCallClaude**. Il termine di ricerca va diretto al Ministero della Giustizi
 
 ## Quando usarla
 
-- dopo un `cassazione_search_massime` lato server che ha restituito zero risultati
-  o un timeout;
+- dopo un `cassazione_search_massime` lato server che ha risposto con
+  `autenticazione.cookieValido: false` (il server non ha potuto interrogare la
+  fonte);
 - quando l'utente chiede direttamente un precedente di Cassazione e il canale
-  server non risponde;
+  server non può interrogare la fonte;
 - per verificare l'esistenza di una sentenza conoscendo gli estremi (numero e
   anno): il tool MCP `citation-verify-ita_check_existence` (server
   `citation-verify-ita`) verifica l'esistenza delle citazioni, ma per le sentenze

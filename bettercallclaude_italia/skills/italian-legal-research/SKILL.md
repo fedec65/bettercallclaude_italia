@@ -88,7 +88,7 @@ Usa i server MCP in questo ordine:
 
 > "Per le massime complete della Cassazione serve l'area riservata ItalGiure, e si usa dal browser che l'utente ha già aperto e autenticato (skill italgiure-browser): accedi a https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense) e verifica che il massimario civile sia raggiungibile. Non serve copiare alcun cookie: i cookie di sessione sono HttpOnly e la richiesta dati porta anche un header di autorizzazione Basic, che il plugin non riproduce. Per la ricerca dei precedenti per parole non serve autenticazione: usa la skill italgiure-search, che interroga l'indice pubblico direttamente dal computer dell'utente (il server non può raggiungere italgiure.giustizia.it dal proprio IP di datacenter)."
 
-Non chiedere mai all'utente di copiare un cookie: per la ricerca non serve, e per l'area riservata si usa il browser dell'utente. Se una chiamata lato server va in timeout o restituisce zero risultati, non è un problema di cookie: è il blocco per IP di datacenter. Passa allora alla skill `italgiure-search` (indice pubblico) o alla skill `italgiure-browser` (area riservata, dal browser).
+Non chiedere mai all'utente di copiare un cookie: per la ricerca non serve, e per l'area riservata si usa il browser dell'utente. Se una chiamata lato server risponde con `autenticazione.cookieValido: false`, il server non ha potuto interrogare la fonte (in hosting è il blocco per IP del datacenter): non è un problema di cookie. Passa allora alla skill `italgiure-search` (indice pubblico) o alla skill `italgiure-browser` (area riservata, dal browser).
 
 **MCP `normattiva`** (legislazione nazionale aggiornata):
 

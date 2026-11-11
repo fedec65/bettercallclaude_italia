@@ -44,7 +44,7 @@ Il codice `ofid_` identifica un flusso di connessione fallito lato client. Causa
 3. Se il problema persiste, segnalalo: i limiti attuali sono 300 chiamate tool / 15 min per IP (i metodi di handshake non contano), configurabili lato server via `MCP_RATE_LIMIT_MAX`.
 
 **Il server `cassazione` risponde `cookieValido: false`**
-Il cookie ItalGiure è assente o scaduto. Procedura di rinnovo: `docs/cassazione-cookie.md`.
+In hosting il server non può interrogare la fonte e lo dichiara: `autenticazione.cookieValido` vale `false` e `autenticazione.messaggio` spiega il motivo (IP di datacenter scartato). Non è un cookie mancante: è il blocco per IP. Il canale supportato è la skill `italgiure-search` (dal computer dell'utente) o `italgiure-browser` (area riservata). Guida: `docs/cassazione-cookie.md`.
 
 ---
 
@@ -84,8 +84,8 @@ Massime e sentenze della Corte di Cassazione. Fonte pubblica: SentenzeWeb (`http
 
 | Tool | Descrizione |
 |------|-------------|
-| `cassazione_search_massime` | Ricerca massime (porzione pubblica, ultimi 5 anni). Parametro opzionale `cookie` per accesso ItalGiure completo |
-| `cassazione_get_sentenza` | Recupero sentenza per ID (porzione pubblica). Parametro opzionale `cookie` |
+| `cassazione_search_massime` | In hosting il server non raggiunge la fonte e lo dichiara (`autenticazione.cookieValido: false`): il canale supportato è la skill `italgiure-search` dal computer dell'utente. Parametro opzionale `cookie` per i server locali con IP ammesso |
+| `cassazione_get_sentenza` | Come `cassazione_search_massime`: in hosting il server non raggiunge la fonte e lo dichiara (`autenticazione.cookieValido: false`). Parametro opzionale `cookie` per i server locali con IP ammesso |
 
 **Cookie ItalGiure**: l'accesso completo a massime e sentenze storiche richiede un cookie di sessione ItalGiure. Si configura **una volta sola** nelle impostazioni del plugin (voce "Cookie sessione ItalGiure", `userConfig.italgiure_cookie`); il plugin lo passa automaticamente a ogni chiamata. Guida completa: `docs/cassazione-cookie.md`.
 

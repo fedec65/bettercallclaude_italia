@@ -107,8 +107,9 @@ opzionali `numeroMassima` e `rv`, cosi' tutto a valle (`citation-content-verify`
 funziona senza sapere da dove arrivano i dati.
 
 **Non chiamare quel tool**: lato server non funziona — l'IP di datacenter e'
-scartato da italgiure.giustizia.it — e restituirebbe zero risultati senza
-motivo. Qui il suo nome serve solo da riferimento per la forma da produrre.
+scartato da italgiure.giustizia.it — e risponderebbe con
+`autenticazione.cookieValido: false` e il messaggio che lo dichiara. Qui il suo
+nome serve solo da riferimento per la forma da produrre.
 
 La forma standard e':
 

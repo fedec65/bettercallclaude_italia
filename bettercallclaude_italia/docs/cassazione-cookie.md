@@ -16,7 +16,7 @@ giurisprudenza della Corte di Cassazione.
 |---|---|---|
 | Precedenti per parole chiave, estremi, sezione, data | skill **italgiure-search** | **nessuna** |
 | Massime complete, Rv., conformi e difformi | skill **italgiure-browser** | login già attivo nel tuo browser |
-| Il server BetterCallClaude risponde | — | non risponde: vedi «Perché il server non funziona» |
+| Il server BetterCallClaude interroga la fonte | — | in hosting non può e lo dichiara con `autenticazione.cookieValido: false`: vedi «Perché il server non funziona» |
 
 La ricerca **non richiede autenticazione**. Non c'è alcun cookie da copiare per
 fare una ricerca.
@@ -64,8 +64,13 @@ credenziali. Il plugin non chiede e non riceve mai la tua password.
 
 I server MCP di BetterCallClaude sono ospitati su un indirizzo IP di datacenter.
 `www.italgiure.giustizia.it` **scarta a livello di rete** le richieste che
-arrivano da quel tipo di indirizzo: la connessione va in timeout, con o senza
-cookie.
+arrivano da quel tipo di indirizzo: la connessione non raggiunge il servizio,
+con o senza cookie.
+
+Il tool lo dichiara: la chiamata va a buon fine (`success: true`), ma
+`data.autenticazione.cookieValido` vale `false` e
+`data.autenticazione.messaggio` spiega il motivo. Non è un errore e non c'è un
+timeout da aspettare.
 
 Non è quindi un problema di cookie mancante, né di cookie scaduto, né di
 autenticazione: è il punto di partenza della connessione. Per questo la ricerca
@@ -96,8 +101,9 @@ terzi.
 **«Devo configurare un cookie nelle impostazioni del plugin?»**
 No, per la ricerca. La voce «Cookie sessione ItalGiure» nelle impostazioni è
 riservata alle installazioni che interrogano l'area riservata via server, e non
-è il canale consigliato: il server non è raggiungibile. La ricerca normale non
-usa cookie.
+è il canale consigliato: il canale server ospitato non può interrogare la
+fonte e lo dichiara con `autenticazione.cookieValido: false`. La ricerca
+normale non usa cookie.
 
 **«Il cookie è sicuro da salvare?»**
 Un cookie di sessione non contiene la password, solo un identificativo
@@ -117,4 +123,4 @@ italiano no. Per questo la ricerca gira dal computer dell'utente.
 |---|---|
 | Precedenti per parole | chiedi al plugin: usa la skill italgiure-search. Nessuna preparazione |
 | Massime complete, Rv. | skill italgiure-browser, con login già fatto nel browser |
-| Il server non risponde | è il blocco per IP: usa il canale dal computer, non il server |
+| Il server ospitato non interroga la fonte | lo dichiara con `autenticazione.cookieValido: false`: usa il canale dal computer, non il server |

@@ -207,7 +207,7 @@ Quando i server scraper (corte-costituzionale, giustizia-amministrativa, cassazi
 
 ### Ricerca Cassazione
 
-La ricerca dei precedenti della Cassazione **non richiede autenticazione**: la skill `italgiure-search` interroga l'indice pubblico SentenzeWeb dal computer dell'utente. Il canale server non è disponibile: `www.italgiure.giustizia.it` scarta a livello di rete le richieste che arrivano da IP di datacenter, quindi il server BetterCallClaude non lo raggiunge.
+La ricerca dei precedenti della Cassazione **non richiede autenticazione**: la skill `italgiure-search` interroga l'indice pubblico SentenzeWeb dal computer dell'utente. Il canale server ospitato non può interrogare la fonte e lo dichiara con `autenticazione.cookieValido: false`: `www.italgiure.giustizia.it` scarta a livello di rete le richieste che arrivano da IP di datacenter, quindi il server BetterCallClaude non lo raggiunge.
 
 Le **massime complete** (e Rv., conformi e difformi) richiedono l'area riservata, che si usa dal browser già autenticato con la skill `italgiure-browser` ([ItalGiure area riservata](https://www.italgiure.giustizia.it/new/archives), login con SPID o credenziali). La modalità è presidiata: poche interrogazioni per sessione, nessun download in blocco. **Non serve copiare alcun cookie**: i cookie di sessione sono HttpOnly e la richiesta dati dell'area riservata porta anche un header di autorizzazione Basic, che il plugin non riproduce.
 
