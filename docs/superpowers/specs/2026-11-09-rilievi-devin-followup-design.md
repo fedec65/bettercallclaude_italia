@@ -141,3 +141,38 @@ prima il build).
 Il merge di una PR non è autorizzato dal solo check `Devin Review` verde: il verde significa
 «analisi completata». Prima del merge va letto il corpo della review (e la timeline dei commenti) per
 verificare che non ci siano rilievi aperti.
+
+---
+
+## B6 — riconciliazione lato plugin (2026-11-11)
+
+Il server, dopo il Track B5, **non "restituisce zero risultati" e non "va in timeout"**: la
+chiamata va a buon fine (envelope `success: true`) e segnala il fallimento in
+`data.autenticazione.cookieValido: false` + `data.autenticazione.messaggio`. I testi del
+plugin che descrivevano il canale server con la formula «va in timeout o restituisce zero
+risultati» non riconoscono più la risposta reale: il modello rischia di non passare al
+canale client e di riportare all'utente uno zero risultati fuorviante.
+
+**Decisione (utente, 2026-11-11)**: il tool server resta elencato negli allowlist — funziona
+con un server locale (stdio) e IP ammesso — ma i testi imparano a riconoscere
+`autenticazione.cookieValido: false` come trigger del canale client. L'alternativa (rimuovere
+i tool cassazione dagli allowlist, canale Cassazione sempre client-side) è stata scartata:
+would cancellare il caso d'uso del server locale e toccare 30+ file.
+
+**Regola di linguaggio unica**: il server ospitato non può interrogare ItalGiure perché l'IP
+datacenter è scartato; il tool lo dichiara: la chiamata va a buon fine (`success: true`) ma
+`data.autenticazione.cookieValido` è `false` e `data.autenticazione.messaggio` spiega il
+motivo. In quel caso si usa il canale client (`italgiure-search` / `italgiure-browser`).
+
+**File toccati**: `skills/italgiure-search/SKILL.md` (frontmatter + corpo),
+`skills/italian-legal-research/SKILL.md`, `skills/italian-legal-strategy/SKILL.md`,
+`agents/researcher.md`, `skills/italgiure-browser/SKILL.md`, `CONNECTORS.md`,
+`docs/cassazione-cookie.md`, `README.md` del plugin.
+
+**Non-regressione**: nuovo `scripts/check-cassazione-narrative.js` + `.test.js` (formato delle
+suite esistenti, nessun framework), wired in `npm test`: vieta la formula obsoleta e pretende
+`cookieValido` dove si descrive il fallback del server.
+
+**Fuori scope**: rimuovere i tool cassazione dagli allowlist; cambiare la versione (la v2.5.0
+non è ancora pubblicata → si rigenera `dist/bettercallclaude_italia-v2.5.0.zip` con le
+correzioni).

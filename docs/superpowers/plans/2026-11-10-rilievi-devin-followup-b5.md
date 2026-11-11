@@ -880,3 +880,65 @@ Nel repo plugin, aggiorna `.claude/session-state.md` (sezione «Prossimi passi»
 - **Non** affronta i Minor già archiviati (build di `dist/` in CI, «Prova SentenzeWeb» a `italgiure-client.ts:403`, accenti nei nomi dei test, duplicazione descrizioni↔costanti, narrativa di `AGENTS.md`): restano in lista.
 - **Non** modifica le descrizioni degli altri tool oltre a quella rettificata in Task 2.
 - **Non** ripara lo script `npm run lint` del repo (ESLint 9 senza `eslint.config.js`): il job `lint` della CI in realtà esegue il typecheck.
+
+---
+
+### Task 7: B6 — riconciliazione lato plugin (spec B6, 2026-11-11)
+
+**Files:**
+- Modify: `bettercallclaude_italia/skills/italgiure-search/SKILL.md`, `skills/italian-legal-research/SKILL.md`,
+  `skills/italian-legal-strategy/SKILL.md`, `agents/researcher.md`, `skills/italgiure-browser/SKILL.md`,
+  `CONNECTORS.md`, `docs/cassazione-cookie.md`, `README.md`
+- Create: `scripts/check-cassazione-narrative.js`, `scripts/check-cassazione-narrative.test.js`
+- Modify: `package.json` (script `test`)
+
+**Regola** (unica, da ripetere ovunque): il server ospitato non può interrogare ItalGiure
+perché l'IP datacenter è scartato; il tool lo dichiara: la chiamata va a buon fine
+(`success: true`) ma `data.autenticazione.cookieValido` è `false` e
+`data.autenticazione.messaggio` spiega il motivo. In quel caso → canale client.
+
+**Sostituzioni esatte**:
+
+1. `skills/italgiure-search/SKILL.md` frontmatter: `la ricerca con il server MCP ha restituito
+   zero risultati o un timeout` → `la ricerca con il server MCP ha risposto con
+   autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure)`.
+2. `skills/italgiure-search/SKILL.md` corpo: `la connessione va in timeout, con o senza cookie di
+   sessione. Percio' il tool \`cassazione_search_massime\` lato server non restituisce risultati, e
+   non e' un problema di cookie mancante.` → `la connessione non raggiunge il servizio, con o senza
+   cookie di sessione. Il tool \`cassazione_search_massime\` lato server lo dichiara: la chiamata va
+   a buon fine, ma \`autenticazione.cookieValido\` vale \`false\` e \`autenticazione.messaggio\` spiega
+   perche'. Non e' un problema di cookie mancante, e non e' un timeout da aspettare: e' il blocco per
+   IP del datacenter.`
+3. `skills/italgiure-search/SKILL.md` «Quando usarla»: `dopo un \`cassazione_search_massime\` lato
+   server che ha restituito zero risultati o un timeout` → `dopo un \`cassazione_search_massime\` lato
+   server che ha risposto con \`autenticazione.cookieValido: false\` (il server non ha potuto
+   interrogare la fonte)`.
+4. `skills/italian-legal-research/SKILL.md`, `skills/italian-legal-strategy/SKILL.md`,
+   `agents/researcher.md` (frase identica): `Se una chiamata lato server va in timeout o restituisce
+   zero risultati, non è un problema di cookie: è il blocco per IP di datacenter.` → `Se una
+   chiamata lato server risponde con \`autenticazione.cookieValido: false\`, il server non ha potuto
+   interrogare la fonte (in hosting è il blocco per IP del datacenter): non è un problema di cookie.`
+5. `agents/researcher.md` (riga del canale): `quindi il canale server non è raggiungibile` →
+   `quindi il canale server non può interrogare la fonte e lo dichiara con
+   \`autenticazione.cookieValido: false\``.
+6. `skills/italgiure-browser/SKILL.md`: `e restituirebbe zero risultati senza motivo` → `e
+   risponderebbe con \`autenticazione.cookieValido: false\` e il messaggio che lo dichiara`.
+7. `CONNECTORS.md` (tabella cassazione): le due righe dei tool non descrivono più un tool
+   funzionante «porzione pubblica» → il tool dichiara che in hosting non raggiunge la fonte e il
+   canale supportato è la skill `italgiure-search` dal computer dell'utente; il parametro `cookie`
+   resta indicato per i server locali con IP ammesso.
+8. `docs/cassazione-cookie.md`: §3, FAQ «Il server non risponde» e riepilogo → il server non ha potuto
+   interrogare la fonte e lo dichiara (`autenticazione.cookieValido: false` + messaggio), non è un
+   errore e non va aspettato un timeout.
+9. `README.md` del plugin (sezione «Ricerca Cassazione»): «Il canale server non è disponibile» →
+   il canale server ospitato non può interrogare la fonte e lo dichiara con
+   `autenticazione.cookieValido: false`.
+10. Nuovo `scripts/check-cassazione-narrative.js` (pattern di `scripts/check-tool-names.js`: node
+    puro, exit 1 sulla violazione, directory del plugin come argomento facoltativo) che vieta nei
+    file del plugin la formula obsoleta e pretende la menzione di `cookieValido` dove si descrive il
+    fallback del server; `scripts/check-cassazione-narrative.test.js` con fixture temporanee (pattern
+    di `scripts/check-tool-names.test.js`); wiring in `package.json` → `test`.
+
+**Verifica**: `node scripts/generate-tool-frontmatter.js --apply` (cambia la description della skill),
+`node scripts/validate-plugin.js`, `node scripts/check-tool-names.js`, `npm test` (4 suite),
+`npm run package` per rigenerare `dist/bettercallclaude_italia-v2.5.0.zip` (gitignored).
