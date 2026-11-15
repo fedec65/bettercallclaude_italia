@@ -176,3 +176,49 @@ suite esistenti, nessun framework), wired in `npm test`: vieta la formula obsole
 **Fuori scope**: rimuovere i tool cassazione dagli allowlist; cambiare la versione (la v2.5.0
 non è ancora pubblicata → si rigenera `dist/bettercallclaude_italia-v2.5.0.zip` con le
 correzioni).
+
+---
+
+## B7 — rilievi Devin sul Track A (PR #68, 2026-11-15)
+
+La PR #68 (Track A v2.5.0 + B6) e' la prima volta che il lavoro Track A passa dalla review
+Devin. Devin ha trovato 6 problemi: 3 🔴/🟥, 2 🔍, 1 info. Verificati a mano sul codice:
+**5 confermati, 1 parzialmente** (il #6 sulla sicurezza TLS non e' verificabile da questa
+macchina: l'host e' irraggiungibile per IP, quindi la catena non si puo' ispezionare).
+
+| # | Rilievo | File | Verdetto |
+|---|---|---|---|
+| 1 | 🔴 `fonti_esterne` non raggiunge il modello: i comandi stampano il nome letterale `userConfig.fonti_esterne`, nessun `${user_config.fonti_esterne}` | 24 `commands/*.md` | **Confermato** — la feature #1 richiesta dall'avvocato e' inerte |
+| 2 | 🔴 la ricerca per estremi non filtra `numdec`: `Cass. n. 577/2008` diventa testo libero | `skills/italgiure-search/scripts/italgiure-query.js:39-82` | **Confermato** |
+| 3 | 🔴 un errore Solr mascherato da zero risultati (`payload.response` mancante → `totale: 0`) e `curl` senza `--fail` | `italgiure-query.js:89-125`, `SKILL.md:119` | **Confermato** — è lo specchio del bug appena corretto lato server |
+| 4 | 🔍 i comandi promettono connettori esterni che non sono nell'allowlist: gli host possono nasconderli | `commands/ricerca.md:46` | **Confermato** |
+| 5 | 🔍 `urlPdf` contiene il link a un indice `.txt`, non a un PDF | `italgiure-query.js:92-105`, fixture di test | **Confermato** |
+| 6 | 🟥 `curl -k`: la connessione non e' autenticata (MITM: termini leggibili, risultati fabbricabili) | `SKILL.md:119` | **Confermato sul codice**; la catena non e' ispezionabile da qui |
+
+**Decisioni**:
+- **#1**: l'interpolazione `${user_config.x}` e' documentata nei **comandi** (`commands/flusso.md:76`,
+  `commands/crea-flusso.md:44`) e non nelle skill. Quindi: nei 24 comandi si usa il placeholder con
+  il controllo «se si risolve in un valore non vuoto (il placeholder non appare letteralmente)»; le 3
+  skill che menzionano `fonti_esterne` non usano il placeholder ma dicono che l'elenco arriva dal
+  testo del comando che le invoca, e che in assenza di elenco non ce ne sono. Fallimento sicuro:
+  nessun connettore inventato.
+- **#3**: `formatResponse` deve fallire esplicitamente quando la risposta non e' una risposta Solr
+  valida (`response` oggetto, `numFound` numerico, `docs` array) e la `curl` deve usare
+  `--fail-with-body` (curl 8.7.1 lo supporta) cosi' l'errore HTTP arriva al formatter invece di
+  becoming «totale: 0». La tabella dei sintomi della skill deve distinguere errore di trasporto,
+  errore HTTP e ricerca vuota.
+- **#2**: `buildSolrQuery` estrae numero e anno da un input in forma di citazione e emette
+  `numdec:"N" AND anno:"YYYY"`. Il client **diventa piu' preciso del server**: lo script lo
+  dichiara nel proprio commento (il server non raggiunge la fonte dal datacenter, quindi la
+  semantica non era osservabile li').
+- **#4**: unito a #1 — la clausola dice di **verificare che il connettore sia disponibile nella
+  sessione** (gli host nascondono i tool non elencati) e di dichiararlo se manca, senza errori.
+- **#5**: il campo `urlPdf` resta (contratto con `cassazione_search_massime`), ma la skill smette di
+  promettere «link al PDF» e dice «link al documento (PDF o indice testuale)».
+- **#6**: `-k` resta (la catena non e' standard e la CA non e' ottenibile da qui: toglierlo
+  romperebbe l'unico canale funzionante), ma il limite di fiducia diventa **esplicito**: la connessione
+  non e' autenticata, i termini viaggiano in chiaro verso l'host e la risposta non e' verificata; per
+  ricerche che decidono, la modalita' browser (`italgiure-browser`) usa la catena TLS del browser.
+
+**Fuori scope**: refactor del client Solr, cambio del contratto dei campi, riscrittura delle 24
+clausole oltre l'eccezione fonti esterne, versioning del plugin.

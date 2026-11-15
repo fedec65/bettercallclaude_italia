@@ -942,3 +942,82 @@ perché l'IP datacenter è scartato; il tool lo dichiara: la chiamata va a buon 
 **Verifica**: `node scripts/generate-tool-frontmatter.js --apply` (cambia la description della skill),
 `node scripts/validate-plugin.js`, `node scripts/check-tool-names.js`, `npm test` (4 suite),
 `npm run package` per rigenerare `dist/bettercallclaude_italia-v2.5.0.zip` (gitignored).
+
+---
+
+### Task 8: B7 — rilievi Devin sul Track A (spec B7, 2026-11-15)
+
+**Files:**
+- Modify: `bettercallclaude_italia/commands/*.md` (24 file, clausola fonti esterne),
+  `skills/italian-legal-research/SKILL.md`, `skills/italian-legal-strategy/SKILL.md`,
+  `skills/citation-content-verify/SKILL.md`, `skills/italgiure-search/SKILL.md`,
+  `skills/italgiure-search/scripts/italgiure-query.js`,
+  `skills/italgiure-search/scripts/italgiure-query.test.js`
+
+**1. #1 + #4 — il valore delle fonti esterne arriva al modello (24 comandi)**
+
+In ogni `commands/*.md` la clausola contiene oggi:
+
+`se \`userConfig.fonti_esterne\` e' valorizzato, le banche dati ivi elencate vanno interrogate **in parallelo** ai server MCP di BetterCallClaude, e ogni pronuncia va etichettata con la banca dati di provenienza; se il connettore corrispondente non e' presente in sessione, si prosegue senza errori e **senza dichiarare quella fonte come consultata**.`
+
+Sostituisci con:
+
+`se \`${user_config.fonti_esterne}\` si risolve in un valore non vuoto (cioe' il placeholder non appare letteralmente), le banche dati ivi elencate vanno interrogate **in parallelo** ai server MCP di BetterCallClaude, e ogni pronuncia va etichettata con la banca dati di provenienza; verifica che il connettore corrispondente sia effettivamente disponibile nella sessione (gli host possono nascondere i tool che non compaiono nell'allowlist): se manca, dillo e prosegui senza errori, **senza dichiarare quella fonte come consultata**.`
+
+La sostituzione e' identica nei 24 file (stesso testo) → fallo in modo meccanico e verifica con
+`grep -c` che non resti alcuna occorrenza di `userConfig.fonti_esterne` senza il placeholder.
+
+**2. #1 — le 3 skill**
+
+`skills/italian-legal-research/SKILL.md`, `skills/italian-legal-strategy/SKILL.md`,
+`skills/citation-content-verify/SKILL.md`: la menzione di `fonti_esterne` deve dire che l'elenco delle
+banche dati arriva dal testo del comando che invoca la skill (dal placeholder risolto) e che, in
+assenza di elenco, non ce ne sono: non si devono chiedere nomi di banche dati all'utente.
+
+**3. #3 — la risposta Solr non valida non e' una ricerca vuota (script)**
+
+In `italgiure-query.js`, `formatResponse` deve fallire esplicitamente quando il payload non e' una
+risposta Solr valida: `payload.response` deve essere un oggetto, `response.docs` un array e
+`response.numFound` un numero. Il messaggio deve dire che la ricerca e' FALLITA (non vuota) e
+includere, se presente, il campo `error` del payload. Aggiornare anche il commento JSDoc.
+
+**4. #3 — la `curl` deve portare l'errore al formatter (skill)**
+
+Nella invocazione della skill: aggiungere `--fail-with-body` alla `curl` (curl 8.7.1 lo supporta) e
+far controllare al modello il codice di uscita della `curl` prima di interpretare l'output. La tabella
+«Se la ricerca fallisce» deve distinguere tre casi: timeout (IP non ammesso), errore HTTP o JSON non
+valido (ricerca fallita) e `totale: 0` (ricerca eseguita, nessun risultato).
+
+**5. #2 — la ricerca per estremi filtra `numdec` (script)**
+
+In `italgiure-query.js`, `buildSolrQuery` deve riconoscere un input in forma di citazione (numero e
+anno, es. `Cass. n. 577/2008`, `n. 577 del 2008`) e in quel caso emettere clausole fielded
+`numdec:"577" AND anno:"2008"` invece di trattare l'input come testo libero. Negli altri casi il
+comportamento resta quello attuale (testo libero in parentesi, sintassi Solr passata invariata).
+Aggiornare il commento di testa: il client ora e' piu' preciso del server `cassazione` perche' la
+semantica del server non e' osservabile dal datacenter. Aggiungere i test in
+`italgiure-query.test.js` (citazione con numero e anno; anno senza numero resta testo libero; una
+query gia' in sintassi Solr resta invariata).
+
+**6. #2 — la verifica per estremi confronta il risultato (skill)**
+
+Nella skill, il passo di ricerca per estremi deve dire di confrontare l'`estremi` del risultato con
+il numero e l'anno richiesti prima di dichiarare che la sentenza esiste.
+
+**7. #5 — il link non e' sempre un PDF (skill)**
+
+La `urlPdf` puo' puntare a un indice testuale `.txt`. Nella skill: description, tabella di mapping e
+passo di presentazione devono dire «link al documento (PDF o indice testuale)» e il modello non deve
+promettere un PDF. Il nome del campo resta `urlPdf` (contratto con `cassazione_search_massime`).
+
+**8. #6 — il limite di fiducia e' esplicito (skill)**
+
+Mantenere `-k` (la catena non e' standard e la CA non e' ottenibile: toglierlo romperebbe l'unico
+canale funzionante) ma dichiarare il limite: la connessione non e' autenticata crittograficamente, i
+termini di ricerca viaggiano in chiaro verso l'host e la risposta non e' verificata; per ricerche che
+decidono, usare la modalita' browser (`italgiure-browser`), che usa la catena TLS del browser.
+
+**Verifica**: `node scripts/generate-tool-frontmatter.js --apply` (cambia la description della skill),
+`npm test` (4 suite, compresi i nuovi casi di `italgiure-query.test.js`), `node scripts/validate-plugin.js`,
+`node scripts/check-tool-names.js`, `node scripts/check-cassazione-narrative.js` (le nuove frasi non
+devono reintrodurre le formule obsolete), `npm run package` per rigenerare lo zip.
