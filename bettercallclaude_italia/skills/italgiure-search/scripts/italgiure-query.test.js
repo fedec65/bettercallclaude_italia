@@ -150,6 +150,73 @@ t('la citazione delle sezioni unite resta una query per estremi', () => {
   );
 });
 
+console.log('ricerca per estremi: qualificativi e punteggiatura');
+
+t('il qualificativo di materia civile non impedisce la query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. civ. n. 12345/2019' }),
+    'numdec:"12345" AND anno:"2019"'
+  );
+});
+
+t('il qualificativo di materia penale non impedisce la query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. pen. n. 12345/2019' }),
+    'numdec:"12345" AND anno:"2019"'
+  );
+});
+
+t('il qualificativo di materia per esteso non impedisce la query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. civile n. 12345/2019' }),
+    'numdec:"12345" AND anno:"2019"'
+  );
+});
+
+t('materia e sezione separate da virgole non impediscono la query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. civ., sez. III, n. 12345/2019' }),
+    'numdec:"12345" AND anno:"2019"'
+  );
+});
+
+t('la punteggiatura finale non impedisce la query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. n. 577/2008.' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
+t('la punteggiatura finale non impedisce la forma breve', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: '577/2008.' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
+t('il tipo di provvedimento non impedisce la query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'sentenza n. 577/2008' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
+console.log('ricerca per estremi: le citazioni legislative restano testo libero');
+
+t('una legislazione citata per numero resta testo libero', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'legislazione 165/2001' }),
+    '(legislazione 165\\/2001)'
+  );
+});
+
+t('un regio decreto citato per numero resta testo libero', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'R. 123/2020' }),
+    '(R. 123\\/2020)'
+  );
+});
+
 t('i filtri si applicano anche alla query per estremi', () => {
   assert.strictEqual(
     buildSolrQuery({ query: 'Cass. n. 577/2008', materia: 'civile' }),

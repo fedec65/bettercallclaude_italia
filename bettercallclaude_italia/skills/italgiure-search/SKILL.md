@@ -133,6 +133,10 @@ node <SCRIPT> build --query "Cass. n. 577/2008"
 # numdec:"577" AND anno:"2008"
 ```
 
+Verifica che la query costruita contenga `numdec:` e `anno:`: se è testo
+libero, la citazione non è stata riconosciuta (riformattala — per esempio
+`Cass. civ., sez. III, n. 12345/2019` — o usa la ricerca per parole).
+
 Un anno senza numero resta testo libero, e una query già in sintassi Solr
 passa invariata: in entrambi i casi niente da fare.
 
@@ -141,6 +145,11 @@ almeno tre cifre: con una o due cifre (`10/2024`) è una data, non un numero
 di decisione. Viceversa, una frase che contiene per caso un «n. 123/2020»
 resta testo libero: la ricerca per estremi vale per la citazione, non per la
 sottostringa.
+
+Sono riconosciuti i qualificativi di materia (`civ.`, `pen.`, `civile`,
+`penale`), la sezione (`sez. III`, `SS.UU.`) e il tipo di provvedimento
+(`sentenza`, `ordinanza`, `decisione`), in qualsiasi ordine e separati da
+virgole, e la punteggiatura finale non impedisce il riconoscimento.
 
 Non aggiungere `--anno` con un anno diverso da quello della citazione: i due
 filtri si contraddirebbero e lo script fallisce. `--anno` con lo stesso anno

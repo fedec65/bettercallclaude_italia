@@ -40,11 +40,17 @@ const TIPO_VALUES = ['sentenza', 'ordinanza', 'decreto'];
 const LEGISLATIVE_RE =
   /\b(?:d\.?\s*l\.?\s*g\.?\s*s\.?|d\.?\s*l\.|\bl\.|legge|legisl\.|decret\w*|dlg|art\.|d\.)/i;
 
-// Marcatori di una corte in testa all'input: si tolgo per arrivare alla
-// citazione ("Cass.", "Cassazione", "Corte di Cassazione").
-const COURT_MARKER_RE = /^(?:corte\s+di\s+cassazione|cassazione|cass\.)\s*,?\s*/i;
-// Marcatori accessori: sezioni unite e sezione (numero romano o arabo).
-const COURT_EXTRA_MARKER_RE = /^(?:ss\.?\s*uu\.?|sez\.?\s*(?:[ivxlcdm]+|\d+))\s*,?\s*/i;
+// Marcatori che possono precedere la citazione e vanno tolti: la corte, il
+// qualificativo di materia, la sezione e il tipo di provvedimento. Sono
+// ammessi in qualsiasi ordine e separati da virgole, come li scrive un
+// avvocato: "Cass. civ., sez. III, n. 12345/2019". Sono alternative esatte:
+// se il testo che segue non è la forma numero+anno, l'input resta testo
+// libero.
+const LEADING_MARKER_RE =
+  /^(?:corte\s+di\s+cassazione|cassazione\b|cass\.|cass\b|civ\.|pen\.|civile\b|penale\b|ss\.?\s*uu\.?|sezione(?:\s+[a-z0-9]+)?|sez\.?\s*(?:[ivxlcdm]+|\d+)|sentenza\b|ordinanza\b|decisione\b)\s*,?\s*/i;
+// Punteggiatura finale della citazione: "Cass. n. 577/2008." è la stessa
+// citazione di "Cass. n. 577/2008".
+const TRAILING_PUNCTUATION_RE = /[\s.,;:]+$/;
 
 // Forma con marcatore esplicito: "n." (o "n°", o "numero") dichiara il numero
 // della decisione. Accetta da una a sei cifre: il marcatore rende esplicita
@@ -64,10 +70,11 @@ function isPlainObject(value) {
  * Riconosce un input in forma di citazione di una DECISIONE.
  *
  * Il riconoscimento è deliberatamente stretto: tolto un eventuale marcatore
- * di corte in testa, il resto deve essere la forma numero+anno e nient'altro.
- * Qualunque altro testo tiene l'input a testo libero: una frase che contiene
- * per caso "n. 123/2020" non è una citazione e non deve diventare una
- * ricerca per estremi (perderesti gli altri termini e il resto della frase).
+ * in testa (corte, materia, sezione, tipo di provvedimento), il resto deve
+ * essere la forma numero+anno e nient'altro. Qualunque altro testo tiene
+ * l'input a testo libero: una frase che contiene per caso "n. 123/2020" non
+ * è una citazione e non deve diventare una ricerca per estremi (perderesti
+ * gli altri termini e il resto della frase).
  *
  * Restituisce null se l'input non è una citazione di decisione — anche se
  * contiene un numero e un anno. In quel caso l'input resta testo libero.
@@ -77,14 +84,14 @@ function parseCitation(raw) {
   if (LEGISLATIVE_RE.test(raw)) return null;
 
   let resto = raw.trim();
-  const corte = resto.match(COURT_MARKER_RE);
-  if (corte) resto = resto.slice(corte[0].length);
+  // I marcatori si tolgono in testa, uno per volta: possono comparire in
+  // qualsiasi ordine ("Cass. civ., sez. III, n. …").
   for (;;) {
-    const extra = resto.match(COURT_EXTRA_MARKER_RE);
-    if (!extra) break;
-    resto = resto.slice(extra[0].length);
+    const marker = resto.match(LEADING_MARKER_RE);
+    if (!marker) break;
+    resto = resto.slice(marker[0].length);
   }
-  resto = resto.trim();
+  resto = resto.trim().replace(TRAILING_PUNCTUATION_RE, '');
 
   const m = MARKED_CITATION_RE.exec(resto) || PLAIN_CITATION_RE.exec(resto);
   if (!m) return null;
