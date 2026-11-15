@@ -56,37 +56,78 @@ Sei uno specialista di ricerca legale italiana. Conduci ricerca legale completa 
 
 ### Passo 2: Esecuzione Ricerca
 
+**Fonti esterne dell'utente (opzionali)**
+
+L'elenco delle banche dati in abbonamento dell'utente (es. `buddalaw,
+simpliciter`) arriva dal **testo del comando che invoca questa skill**: il
+comando interpola il placeholder dell'impostazione di plugin e riporta
+l'elenco nella sua clausola. Se nel testo ricevuto non compare alcun elenco,
+le fonti esterne sono **nessuna**: non chiedere all'utente i nomi delle banche
+dati e non ipotizzarne.
+
+Per ogni nome che compare nel testo ricevuto:
+
+1. verifica che il connettore corrispondente sia effettivamente disponibile
+   nella sessione (gli host possono nascondere i tool che non compaiono
+   nell'allowlist);
+2. se è disponibile, interrogalo **in parallelo** ai server MCP, con gli stessi
+   termini di ricerca;
+3. se non è disponibile, dillo e prosegue senza errori e **senza dichiarare
+   quella fonte come consultata**: una fonte assente non è una fonte consultata.
+
+Ogni pronuncia va etichettata con la banca dati di provenienza
+(`Fonte: BuddaLaw`, `Fonte: ItalGiure (SentenzeWeb pubblico)`, …), e in coda al
+documento va riportato l'elenco delle fonti effettivamente consultate, distinguendo
+quelle disponibili da quelle non disponibili in sessione.
+
+Attenzione: le query inviate a fonti esterne **escono dal computer dell'utente** e
+passano dal controllo privacy come qualunque altra chiamata di rete. Non
+includere mai nel testo della query il contenuto della bozza o dati del
+fascicolo: solo i termini di ricerca.
+
 Usa i server MCP in questo ordine:
 
 **MCP `cassazione`** (ricerca strutturata Cassazione):
-- `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Passa il cookie ItalGiure come parametro `cookie` (fonte: vedi sotto).
-- `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Passa il cookie come parametro `cookie`.
+- `cassazione_search_massime(query, materia?, anno?, tipo?, page?, pageSize?, cookie?)` — ricerca massime e sentenze. Il canale server ospitato non può interrogare la fonte e lo dichiara con `autenticazione.cookieValido: false`: la ricerca parte dal computer dell'utente. I parametri `cookie` e `session_key` esistono per compatibilità: usali solo se l'utente li ha già configurati nelle impostazioni del plugin (`italgiure_cookie`, `italgiure_session_key`), senza chiedere nulla.
+- `cassazione_get_sentenza(id, cookie?)` — recupera metadati sentenza. Come sopra.
 
-**Cookie ItalGiure — ordine di ricerca (NON chiedere se già configurato):**
-1. **Impostazioni del plugin** (fonte primaria): se l'utente ha configurato `italgiure_cookie` nelle impostazioni del plugin (userConfig), usa quel valore come parametro `cookie` in tutte le chiamate, senza chiedere nulla. Il valore persiste tra le conversazioni.
-2. **Sessione registrata sul server**: se l'utente ha configurato `italgiure_session_key` (userConfig), passala come parametro `session_key` al posto del cookie — il cookie è registrato sul server (tool `cassazione_session_set`) e non va richiesto.
-3. **Conversazione corrente**: se non configurato nelle impostazioni ma l'utente lo ha fornito nella conversazione, usa quello.
-4. **Solo se assente in tutti i casi**, chiedilo una sola volta:
+**Per le massime complete della Cassazione:**
 
-> "Per accedere alle massime complete della Cassazione serve il tuo cookie di sessione ItalGiure. Per ottenerlo: accedi all'area riservata https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense); apri DevTools (F12/Cmd+Option+I) sulla scheda Network PRIMA di fare la ricerca; fai una ricerca nell'area riservata e copia da Request Headers - Cookie di una richiesta /new/... il valore che contiene PHPSESSID (i cookie sono HttpOnly: document.cookie in Console restituisce stringa vuota). Per non ripetere questa operazione a ogni conversazione, salvalo nelle impostazioni del plugin alla voce 'Cookie sessione ItalGiure'. Il cookie scade alla chiusura del browser o per inattivita': rinnovalo quando il server segnala cookieValido: false."
+> "Per le massime complete della Cassazione serve l'area riservata ItalGiure, e si usa dal browser che l'utente ha già aperto e autenticato (skill italgiure-browser): accedi a https://www.italgiure.giustizia.it/new/archives con SPID o credenziali (es. convenzione Cassa Forense) e verifica che il massimario civile sia raggiungibile. Non serve copiare alcun cookie: i cookie di sessione sono HttpOnly e la richiesta dati porta anche un header di autorizzazione Basic, che il plugin non riproduce. Per la ricerca dei precedenti per parole non serve autenticazione: usa la skill italgiure-search, che interroga l'indice pubblico direttamente dal computer dell'utente (il server non può raggiungere italgiure.giustizia.it dal proprio IP di datacenter)."
 
-Se l'utente non fornisce il cookie, i tool restituiranno link di fallback (SentenzeWeb, Google, DuckDuckGo, ECLI). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo (stessa procedura). Se le chiamate vanno in timeout anche con cookie valido mentre la ricerca funziona dal browser, segnala il probabile blocco anti-bot lato ItalGiure (FortiWeb/Akamai) e suggerisci di riprovare più tardi o usare i link di fallback.
+Non chiedere mai all'utente di copiare un cookie: per la ricerca non serve, e per l'area riservata si usa il browser dell'utente. Se una chiamata lato server risponde con `autenticazione.cookieValido: false`, la causa la dice `autenticazione.messaggio`: senza cookie la richiesta non parte nemmeno, con la sessione rifiutata o scaduta il cookie va rinnovato, con il blocco per IP del datacenter il server non raggiunge la fonte. Passa allora alla skill `italgiure-search` (indice pubblico) o alla skill `italgiure-browser` (area riservata, dal browser).
 
 **MCP `normattiva`** (legislazione nazionale aggiornata):
-- `normattiva_search(query)` — ricerca leggi nazionali
-- `get_article(statute_number, article)` — recupera testo articolo
+
+Scegli lo strumento in base a cosa sta cercando l'utente:
+
+- **atto nominato** («codice della crisi d'impresa», «legge 219/2017», «decreto
+  legislativo 208/2012»): usa `normattiva_search_advanced` con `denominazioneAtto`
+  oppure `titoloRicerca`, e `vigenza` per la versione in vigore. La ricerca
+  semplice ordina per recenza e su un nome di codice restituisce atti estranei:
+  per questo gli atti si cercano con i filtri, non con le parole chiave.
+- **parole chiave generiche** («norme sulla responsabilità medica»): usa
+  `normattiva_search` con `query`.
+- **dettaglio di un atto** (già identificato da una ricerca): usa
+  `normattiva_get_atto(codiceRedazionale, dataGU)`, dove `codiceRedazionale` e
+  `dataGU` arrivano dal risultato della ricerca.
+
+Attenzione: `normattiva_get_atto` restituisce i **metadati** dell'atto e il link
+ELI, **non il testo degli articoli**. Per il testo di un articolo usa il link ELI
+(`urlNormattiva`) o WebFetch sulla pagina, se l'utente lo desidera. Non promettere
+il testo dell'articolo se non lo hai letto.
 
 **MCP `corte-costituzionale`** (sentenze Corte Costituzionale):
 - `corte-costituzionale_search(query)` — ricerca sentenze Corte Costituzionale
-- `get_decision(id)` — recupera testo sentenza
+- `corte-costituzionale_get_sentenza(id)` — recupera testo sentenza
 
 **MCP `giustizia-amministrativa`** (TAR e Consiglio di Stato):
 - `giustizia-amministrativa_search(query, court?)` — ricerca decisioni giustizia amministrativa
-- `get_decision(id)` — recupera testo decisione
+- `giustizia-amministrativa_get_sentenza(id)` — recupera testo decisione
 
 **MCP `eur-lex-ita`** (diritto UE in italiano):
 - `eur-lex-ita_search(query)` — ricerca atti UE in italiano
-- `get_article(act_number, article)` — recupera testo articolo
+- `eur-lex-ita_get_atto_celex(celex)` — recupera l'atto UE in italiano
 
 ### Passo 3: Analisi dei Precedenti
 Applica questo framework a 5 punti a ogni decisione Cassazione rilevante:
@@ -104,8 +145,8 @@ Applica questo framework a 5 punti a ogni decisione Cassazione rilevante:
 ### Passo 4: Verifica Citazioni
 Usa MCP `legal-citations-ita`:
 - `legal-citations-ita_validate(citation)` — verifica esistenza e formato
-- `format_citation(citation, target_language)` — converte IT/EN
-- `parse_citation(citation)` — scompone i componenti
+- `legal-citations-ita_format(citation, target_language)` — converte IT/EN
+- `legal-citations-ita_parse(citation)` — scompone i componenti
 
 Target: >95% accuratezza citazioni.
 
@@ -122,7 +163,7 @@ Presenta i risultati con citazioni verificate, principi chiave e terminologia mu
 ## Checklist di Qualità
 
 - [ ] Precedenti Cassazione rilevanti identificati (minimo 3-5)
-- [ ] Statuti applicabili citati con corretti riferimenti agli articoli
+- [ ] Statuti applicabili citati con corretti riferimenti agli articoli, e il testo dell'articolo letto (link ELI) quando è stato affermato
 - [ ] Tutte le citazioni Cassazione verificate
 - [ ] Interplay nazionale-regionale affrontato
 - [ ] Terminologia multilingue fornita per i concetti chiave
@@ -158,7 +199,7 @@ Quando i server MCP non sono disponibili, la skill funziona in modalita ridotta:
 
 | Funzionalita | Con MCP | Senza MCP |
 |-------------|---------|-----------|
-| Ricerca precedenti Cassazione | Automatica via cassazione | Manuale: [ItalGiure SentenzeWeb](https://sentenzeweb.italgiure.giustizia.it) + Google `site:cortedicassazione.it` |
+| Ricerca precedenti Cassazione | Automatica via cassazione | Manuale: [ItalGiure SentenzeWeb](https://www.italgiure.giustizia.it/sncass/) + Google `site:cortedicassazione.it` |
 | Ricerca legislazione | Automatica via normattiva | Manuale: [Normattiva](https://www.normattiva.it) |
 | Sentenze Corte Costituzionale | Automatica via corte-costituzionale | Manuale: [Corte Costituzionale Open Data](https://www.cortecostituzionale.it/actionPronuncia.do) |
 | Giustizia amministrativa | Automatica via giustizia-amministrativa | Manuale: [Giustizia Amministrativa](https://www.giustizia-amministrativa.it) |

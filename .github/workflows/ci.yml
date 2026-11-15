@@ -23,8 +23,14 @@ jobs:
       - name: Validate privacy hook
         run: node bettercallclaude_italia/scripts/privacy-check.test.js
 
+      - name: Run test suites
+        run: npm test
+
       - name: Check MCP tool-name parity
         run: node scripts/check-tool-names.js
+
+      - name: Check Cassazione narrative
+        run: node scripts/check-cassazione-narrative.js
 
       - name: Check version alignment
         run: |

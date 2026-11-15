@@ -31,7 +31,7 @@ Sei invocato tramite `/bettercallclaude-italia:triage-nda`. Applica la skill ita
 
 **Convenzione output**: scrivi i report di triage in `bcc-output/YYYY-MM-DD-<slug>/triage-nda-<doc>.md`. In modalita batch, scrivi anche una tabella riepilogativa. In chat mostra solo il verdetto (GREEN/YELLOW/RED) con un riassunto di 2-3 righe per NDA. Vedi `skills/shared/SKILL.md`.
 
-**Ambito plugin**: usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia per tutto il lavoro legale. Non delegare a skill o agenti esterni al plugin. Lettura file e operazioni di sistema sono esenti.
+**Ambito plugin**: usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia per tutto il lavoro legale. Non delegare a skill o agenti esterni al plugin. **Eccezione — fonti esterne**: se `${user_config.fonti_esterne}` si risolve in un valore non vuoto (cioè il placeholder non appare letteralmente), le banche dati ivi elencate vanno interrogate **in parallelo** ai server MCP di BetterCallClaude, e ogni pronuncia va etichettata con la banca dati di provenienza; verifica che il connettore corrispondente sia effettivamente disponibile nella sessione (gli host possono nascondere i tool che non compaiono nell'allowlist): se manca, dillo e prosegui senza errori, **senza dichiarare quella fonte come consultata**. Lettura file e operazioni di sistema sono esenti.
 
 ## Caricamento Playbook
 

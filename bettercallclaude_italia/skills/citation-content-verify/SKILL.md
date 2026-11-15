@@ -87,6 +87,35 @@ Usa `legal-citations-ita_validate` / `legal-citations-ita_parse` per ottenere la
 
 ### Passo 3: ROTTA E VERIFICA
 
+**Fonti esterne dell'utente (opzionali)**
+
+L'elenco delle banche dati in abbonamento dell'utente (es. `buddalaw,
+simpliciter`) arriva dal **testo del comando che invoca questa skill**: il
+comando interpola il placeholder dell'impostazione di plugin e riporta
+l'elenco nella sua clausola. Se nel testo ricevuto non compare alcun elenco,
+le fonti esterne sono **nessuna**: non chiedere all'utente i nomi delle banche
+dati e non ipotizzarne.
+
+Per ogni nome che compare nel testo ricevuto:
+
+1. verifica che il connettore corrispondente sia effettivamente disponibile
+   nella sessione (gli host possono nascondere i tool che non compaiono
+   nell'allowlist);
+2. se è disponibile, interrogalo **in parallelo** ai server MCP, con gli stessi
+   termini di ricerca;
+3. se non è disponibile, dillo e prosegue senza errori e **senza dichiarare
+   quella fonte come consultata**: una fonte assente non è una fonte consultata.
+
+Ogni pronuncia va etichettata con la banca dati di provenienza
+(`Fonte: BuddaLaw`, `Fonte: ItalGiure (SentenzeWeb pubblico)`, …), e in coda al
+documento va riportato l'elenco delle fonti effettivamente consultate, distinguendo
+quelle disponibili da quelle non disponibili in sessione.
+
+Attenzione: le query inviate a fonti esterne **escono dal computer dell'utente** e
+passano dal controllo privacy come qualunque altra chiamata di rete. Non
+includere mai nel testo della query il contenuto della bozza o dati del
+fascicolo: solo i termini di ricerca.
+
 **Gate di esistenza (sempre per primo)**: prima di ogni verifica di implicazione, chiama `citation-verify-ita_check_existence` con la citazione normalizzata. Se l'utente ha configurato il cookie ItalGiure (fonte primaria: `userConfig.italgiure_cookie` nelle impostazioni del plugin, altrimenti cookie fornito in conversazione), passalo come parametro `italgiure_cookie` (stesso pattern dei tool `cassazione_*`). Il tool NON verifica l'implicazione — solo l'esistenza della fonte.
 
 - `exists: true` → prosegui con la verifica di implicazione lato LLM tramite la route specifica qui sotto.

@@ -32,16 +32,46 @@ Sei uno specialista di strategia processuale italiana.
 
 ### Passo 1: Comprendi Fatti e Questioni Giuridiche
 ### Passo 2: Ricerca Precedenti
+
+**Fonti esterne dell'utente (opzionali)**
+
+L'elenco delle banche dati in abbonamento dell'utente (es. `buddalaw,
+simpliciter`) arriva dal **testo del comando che invoca questa skill**: il
+comando interpola il placeholder dell'impostazione di plugin e riporta
+l'elenco nella sua clausola. Se nel testo ricevuto non compare alcun elenco,
+le fonti esterne sono **nessuna**: non chiedere all'utente i nomi delle banche
+dati e non ipotizzarne.
+
+Per ogni nome che compare nel testo ricevuto:
+
+1. verifica che il connettore corrispondente sia effettivamente disponibile
+   nella sessione (gli host possono nascondere i tool che non compaiono
+   nell'allowlist);
+2. se è disponibile, interrogalo **in parallelo** ai server MCP, con gli stessi
+   termini di ricerca;
+3. se non è disponibile, dillo e prosegue senza errori e **senza dichiarare
+   quella fonte come consultata**: una fonte assente non è una fonte consultata.
+
+Ogni pronuncia va etichettata con la banca dati di provenienza
+(`Fonte: BuddaLaw`, `Fonte: ItalGiure (SentenzeWeb pubblico)`, …), e in coda al
+documento va riportato l'elenco delle fonti effettivamente consultate, distinguendo
+quelle disponibili da quelle non disponibili in sessione.
+
+Attenzione: le query inviate a fonti esterne **escono dal computer dell'utente** e
+passano dal controllo privacy come qualunque altra chiamata di rete. Non
+includere mai nel testo della query il contenuto della bozza o dati del
+fascicolo: solo i termini di ricerca.
+
 Usa i tool MCP:
 - `cassazione` → `cassazione_search_massime(query, materia?, anno?, tipo?, cookie?, session_key?)` — ricerca massime e sentenze.
 - `cassazione` → `cassazione_get_sentenza(id, cookie?, session_key?)` — recupera metadati sentenza.
-- `cassazione` → `find_leading_cases(query)`
+- `cassazione` → `cassazione_search_massime(query)`
 
 Per l'autenticazione ItalGiure segui quest'ordine:
 1. **Cookie dalle impostazioni**: se l'utente ha configurato `italgiure_cookie` (userConfig), passalo come parametro `cookie`.
 2. **Sessione registrata sul server**: se l'utente ha configurato `italgiure_session_key` (userConfig), passala come parametro `session_key` al posto del cookie — il cookie è registrato sul server (tool `cassazione_session_set`) e non va richiesto.
 3. **Conversazione corrente**: se non configurato nelle impostazioni ma l'utente lo ha fornito nella conversazione, usa quello.
-4. **Solo se assente in tutti i casi**, chiedilo una sola volta (procedura DevTools: vedi `docs/cassazione-cookie.md`). Se il server risponde `cookieValido: false`, il cookie è scaduto: guida l'utente al rinnovo.
+4. **Non chiedere mai all'utente di copiare un cookie**: per la ricerca non serve — usa la skill `italgiure-search` (indice pubblico SentenzeWeb, dal computer dell'utente); per le massime complete dell'area riservata usa la skill `italgiure-browser` (sessione già autenticata nel browser, modalità presidiata). Se una chiamata lato server risponde con `autenticazione.cookieValido: false`, la causa la dice `autenticazione.messaggio`: senza cookie la richiesta non parte nemmeno, con la sessione rifiutata o scaduta il cookie va rinnovato, con il blocco per IP del datacenter il server non raggiunge la fonte. Passa alla skill `italgiure-search` o `italgiure-browser` (vedi `docs/cassazione-cookie.md`).
 
 ### Passo 3: Valuta Onere della Prova
 **Regola generale (Art. 2697 CC)**: Ciascuna parte deve provare i fatti su cui fondare le sue pretese.
@@ -90,7 +120,7 @@ Baseline da esiti simili della Cassazione, aggiustata per fattori caso-specifici
 | Appello | 12-36 mesi |
 | Cassazione | 12-48 mesi |
 
-**Calcolo dei termini processuali**: quando la questione coinvolge termini processuali (CPC, CPP, CPA), usa il tool `compute_deadlines` (server `legal-persona-ita`) se disponibile, invece di calcolare manualmente. Il tool applicherebbe le regole di computo corrette (art. 155 CPC — dies a quo non computatur, proroga per sabato e giorni festivi), la sospensione feriale del periodo 1°–31 agosto (L. 742/1969 e succ. mod.) e i termini chiave (art. 163-bis CPC: 90 giorni fra citazione e prima udienza, 150 se la controparte risiede all'estero; impugnazioni: 30/60 giorni dalla notifica o 6 mesi dalla pubblicazione). Includi sempre il calcolo passo-passo nel deliverable, con il disclaimer obbligatorio che i termini devono essere verificati presso la cancelleria del giudice competente. Se `compute_deadlines` non è disponibile (attualmente il server `legal-persona-ita` espone solo `legal-persona-ita_draft_document`), calcola manualmente seguendo le stesse regole e contrassegna il risultato come *(calcolato manualmente — verificare presso la cancelleria competente)*.
+**Calcolo dei termini processuali**: quando la questione coinvolge termini processuali (CPC, CPP, CPA), usa il tool `legal-persona-ita_compute_deadlines` (server `legal-persona-ita`) se disponibile, invece di calcolare manualmente. Il tool applicherebbe le regole di computo corrette (art. 155 CPC — dies a quo non computatur, proroga per sabato e giorni festivi), la sospensione feriale del periodo 1°–31 agosto (L. 742/1969 e succ. mod.) e i termini chiave (art. 163-bis CPC: 90 giorni fra citazione e prima udienza, 150 se la controparte risiede all'estero; impugnazioni: 30/60 giorni dalla notifica o 6 mesi dalla pubblicazione). Includi sempre il calcolo passo-passo nel deliverable, con il disclaimer obbligatorio che i termini devono essere verificati presso la cancelleria del giudice competente. Se `legal-persona-ita_compute_deadlines` non è disponibile, calcola manualmente seguendo le stesse regole e contrassegna il risultato come *(calcolato manualmente — verificare presso la cancelleria competente)*.
 
 ## Analisi Costi-Benefici
 

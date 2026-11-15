@@ -66,7 +66,7 @@ In chat, 3-5 righe: numero eventi, numero contestati/conflitti, lacune trovate, 
 
 ## Ambito Plugin
 
-Usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia. Lettura file, lo script di render e le operazioni di sistema sono esenti.
+Usa esclusivamente agenti, skill e server MCP di BetterCallClaude Italia. **Eccezione — fonti esterne**: se `${user_config.fonti_esterne}` si risolve in un valore non vuoto (cioè il placeholder non appare letteralmente), le banche dati ivi elencate vanno interrogate **in parallelo** ai server MCP di BetterCallClaude, e ogni pronuncia va etichettata con la banca dati di provenienza; verifica che il connettore corrispondente sia effettivamente disponibile nella sessione (gli host possono nascondere i tool che non compaiono nell'allowlist): se manca, dillo e prosegui senza errori, **senza dichiarare quella fonte come consultata**. Lettura file, lo script di render e le operazioni di sistema sono esenti.
 
 ## Query dell'Utente
 

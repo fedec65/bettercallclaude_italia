@@ -1,13 +1,13 @@
 {
   "name": "bettercallclaude-italia",
-  "version": "2.4.11",
+  "version": "2.5.0",
   "private": true,
   "description": "Italian Legal Intelligence Plugin for Claude",
   "scripts": {
     "build:ollama": "cd bettercallclaude_italia/mcp-servers/ollama && npm install && npm run build:bundle",
     "package": "bash scripts/package-plugin.sh",
     "validate": "node scripts/validate-plugin.js",
-    "test": "node bettercallclaude_italia/scripts/privacy-check.test.js"
+    "test": "node bettercallclaude_italia/scripts/privacy-check.test.js && node scripts/check-tool-names.test.js && node scripts/check-cassazione-narrative.test.js && node bettercallclaude_italia/skills/italgiure-search/scripts/italgiure-query.test.js"
   },
   "repository": {
     "type": "git",
