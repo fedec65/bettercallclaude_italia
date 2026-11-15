@@ -104,10 +104,49 @@ t('la citazione nella forma «n. numero del anno» diventa una query per estremi
   );
 });
 
+t('la citazione nella forma «n° numero/anno» diventa una query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. n° 577/2008' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
 t('la citazione senza prefisso diventa una query per estremi', () => {
   assert.strictEqual(
     buildSolrQuery({ query: '577/2008' }),
     'numdec:"577" AND anno:"2008"'
+  );
+});
+
+t('la forma breve con due cifre resta testo libero (è una data)', () => {
+  assert.strictEqual(buildSolrQuery({ query: '10/2024' }), '(10\\/2024)');
+});
+
+t('una citazione di decreto legislativo resta testo libero', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'D.Lgs. n. 165/2001' }),
+    '(D.Lgs. n. 165\\/2001)'
+  );
+});
+
+t('una legge citata per numero resta testo libero', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'legge n. 241/1990' }),
+    '(legge n. 241\\/1990)'
+  );
+});
+
+t('un testo libero che contiene una citazione resta testo libero', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'sentenza n. 123/2020 sul danno' }),
+    '(sentenza n. 123\\/2020 sul danno)'
+  );
+});
+
+t('la citazione delle sezioni unite resta una query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. SS.UU. n. 20874/2008' }),
+    'numdec:"20874" AND anno:"2008"'
   );
 });
 

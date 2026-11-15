@@ -1,6 +1,6 @@
 ---
 name: italgiure-search
-description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al documento (PDF o indice testuale). Attivazione quando serve un precedente di legittimità e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
+description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter è scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al documento (PDF o indice testuale). Attivazione quando serve un precedente di legittimità e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
 tools:
   - Bash
   - Read
@@ -20,9 +20,9 @@ tools:
 
 Interroga l'indice pubblico **SentenzeWeb** del CED Ministero della Giustizia.
 
-## Perche' questa skill esiste
+## Perché questa skill esiste
 
-Il server MCP di BetterCallClaude e' deployato su un indirizzo IP di datacenter.
+Il server MCP di BetterCallClaude è deployato su un indirizzo IP di datacenter.
 `www.italgiure.giustizia.it` **scarta a livello TCP** le richieste che arrivano da
 quel tipo di indirizzo. Il tool `cassazione_search_massime` lato server lo
 dichiara: la chiamata va a buon fine, ma `autenticazione.cookieValido` vale
@@ -32,7 +32,7 @@ un timeout da aspettare: in entrambi i casi la ricerca va fatta dal computer
 dell'utente.
 
 Questa skill esegue la **stessa query** dalla macchina dell'utente, dove
-l'IP e' ammesso. La risposta ha la stessa forma del tool server, cosi tutto a
+l'IP è ammesso. La risposta ha la stessa forma del tool server, così tutto a
 valle funziona senza modifiche.
 
 Sulla ricerca per estremi il client è **più preciso** del server: il server non
@@ -54,7 +54,7 @@ BetterCallClaude**. Il termine di ricerca va diretto al Ministero della Giustizi
   anno): il tool MCP `citation-verify-ita_check_existence` (server
   `citation-verify-ita`) verifica l'esistenza delle citazioni, ma per le sentenze
   non raggiunge ItalGiure dal lato server, quindi la via client-side di questa
-  skill e' quella che funziona.
+  skill è quella che funziona.
 
 Per l'**area riservata** (massime complete, Rv., conformi e difformi) usa
 `italgiure-browser`. Per la **legislazione** usa `italian-legal-research`.
@@ -64,7 +64,7 @@ Per l'**area riservata** (massime complete, Rv., conformi e difformi) usa
 ### Passo 0 — Individua lo script
 
 Lo script sta nella stessa skill, in `scripts/italgiure-query.js`. **La directory
-di lavoro della shell non e' la directory della skill**, quindi un percorso
+di lavoro della shell non è la directory della skill**, quindi un percorso
 relativo non risolve. Individualo con un Glob:
 
 ```
@@ -97,7 +97,7 @@ valida: un valore non numerico o non positivo viene **ignorato in silenzio**
 un anno abbreviato come `24` produce il filtro `anno:"24"`, che non
 corrisponde ad alcun anno reale.
 
-Se lo script non e' disponibile, costruisci la query con queste regole:
+Se lo script non è disponibile, costruisci la query con queste regole:
 
 - testo libero: racchiudilo in parentesi e escapa i caratteri speciali Solr
   (`+ - ! ( ) { } [ ] ^ " ~ * ? : \ /`);
@@ -106,12 +106,12 @@ Se lo script non e' disponibile, costruisci la query con queste regole:
 - tipo aggiunge ` AND tipoprov:"Sentenza"` (o "Ordinanza", "Decreto", con l'iniziale
   maiuscola);
 - le clausole si uniscono con ` AND `;
-- se il testo contiene gia' sintassi Solr (parentesi iniziali, `:`, `~`, AND, OR)
-  usalo cosi' com'e'.
+- se il testo contiene già sintassi Solr (parentesi iniziali, `:`, `~`, AND, OR)
+  usalo così com'è.
 
-**Attenzione al rilevamento della sintassi raw.** Il riconoscimento e' per
+**Attenzione al rilevamento della sintassi raw.** Il riconoscimento è per
 sottostringa: se il testo libero contiene un `AND` o un `OR` maiuscolo viene
-trattato come sintassi Solr e passato **non escapato e non racchiuso**. Percio',
+trattato come sintassi Solr e passato **non escapato e non racchiuso**. Perciò,
 se i termini di ricerca contengono `AND` o `OR` maiuscoli, scrivili in minuscolo
 oppure formula la query in sintassi Solr esplicita: altrimenti la ricerca si
 comporta in modo inatteso.
@@ -122,6 +122,12 @@ Quando l'utente chiede una decisione **per estremi** (`Cass. n. 577/2008`,
 `n. 577 del 2008`), non cercare per parole: passa la citazione al
 costruttore della query, che la riconosce e produce i campi `numdec` e `anno`.
 
+Solo citazioni di **decisioni** entrano nella ricerca per estremi: una
+citazione legislativa (legge, decreto, articolo) non si cerca con questa skill,
+per la normativa usa `italian-legal-research`. Il numero e l'anno di un atto
+normativo non sono gli estremi di una sentenza: cercarli per estremi restituirebbe
+una decisione con lo stesso numero e l'anno giusto, cioè un falso positivo.
+
 ```bash
 node <SCRIPT> build --query "Cass. n. 577/2008"
 # numdec:"577" AND anno:"2008"
@@ -129,6 +135,12 @@ node <SCRIPT> build --query "Cass. n. 577/2008"
 
 Un anno senza numero resta testo libero, e una query già in sintassi Solr
 passa invariata: in entrambi i casi niente da fare.
+
+Una forma senza marcatore (`577/2008`) è una citazione solo se il numero ha
+almeno tre cifre: con una o due cifre (`10/2024`) è una data, non un numero
+di decisione. Viceversa, una frase che contiene per caso un «n. 123/2020»
+resta testo libero: la ricerca per estremi vale per la citazione, non per la
+sottostringa.
 
 Non aggiungere `--anno` con un anno diverso da quello della citazione: i due
 filtri si contraddirebbero e lo script fallisce. `--anno` con lo stesso anno
@@ -146,12 +158,12 @@ presentare un'altra decisione al suo posto.
 ```bash
 Q=$(node <SCRIPT> build --query "TERMINE DI RICERCA" --materia civile)
 
+CODICE=0
 BODY=$(curl -sS -k --fail-with-body -m 30 -X POST \
   "https://www.italgiure.giustizia.it/sncass/isapi/hc.dll/sn.solr/sn-collection/select?app.query" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "q=$Q" \
-  --data "rows=20&start=0&wt=json&fl=id,filename,szdec,tipoprov,datdec,numdec,anno,kind,datdep&sort=pd desc,datdec desc")
-CODICE=$?
+  --data "rows=20&start=0&wt=json&fl=id,filename,szdec,tipoprov,datdec,numdec,anno,kind,datdep&sort=pd desc,datdec desc") || CODICE=$?
 
 printf '%s' "$BODY" | node <SCRIPT> format
 ```
@@ -163,11 +175,12 @@ Note sulla invocazione:
   arriva al formatter, che lo dichiara come ricerca fallita invece di
   trasformarlo in un risultato vuoto. Senza questo flag la `curl` uscirebbe
   con 0 anche su un errore HTTP.
-- `CODICE=$?`: è il codice di uscita della `curl`. **Controllalo prima di
-  interpretare l'output**: se non è 0, la ricerca è fallita (vedi «Se la
-  ricerca fallisce») e non va riportata come `totale: 0`. Esegui il blocco
-  qui sopra come un unico comando: `$?` vale solo se la `curl` è eseguita nella
-  stessa invocazione di shell.
+- `CODICE=0` e `|| CODICE=$?`: è il codice di uscita della `curl`, catturato
+  **senza far abortire la shell**. **Controllalo prima di interpretare
+  l'output**: se non è 0, la ricerca è fallita (vedi «Se la ricerca fallisce»)
+  e non va riportata come `totale: 0`. Non eseguire il blocco con `set -e`: la
+  shell si interromperebbe prima che tu legga il codice e il corpo della
+  risposta.
 - `-k`: l'host presenta una catena di certificazione non standard e la CA non è
   ottenibile, quindi il flag resta: toglierlo romperebbe l'unico canale
   funzionante. Il server MCP fa lo stesso (`rejectUnauthorized: false`).
@@ -188,14 +201,14 @@ Note sulla invocazione:
 Assegna l'output del Passo 1 alla variabile `Q`, e sostituisci `rows`/`start` con
 la paginazione richiesta (20 risultati per pagina, `start = (pagina - 1) * 20`).
 
-Se lo script non e' disponibile, ometti la pipe finale e mappa tu `$BODY` con la
+Se lo script non è disponibile, ometti la pipe finale e mappa tu `$BODY` con la
 tabella sotto: prima controlla `$CODICE` e verifica che `$BODY` sia un JSON Solr
 valido (`response.docs` array, `response.numFound` numero). Se il codice non è 0
 o il corpo non è un JSON Solr valido, la ricerca è **fallita**, non vuota.
 
 ### Passo 3 — Presenta i risultati
 
-Se hai usato lo script, la risposta e' gia' nella forma standard. Se hai letto il
+Se hai usato lo script, la risposta è già nella forma standard. Se hai letto il
 JSON grezzo, mappalo con questa tabella:
 
 | Campo Solr | Campo standard | Regola |
@@ -209,7 +222,7 @@ JSON grezzo, mappalo con questa tabella:
 | `datdep[0]` | `dataDeposito` | solo se presente |
 | `filename[0]` | `urlPdf` | `https://www.italgiure.giustizia.it/sncass/{filename[0] senza il ./ iniziale}`: è il link al documento, che può essere un PDF o un indice testuale `.txt` |
 
-La forma standard e':
+La forma standard è:
 
 ```json
 {
@@ -248,13 +261,13 @@ fallita e una ricerca senza risultati sono tre fatti diversi.
 | Sintomo | Cosa significa | Cosa fare |
 |---|---|---|
 | la `curl` esce con codice 28 (timeout) | l'IP corrente non è ammesso da ItalGiure | leggi lo stderr della `curl`: il codice `(28)` è un timeout (canale bloccato), non un problema di formato; poi offri la modalità browser (`italgiure-browser`) e i link di ricerca manuale. L'errore di JSON che segue è una conseguenza del timeout, non un problema diverso |
-| la `curl` esce con un codice diverso da 0 (22 su errore HTTP, 28 su timeout) oppure il formatter segnala un payload non valido | la ricerca è **FALLITA**: non è una ricerca vuota | leggi il corpo che la `curl` ha stampato (`--fail-with-body` lo conserva): se c'è un campo `error` riportalo; se è HTML, JSON non valido o troncato, verifica l'URL e riprova con `rows` più piccolo, poi offri la modalità browser. **Non** riportare `totale: 0`: la ricerca non è arrivata a compimento |
+| la `curl` esce con un codice diverso da 0 **e diverso da 28** (22 su errore HTTP) oppure il formatter segnala un payload non valido | la ricerca è **FALLITA**: non è una ricerca vuota | leggi il corpo che la `curl` ha stampato (`--fail-with-body` lo conserva): se c'è un campo `error` riportalo; se è HTML, JSON non valido o troncato, verifica l'URL e riprova con `rows` più piccolo, poi offri la modalità browser. **Non** riportare `totale: 0`: la ricerca non è arrivata a compimento |
 | `totale: 0` | la ricerca è andata a buon fine, non ci sono risultati | nessun errore: riporta che non ci sono precedenti per quei termini, e prova con la ricerca per estremi |
 
 Il messaggio all'utente deve dire chiaramente **quale** dei tre casi è: canale
 bloccato per IP (timeout), ricerca fallita (errore HTTP o JSON non valido)
 oppure nessun risultato (`totale: 0`).
 
-Nota: questa modalita' copre gli utenti su IP ammesso (in Italia). Coprire anche
+Nota: questa modalità copre gli utenti su IP ammesso (in Italia). Coprire anche
 gli utenti fuori dall'Italia richiede che il server abbia un'uscita in Italia:
-non e' una funzionalita' del plugin.
+non è una funzionalità del plugin.

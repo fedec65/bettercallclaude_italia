@@ -3,9 +3,9 @@
  * Costruzione della query Solr di ItalGiure e mappatura della risposta.
  *
  * Puro di proposito: questo script NON fa richieste di rete. La gamba di rete
- * e' `curl`, eseguita dalla skill, perche' l'hook privacy del plugin
+ * è `curl`, eseguita dalla skill, perché l'hook privacy del plugin
  * (NETWORK_COMMANDS in scripts/privacy-check.js) intercetta curl/wget/nc ma
- * non un `node script.js` che fa HTTP da se'. Se questo script facesse rete,
+ * non un `node script.js` che fa HTTP da sé. Se questo script facesse rete,
  * la chiamata uscirebbe dal perimetro di controllo del segreto professionale.
  *
  * Divergenza dal server `cassazione`: qui il client è PIÙ preciso del
@@ -30,13 +30,30 @@ const ITALGIURE_BASE = 'https://www.italgiure.giustizia.it/sncass';
 const MATERIA_VALUES = ['civile', 'penale'];
 const TIPO_VALUES = ['sentenza', 'ordinanza', 'decreto'];
 
-// Forma di citazione: numero della decisione e anno.
-//   "Cass. n. 577/2008", "n. 577 del 2008"
-// Il marcatore "n." è obbligatorio in questa forma: senza, "L. 241/1990"
-// (una legge) verrebbe letta come numero di decisione.
-const CITATION_RE = /\bn(?:\.|°)?\s*(\d{1,6})\s*(?:\/|del|dell['’])\s*(\d{4})\b/i;
-// Forma abbreviata: il solo numero e l'anno, senza altro testo.
-const BARE_CITATION_RE = /^\s*(\d{1,6})\s*\/\s*(\d{4})\s*$/;
+// --- Riconoscimento della citazione di una DECISIONE ------------------------
+//
+// La ricerca per estremi vale solo per le decisioni. Un atto normativo ha un
+// numero e un anno come una decisione, ma non un `numdec`: cercarlo per
+// estremi restituirebbe una sentenza con lo stesso numero e l'anno giusto —
+// un falso positivo che il modello non distinguerebbe. Ogni input che porta
+// un marcatore legislativo resta quindi testo libero.
+const LEGISLATIVE_RE =
+  /\b(?:d\.?\s*l\.?\s*g\.?\s*s\.?|d\.?\s*l\.|\bl\.|legge|legisl\.|decret\w*|dlg|art\.|d\.)/i;
+
+// Marcatori di una corte in testa all'input: si tolgo per arrivare alla
+// citazione ("Cass.", "Cassazione", "Corte di Cassazione").
+const COURT_MARKER_RE = /^(?:corte\s+di\s+cassazione|cassazione|cass\.)\s*,?\s*/i;
+// Marcatori accessori: sezioni unite e sezione (numero romano o arabo).
+const COURT_EXTRA_MARKER_RE = /^(?:ss\.?\s*uu\.?|sez\.?\s*(?:[ivxlcdm]+|\d+))\s*,?\s*/i;
+
+// Forma con marcatore esplicito: "n." (o "n°", o "numero") dichiara il numero
+// della decisione. Accetta da una a sei cifre: il marcatore rende esplicita
+// l'intenzione.
+const MARKED_CITATION_RE = /^n(?:umero)?(?:\.|°)?\s*(\d{1,6})\s*(?:\/|del|dell['’])\s*(\d{4})$/i;
+// Forma senza marcatori ("577/2008", "577 del 2008"): il numero deve avere al
+//meno tre cifre. Con una o due cifre l'input è una data ("10/2024" =
+// ottobre 2024), non un numero di decisione.
+const PLAIN_CITATION_RE = /^(\d{3,6})\s*(?:\/|del|dell['’])\s*(\d{4})$/;
 
 /** Un oggetto JSON (non un array, non null). */
 function isPlainObject(value) {
@@ -44,12 +61,32 @@ function isPlainObject(value) {
 }
 
 /**
- * Riconosce un input in forma di citazione (numero e anno).
- * Restituisce null se l'input non è una citazione: in quel caso resta testo
- * libero.
+ * Riconosce un input in forma di citazione di una DECISIONE.
+ *
+ * Il riconoscimento è deliberatamente stretto: tolto un eventuale marcatore
+ * di corte in testa, il resto deve essere la forma numero+anno e nient'altro.
+ * Qualunque altro testo tiene l'input a testo libero: una frase che contiene
+ * per caso "n. 123/2020" non è una citazione e non deve diventare una
+ * ricerca per estremi (perderesti gli altri termini e il resto della frase).
+ *
+ * Restituisce null se l'input non è una citazione di decisione — anche se
+ * contiene un numero e un anno. In quel caso l'input resta testo libero.
  */
 function parseCitation(raw) {
-  const m = CITATION_RE.exec(raw) || BARE_CITATION_RE.exec(raw);
+  // Una citazione normativa non è una decisione: esce subito.
+  if (LEGISLATIVE_RE.test(raw)) return null;
+
+  let resto = raw.trim();
+  const corte = resto.match(COURT_MARKER_RE);
+  if (corte) resto = resto.slice(corte[0].length);
+  for (;;) {
+    const extra = resto.match(COURT_EXTRA_MARKER_RE);
+    if (!extra) break;
+    resto = resto.slice(extra[0].length);
+  }
+  resto = resto.trim();
+
+  const m = MARKED_CITATION_RE.exec(resto) || PLAIN_CITATION_RE.exec(resto);
   if (!m) return null;
   return { numero: m[1], anno: m[2] };
 }
@@ -60,18 +97,18 @@ function parseCitation(raw) {
  * Se la query contiene già sintassi Solr viene usata così. Altrimenti:
  * un input in forma di citazione ("Cass. n. 577/2008") diventa una ricerca
  * per estremi con clausole fielded `numdec`/`anno`; tutto il resto è testo
- * libero con prossimita' implicita.
+ * libero con prossimità implicita.
  *
  * `materia` e `tipo` sono validati contro i rispettivi elenchi: un valore
  * sconosciuto fa fallire la costruzione invece di produrre una ricerca
- * piu' larga del richiesto. Se il filtro e' assente non viene emessa alcuna
+ * più larga del richiesto. Se il filtro è assente non viene emessa alcuna
  * clausola.
  */
 function buildSolrQuery(opts) {
   const input = opts || {};
   const raw = typeof input.query === 'string' ? input.query.trim() : '';
   if (!raw) {
-    throw new Error('buildSolrQuery: la query non puo\' essere vuota');
+    throw new Error('buildSolrQuery: la query non può essere vuota');
   }
 
   const clauses = [];
@@ -108,7 +145,7 @@ function buildSolrQuery(opts) {
       if (String(input.anno) !== citazione.anno) {
         throw new Error(
           'buildSolrQuery: il filtro --anno ' + input.anno +
-          ' e\' in conflitto con l\'anno ' + citazione.anno + ' della citazione'
+          ' è in conflitto con l\'anno ' + citazione.anno + ' della citazione'
         );
       }
       // L\'anno è già nella clausola della citazione: non duplicarlo.
@@ -136,7 +173,7 @@ function buildSolrQuery(opts) {
  * Mappa la risposta Solr nella forma standard del plugin, identica a quella
  * di cassazione_search_massime.
  *
- * Fallisce esplicitamente quando il payload non e' una risposta Solr valida:
+ * Fallisce esplicitamente quando il payload non è una risposta Solr valida:
  * `response` deve essere un oggetto, `response.docs` un array e
  * `response.numFound` un numero. Un errore di trasporto o un corpo non JSON
  * non è una ricerca senza risultati: restituire `totale: 0` farebbe credere
@@ -196,7 +233,7 @@ function formatResponse(payload) {
 }
 
 /**
- * Messaggio di errore per un payload che non e' una risposta Solr valida.
+ * Messaggio di errore per un payload che non è una risposta Solr valida.
  * Include il campo `error` del payload, quando c'è: è l'unica indicazione
  * utile su cosa abbia risposto il server.
  */
