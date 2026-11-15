@@ -147,9 +147,10 @@ resta testo libero: la ricerca per estremi vale per la citazione, non per la
 sottostringa.
 
 Sono riconosciuti i qualificativi di materia (`civ.`, `pen.`, `civile`,
-`penale`), la sezione (`sez. III`, `SS.UU.`) e il tipo di provvedimento
-(`sentenza`, `ordinanza`, `decisione`), in qualsiasi ordine e separati da
-virgole, e la punteggiatura finale non impedisce il riconoscimento.
+`penale`), la sezione (`sez. III`, `sezione III`, `SS.UU.`) e il tipo di
+provvedimento (`sentenza`, `ordinanza`, `decisione`), in qualsiasi ordine e
+separati da virgole, e la punteggiatura finale non impedisce il
+riconoscimento.
 
 Non aggiungere `--anno` con un anno diverso da quello della citazione: i due
 filtri si contraddirebbero e lo script fallisce. `--anno` con lo stesso anno
