@@ -88,6 +88,66 @@ t('rifiuta una query vuota', () => {
   assert.throws(() => buildSolrQuery({ query: '   ' }), /query/i);
 });
 
+console.log('ricerca per estremi (citazione)');
+
+t('la citazione con numero e anno diventa una query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. n. 577/2008' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
+t('la citazione nella forma «n. numero del anno» diventa una query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'n. 577 del 2008' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
+t('la citazione senza prefisso diventa una query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: '577/2008' }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
+t('i filtri si applicano anche alla query per estremi', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. n. 577/2008', materia: 'civile' }),
+    'numdec:"577" AND anno:"2008" AND kind:"snciv"'
+  );
+});
+
+t('un anno senza numero resta testo libero', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'sentenza del 2008' }),
+    '(sentenza del 2008)'
+  );
+});
+
+t('una query già in sintassi Solr resta invariata', () => {
+  const q = 'numdec:"577" AND anno:"2008"';
+  assert.strictEqual(buildSolrQuery({ query: q }), q);
+});
+
+t('una legge non viene scambiata per un numero di decisione', () => {
+  assert.strictEqual(buildSolrQuery({ query: 'L. 241/1990' }), '(L. 241\\/1990)');
+});
+
+t('il filtro --anno in conflitto con la citazione fallisce', () => {
+  assert.throws(
+    () => buildSolrQuery({ query: 'Cass. n. 577/2008', anno: 2024 }),
+    /anno/i
+  );
+});
+
+t('il filtro --anno coerente con la citazione non duplica la clausola', () => {
+  assert.strictEqual(
+    buildSolrQuery({ query: 'Cass. n. 577/2008', anno: 2008 }),
+    'numdec:"577" AND anno:"2008"'
+  );
+});
+
 console.log('validazione degli enum');
 
 t('rifiuta una materia sconosciuta', () => {
@@ -221,7 +281,7 @@ t('mappa gli estremi', () => {
   assert.strictEqual(m.id, 'snciv2025332127S');
 });
 
-t('costruisce il link al PDF', () => {
+t('costruisce il link al documento (campo urlPdf)', () => {
   const m = formatResponse(SOLR_PAYLOAD).massime[0];
   assert.strictEqual(
     m.urlPdf,
@@ -245,6 +305,54 @@ t('una risposta vuota non fallisce', () => {
   const out = formatResponse({ response: { numFound: 0, start: 0, docs: [] } });
   assert.strictEqual(out.totale, 0);
   assert.deepStrictEqual(out.massime, []);
+});
+
+console.log('formatResponse: payload non valido');
+
+t('fallisce se il payload non è un oggetto', () => {
+  assert.throws(() => formatResponse(null), /FALLITA/);
+});
+
+t('fallisce se manca l\'oggetto response', () => {
+  assert.throws(() => formatResponse({}), /FALLITA/);
+});
+
+t('fallisce se response non è un oggetto', () => {
+  assert.throws(() => formatResponse({ response: 'nope' }), /FALLITA/);
+});
+
+t('fallisce se response.docs non è un array', () => {
+  assert.throws(() => formatResponse({ response: { numFound: 0, docs: {} } }), /FALLITA/);
+});
+
+t('fallisce se response.numFound non è un numero', () => {
+  assert.throws(() => formatResponse({ response: { numFound: '0', docs: [] } }), /FALLITA/);
+});
+
+t('il messaggio dice che la ricerca è fallita e non vuota', () => {
+  assert.throws(() => formatResponse({}), /non vuota/);
+});
+
+t('il messaggio include il campo error del payload', () => {
+  assert.throws(
+    () => formatResponse({ error: { msg: 'Errore Solr' } }),
+    /Errore Solr/
+  );
+});
+
+t('la CLI format esce con codice 1 su un payload non valido', () => {
+  assert.throws(
+    () => execFileSync(
+      process.execPath,
+      [SCRIPT, 'format'],
+      { encoding: 'utf8', stdio: 'pipe', input: JSON.stringify({ error: { msg: 'boom' } }) }
+    ),
+    (err) => {
+      assert.strictEqual(err.status, 1);
+      assert.ok(/FALLITA/.test(String(err.stderr)), 'stderr inatteso: ' + err.stderr);
+      return true;
+    }
+  );
 });
 
 console.log('');

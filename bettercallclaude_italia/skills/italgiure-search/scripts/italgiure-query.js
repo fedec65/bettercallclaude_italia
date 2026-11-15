@@ -8,6 +8,13 @@
  * non un `node script.js` che fa HTTP da se'. Se questo script facesse rete,
  * la chiamata uscirebbe dal perimetro di controllo del segreto professionale.
  *
+ * Divergenza dal server `cassazione`: qui il client è PIÙ preciso del
+ * server. Il server non può osservare la semantica del proprio
+ * buildSolrQuery (dall'infrastruttura di datacenter italgiure.giustizia.it la
+ * fonte scarta la connessione), quindi la sua ricerca per estremi non è mai
+ * stata verificabile: qui la ricerca per estremi è implementata con clausole
+ * fielded `numdec`/`anno`, ed è il canale che funziona.
+ *
  * Uso:
  *   node italgiure-query.js build --query "responsabilita medica" \
  *        [--materia civile|penale] [--anno 2024] [--tipo sentenza|ordinanza|decreto]
@@ -23,13 +30,37 @@ const ITALGIURE_BASE = 'https://www.italgiure.giustizia.it/sncass';
 const MATERIA_VALUES = ['civile', 'penale'];
 const TIPO_VALUES = ['sentenza', 'ordinanza', 'decreto'];
 
+// Forma di citazione: numero della decisione e anno.
+//   "Cass. n. 577/2008", "n. 577 del 2008"
+// Il marcatore "n." è obbligatorio in questa forma: senza, "L. 241/1990"
+// (una legge) verrebbe letta come numero di decisione.
+const CITATION_RE = /\bn(?:\.|°)?\s*(\d{1,6})\s*(?:\/|del|dell['’])\s*(\d{4})\b/i;
+// Forma abbreviata: il solo numero e l'anno, senza altro testo.
+const BARE_CITATION_RE = /^\s*(\d{1,6})\s*\/\s*(\d{4})\s*$/;
+
+/** Un oggetto JSON (non un array, non null). */
+function isPlainObject(value) {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/**
+ * Riconosce un input in forma di citazione (numero e anno).
+ * Restituisce null se l'input non è una citazione: in quel caso resta testo
+ * libero.
+ */
+function parseCitation(raw) {
+  const m = CITATION_RE.exec(raw) || BARE_CITATION_RE.exec(raw);
+  if (!m) return null;
+  return { numero: m[1], anno: m[2] };
+}
+
 /**
  * Costruisce il parametro `q` della query Solr.
  *
- * La semantica e' identica a buildSolrQuery() del server cassazione
- * (mcp-servers/cassazione/src/tools/italgiure-client.ts): se la query
- * contiene gia' sintassi Solr viene usata cosi', altrimenti e' trattata come
- * testo libero con prossimita' implicita.
+ * Se la query contiene già sintassi Solr viene usata così. Altrimenti:
+ * un input in forma di citazione ("Cass. n. 577/2008") diventa una ricerca
+ * per estremi con clausole fielded `numdec`/`anno`; tutto il resto è testo
+ * libero con prossimita' implicita.
  *
  * `materia` e `tipo` sono validati contro i rispettivi elenchi: un valore
  * sconosciuto fa fallire la costruzione invece di produrre una ricerca
@@ -45,9 +76,18 @@ function buildSolrQuery(opts) {
 
   const clauses = [];
 
-  if (raw.startsWith('(') || raw.includes(':') || raw.includes('~') ||
-      raw.includes('AND') || raw.includes('OR')) {
+  const sintassiSolr =
+    raw.startsWith('(') || raw.includes(':') || raw.includes('~') ||
+    raw.includes('AND') || raw.includes('OR');
+  // La sintassi Solr ha la precedenza: se il testo è già una query, la
+  // riconoscimento della citazione non deve toccarla.
+  const citazione = sintassiSolr ? null : parseCitation(raw);
+
+  if (sintassiSolr) {
     clauses.push(raw);
+  } else if (citazione) {
+    clauses.push('numdec:"' + citazione.numero + '"');
+    clauses.push('anno:"' + citazione.anno + '"');
   } else {
     const escaped = raw.replace(/([+\-!(){}[\]^"~*?:\\/])/g, '\\$1');
     clauses.push('(' + escaped + ')');
@@ -64,7 +104,17 @@ function buildSolrQuery(opts) {
   }
 
   if (input.anno && input.anno > 0) {
-    clauses.push('anno:"' + input.anno + '"');
+    if (citazione) {
+      if (String(input.anno) !== citazione.anno) {
+        throw new Error(
+          'buildSolrQuery: il filtro --anno ' + input.anno +
+          ' e\' in conflitto con l\'anno ' + citazione.anno + ' della citazione'
+        );
+      }
+      // L\'anno è già nella clausola della citazione: non duplicarlo.
+    } else {
+      clauses.push('anno:"' + input.anno + '"');
+    }
   }
 
   if (input.tipo) {
@@ -85,11 +135,31 @@ function buildSolrQuery(opts) {
 /**
  * Mappa la risposta Solr nella forma standard del plugin, identica a quella
  * di cassazione_search_massime.
+ *
+ * Fallisce esplicitamente quando il payload non e' una risposta Solr valida:
+ * `response` deve essere un oggetto, `response.docs` un array e
+ * `response.numFound` un numero. Un errore di trasporto o un corpo non JSON
+ * non è una ricerca senza risultati: restituire `totale: 0` farebbe credere
+ * all'avvocato che quei precedenti non esistano.
  */
 function formatResponse(payload) {
-  const response = (payload && payload.response) || {};
-  const docs = Array.isArray(response.docs) ? response.docs : [];
-  const totale = typeof response.numFound === 'number' ? response.numFound : docs.length;
+  if (!isPlainObject(payload)) {
+    throw new Error(invalidPayloadMessage(payload, 'il payload non è un oggetto JSON'));
+  }
+
+  const response = payload.response;
+  if (!isPlainObject(response)) {
+    throw new Error(invalidPayloadMessage(payload, 'manca l\'oggetto "response"'));
+  }
+  if (!Array.isArray(response.docs)) {
+    throw new Error(invalidPayloadMessage(payload, '"response.docs" non è un array'));
+  }
+  if (typeof response.numFound !== 'number' || !Number.isFinite(response.numFound)) {
+    throw new Error(invalidPayloadMessage(payload, '"response.numFound" non è un numero'));
+  }
+
+  const docs = response.docs;
+  const totale = response.numFound;
 
   const massime = docs.map(function (doc) {
     const d = doc || {};
@@ -123,6 +193,27 @@ function formatResponse(payload) {
   });
 
   return { totale: totale, massime: massime };
+}
+
+/**
+ * Messaggio di errore per un payload che non e' una risposta Solr valida.
+ * Include il campo `error` del payload, quando c'è: è l'unica indicazione
+ * utile su cosa abbia risposto il server.
+ */
+function invalidPayloadMessage(payload, dettaglio) {
+  let errore;
+  if (isPlainObject(payload)) {
+    if (payload.error !== undefined) {
+      errore = payload.error;
+    } else if (isPlainObject(payload.response) && payload.response.error !== undefined) {
+      errore = payload.response.error;
+    }
+  }
+  const dettaglioErrore = errore === undefined
+    ? ''
+    : ' (campo "error" del payload: ' + JSON.stringify(errore) + ')';
+  return 'formatResponse: risposta Solr non valida — la ricerca è FALLITA, non vuota (' +
+    dettaglio + ')' + dettaglioErrore;
 }
 
 /**
@@ -166,7 +257,7 @@ async function main() {
     try {
       payload = JSON.parse(raw);
     } catch (e) {
-      throw new Error('format: lo stdin non contiene JSON valido: ' + e.message);
+      throw new Error('format: lo stdin non contiene JSON valido — la ricerca è FALLITA, non vuota: ' + e.message);
     }
     process.stdout.write(JSON.stringify(formatResponse(payload), null, 2) + '\n');
     return;

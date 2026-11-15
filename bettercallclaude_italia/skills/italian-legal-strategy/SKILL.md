@@ -35,15 +35,22 @@ Sei uno specialista di strategia processuale italiana.
 
 **Fonti esterne dell'utente (opzionali)**
 
-Se `userConfig.fonti_esterne` è valorizzato, contiene i nomi delle banche dati
-giuridiche in abbonamento dell'utente (es. `buddalaw, simpliciter`). Per ogni
-nome:
+L'elenco delle banche dati in abbonamento dell'utente (es. `buddalaw,
+simpliciter`) arriva dal **testo del comando che invoca questa skill**: il
+comando interpola il placeholder dell'impostazione di plugin e riporta
+l'elenco nella sua clausola. Se nel testo ricevuto non compare alcun elenco,
+le fonti esterne sono **nessuna**: non chiedere all'utente i nomi delle banche
+dati e non ipotizzarne.
 
-1. verifica se il connettore corrispondente è presente in sessione;
-2. se è presente, interrogalo **in parallelo** ai server MCP, con gli stessi
+Per ogni nome che compare nel testo ricevuto:
+
+1. verifica che il connettore corrispondente sia effettivamente disponibile
+   nella sessione (gli host possono nascondere i tool che non compaiono
+   nell'allowlist);
+2. se è disponibile, interrogalo **in parallelo** ai server MCP, con gli stessi
    termini di ricerca;
-3. se non è presente, si prosegue senza errori e **senza dichiarare quella fonte
-   come consultata**: una fonte assente non è una fonte consultata.
+3. se non è disponibile, dillo e prosegue senza errori e **senza dichiarare
+   quella fonte come consultata**: una fonte assente non è una fonte consultata.
 
 Ogni pronuncia va etichettata con la banca dati di provenienza
 (`Fonte: BuddaLaw`, `Fonte: ItalGiure (SentenzeWeb pubblico)`, …), e in coda al

@@ -1,6 +1,6 @@
 ---
 name: italgiure-search
-description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al PDF. Attivazione quando serve un precedente di legittimità e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
+description: "Ricerca i precedenti della Corte di Cassazione interrogando l'indice pubblico SentenzeWeb dal PC dell'utente. La query parte dal computer dell'utente, non dal server BetterCallClaude: l'IP dei datacenter e' scartato da italgiure.giustizia.it. Restituisce estremi, sezione, data e link al documento (PDF o indice testuale). Attivazione quando serve un precedente di legittimità e la ricerca con il server MCP ha risposto con autenticazione.cookieValido false (il server non ha potuto interrogare ItalGiure). NON attivare per: ricerca normativa (usa italian-legal-research), verifica di citazioni esistenti (usa citation-content-verify), area riservata e massime complete (usa italgiure-browser)."
 tools:
   - Bash
   - Read
@@ -31,9 +31,14 @@ non parte nemmeno, con un cookie la connessione non raggiunge il servizio. Non �
 un timeout da aspettare: in entrambi i casi la ricerca va fatta dal computer
 dell'utente.
 
-Questa skill esegue la **stessa identica query** dalla macchina dell'utente, dove
+Questa skill esegue la **stessa query** dalla macchina dell'utente, dove
 l'IP e' ammesso. La risposta ha la stessa forma del tool server, cosi tutto a
 valle funziona senza modifiche.
+
+Sulla ricerca per estremi il client è **più preciso** del server: il server non
+poteva osservare la semantica della propria query, perché dal datacenter la
+fonte scarta la connessione. Qui la query per estremi usa le clausole fielded
+`numdec` e `anno` (vedi «Ricerca per estremi»).
 
 Vantaggio privacy: la ricerca **non transita dall'infrastruttura cloud di
 BetterCallClaude**. Il termine di ricerca va diretto al Ministero della Giustizia.
@@ -111,25 +116,67 @@ se i termini di ricerca contengono `AND` o `OR` maiuscoli, scrivili in minuscolo
 oppure formula la query in sintassi Solr esplicita: altrimenti la ricerca si
 comporta in modo inatteso.
 
+### Passo 1b — Ricerca per estremi (numero e anno)
+
+Quando l'utente chiede una decisione **per estremi** (`Cass. n. 577/2008`,
+`n. 577 del 2008`), non cercare per parole: passa la citazione al
+costruttore della query, che la riconosce e produce i campi `numdec` e `anno`.
+
+```bash
+node <SCRIPT> build --query "Cass. n. 577/2008"
+# numdec:"577" AND anno:"2008"
+```
+
+Un anno senza numero resta testo libero, e una query già in sintassi Solr
+passa invariata: in entrambi i casi niente da fare.
+
+Non aggiungere `--anno` con un anno diverso da quello della citazione: i due
+filtri si contraddirebbero e lo script fallisce. `--anno` con lo stesso anno
+della citazione non duplica la clausola.
+
+**Verifica prima di dichiarare che la decisione esiste**: confronta l'`estremi`
+di ogni risultato con il numero e l'anno richiesti (per esempio
+`Sez. III Sentenza n. 577 del 2008`). Solo se il numero e l'anno corrispondono
+a quelli chiesti puoi affermare che la decisione esiste; se gli estremi
+differiscono, la decisione richiesta non è stata trovata e non puoi
+presentare un'altra decisione al suo posto.
+
 ### Passo 2 — Interroga l'indice
 
 ```bash
 Q=$(node <SCRIPT> build --query "TERMINE DI RICERCA" --materia civile)
 
-curl -sS -k -m 30 -X POST \
+BODY=$(curl -sS -k --fail-with-body -m 30 -X POST \
   "https://www.italgiure.giustizia.it/sncass/isapi/hc.dll/sn.solr/sn-collection/select?app.query" \
   -H "Content-Type: application/x-www-form-urlencoded" \
   --data-urlencode "q=$Q" \
-  --data "rows=20&start=0&wt=json&fl=id,filename,szdec,tipoprov,datdec,numdec,anno,kind,datdep&sort=pd desc,datdec desc" \
-  | node <SCRIPT> format
+  --data "rows=20&start=0&wt=json&fl=id,filename,szdec,tipoprov,datdec,numdec,anno,kind,datdep&sort=pd desc,datdec desc")
+CODICE=$?
+
+printf '%s' "$BODY" | node <SCRIPT> format
 ```
 
 Note sulla invocazione:
 
-- `-k`: l'host presenta una catena di certificazione non standard. Il server MCP
-  fa lo stesso (`rejectUnauthorized: false`).
-- `-m 30`: timeout esplicito. Se la `curl` va in timeout, l'IP corrente non e'
-  ammesso: vedi «Se la ricerca fallisce».
+- `--fail-with-body`: su un errore HTTP (4xx/5xx) la `curl` esce con codice 22
+  **e** lascia il corpo della risposta nello stdout: il corpo dell'errore
+  arriva al formatter, che lo dichiara come ricerca fallita invece di
+  trasformarlo in un risultato vuoto. Senza questo flag la `curl` uscirebbe
+  con 0 anche su un errore HTTP.
+- `CODICE=$?`: è il codice di uscita della `curl`. **Controllalo prima di
+  interpretare l'output**: se non è 0, la ricerca è fallita (vedi «Se la
+  ricerca fallisce») e non va riportata come `totale: 0`. Esegui il blocco
+  qui sopra come un unico comando: `$?` vale solo se la `curl` è eseguita nella
+  stessa invocazione di shell.
+- `-k`: l'host presenta una catena di certificazione non standard e la CA non è
+  ottenibile, quindi il flag resta: toglierlo romperebbe l'unico canale
+  funzionante. Il server MCP fa lo stesso (`rejectUnauthorized: false`).
+  **Limite di fiducia**: la connessione non è autenticata crittograficamente,
+  i termini di ricerca viaggiano in chiaro verso l'host e la risposta non è
+  verificata. Per ricerche che decidono una controversia usa la modalità
+  browser (`italgiure-browser`), che usa la catena TLS del browser.
+- `-m 30`: timeout esplicito. Se la `curl` esce con codice 28, l'IP corrente
+  non è ammesso: vedi «Se la ricerca fallisce».
 - `curl` e non `node script.js`: l'hook privacy del plugin intercetta `curl` e i
   comandi di rete, e lascia passare i file locali. Usando `curl` la ricerca resta
   dentro il perimetro di controllo del segreto professionale.
@@ -141,8 +188,10 @@ Note sulla invocazione:
 Assegna l'output del Passo 1 alla variabile `Q`, e sostituisci `rows`/`start` con
 la paginazione richiesta (20 risultati per pagina, `start = (pagina - 1) * 20`).
 
-Se lo script non e' disponibile, ometti la pipe finale: la `curl` restituisce il
-JSON grezzo di Solr, e mappalo con la tabella sotto.
+Se lo script non e' disponibile, ometti la pipe finale e mappa tu `$BODY` con la
+tabella sotto: prima controlla `$CODICE` e verifica che `$BODY` sia un JSON Solr
+valido (`response.docs` array, `response.numFound` numero). Se il codice non è 0
+o il corpo non è un JSON Solr valido, la ricerca è **fallita**, non vuota.
 
 ### Passo 3 — Presenta i risultati
 
@@ -158,7 +207,7 @@ JSON grezzo, mappalo con questa tabella:
 | `tipoprov` | `tipo` | |
 | `datdec` | `dataDecisione` | |
 | `datdep[0]` | `dataDeposito` | solo se presente |
-| `filename[0]` | `urlPdf` | `https://www.italgiure.giustizia.it/sncass/{filename[0] senza il ./ iniziale}` |
+| `filename[0]` | `urlPdf` | `https://www.italgiure.giustizia.it/sncass/{filename[0] senza il ./ iniziale}`: è il link al documento, che può essere un PDF o un indice testuale `.txt` |
 
 La forma standard e':
 
@@ -182,22 +231,29 @@ La forma standard e':
 I valori qui sono segnaposto: nella risposta reale contengono i dati del
 documento, non dei valori di esempio.
 
+`urlPdf` è il nome del campo (il contratto con `cassazione_search_massime`),
+ma non promettere un PDF: è il link al documento, e sull'indice pubblico è
+spesso un indice testuale `.txt`. Presentalo come «link al documento» e non
+come «scarica il PDF».
+
 Per ogni precedente, indica la provenienza: `Fonte: ItalGiure (SentenzeWeb pubblico)`.
 Non attribuire a questa ricerca le **massime** (il testo della massima): l'indice
 pubblico non le espone. Se servono le massime o gli Rv., serve l'area riservata.
 
 ## Se la ricerca fallisce
 
+I tre casi sono distinti e non vanno confusi: un canale bloccato, una ricerca
+fallita e una ricerca senza risultati sono tre fatti diversi.
+
 | Sintomo | Cosa significa | Cosa fare |
 |---|---|---|
-| `curl` va in timeout | l'IP corrente non e' ammesso da ItalGiure | leggi prima lo stderr di `curl`: se riporta `(28)` e' un timeout (canale bloccato), non un problema di formato; poi offri la modalita' browser (`italgiure-browser`) e i link di ricerca manuale. L'errore di JSON che segue e' una conseguenza del timeout, non un problema diverso |
-| `curl` restituisce HTML invece di JSON | la risposta non e' del Solr (redirection o blocco) | verifica l'URL, prova `-k` senza flag di header, e offri la modalita' browser |
-| `totale: 0` | la ricerca e' andata a buon fine, non ci sono risultati | nessun errore: riporta che non ci sono precedenti per quei termini, e prova con la ricerca per estremi |
-| errore di JSON (la `curl` ha risposto) | risposta troncata o non-JSON | riprova con `rows` piu' piccolo |
+| la `curl` esce con codice 28 (timeout) | l'IP corrente non è ammesso da ItalGiure | leggi lo stderr della `curl`: il codice `(28)` è un timeout (canale bloccato), non un problema di formato; poi offri la modalità browser (`italgiure-browser`) e i link di ricerca manuale. L'errore di JSON che segue è una conseguenza del timeout, non un problema diverso |
+| la `curl` esce con un codice diverso da 0 (22 su errore HTTP, 28 su timeout) oppure il formatter segnala un payload non valido | la ricerca è **FALLITA**: non è una ricerca vuota | leggi il corpo che la `curl` ha stampato (`--fail-with-body` lo conserva): se c'è un campo `error` riportalo; se è HTML, JSON non valido o troncato, verifica l'URL e riprova con `rows` più piccolo, poi offri la modalità browser. **Non** riportare `totale: 0`: la ricerca non è arrivata a compimento |
+| `totale: 0` | la ricerca è andata a buon fine, non ci sono risultati | nessun errore: riporta che non ci sono precedenti per quei termini, e prova con la ricerca per estremi |
 
-Il messaggio all'utente deve dire chiaramente **quale** dei due casi e': canale
-irraggiungibile (timeout) oppure nessun risultato (totale 0). Sono problemi
-diversi e non vanno confusi.
+Il messaggio all'utente deve dire chiaramente **quale** dei tre casi è: canale
+bloccato per IP (timeout), ricerca fallita (errore HTTP o JSON non valido)
+oppure nessun risultato (`totale: 0`).
 
 Nota: questa modalita' copre gli utenti su IP ammesso (in Italia). Coprire anche
 gli utenti fuori dall'Italia richiede che il server abbia un'uscita in Italia:
