@@ -179,14 +179,18 @@ if (contents.skill) {
     }
   }
 
-  // Niente tool browser hardcoded nella skill (tool generici consentiti).
-  const genericTools = ['Read', 'Grep', 'Glob', 'Bash', 'WebSearch', 'WebFetch'];
+  // La skill deve avere ESATTAMENTE i tool generici previsti dal brief.
+  const allowedSkillTools = ['Read', 'Grep', 'Glob', 'Bash'];
   const fm = parseFrontmatter(skill);
   if (fm && fm.tools) {
-    for (const t of fm.tools) {
-      if (!genericTools.includes(t)) {
-        err(skillFile, fm._line.tools || 1, `tool non generico nella skill: ${t}`);
-      }
+    const missing = allowedSkillTools.filter((t) => !fm.tools.includes(t));
+    const extra = fm.tools.filter((t) => !allowedSkillTools.includes(t));
+    if (missing.length || extra.length) {
+      err(
+        skillFile,
+        fm._line.tools || 1,
+        `la skill deve avere esattamente i tool ${allowedSkillTools.join(', ')} (mancanti: ${missing.join(', ')}, extra: ${extra.join(', ')})`
+      );
     }
   }
 }
@@ -208,13 +212,18 @@ if (contents.command) {
     }
   }
 
-  const allowedCommandTools = ['Read', 'Grep', 'Glob', 'Bash', 'Task', 'WebSearch', 'WebFetch'];
+  // Il comando deve avere ESATTAMENTE i tool previsti dal brief.
+  const allowedCommandTools = ['Read', 'Grep', 'Glob', 'Bash', 'Task'];
   const fm = parseFrontmatter(command);
   if (fm && fm.tools) {
-    for (const t of fm.tools) {
-      if (!allowedCommandTools.includes(t)) {
-        err(commandFile, fm._line.tools || 1, `tool non previsto nel comando: ${t}`);
-      }
+    const missing = allowedCommandTools.filter((t) => !fm.tools.includes(t));
+    const extra = fm.tools.filter((t) => !allowedCommandTools.includes(t));
+    if (missing.length || extra.length) {
+      err(
+        commandFile,
+        fm._line.tools || 1,
+        `il comando deve avere esattamente i tool ${allowedCommandTools.join(', ')} (mancanti: ${missing.join(', ')}, extra: ${extra.join(', ')})`
+      );
     }
   }
 }
@@ -226,13 +235,18 @@ if (contents.agent) {
   const agent = contents.agent;
   const agentFile = files.agent;
 
-  const allowedAgentTools = ['Read', 'Grep', 'Glob', 'Bash', 'WebSearch', 'WebFetch'];
+  // L'agent deve avere ESATTAMENTE i tool generici previsti dal brief.
+  const allowedAgentTools = ['Read', 'Grep', 'Glob', 'Bash'];
   const fm = parseFrontmatter(agent);
   if (fm && fm.tools) {
-    for (const t of fm.tools) {
-      if (!allowedAgentTools.includes(t)) {
-        err(agentFile, fm._line.tools || 1, `tool browser o non previsto nell\'agent: ${t}`);
-      }
+    const missing = allowedAgentTools.filter((t) => !fm.tools.includes(t));
+    const extra = fm.tools.filter((t) => !allowedAgentTools.includes(t));
+    if (missing.length || extra.length) {
+      err(
+        agentFile,
+        fm._line.tools || 1,
+        `l\'agent deve avere esattamente i tool ${allowedAgentTools.join(', ')} (mancanti: ${missing.join(', ')}, extra: ${extra.join(', ')})`
+      );
     }
   }
 

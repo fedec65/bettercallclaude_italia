@@ -6,8 +6,6 @@ tools:
   - Grep
   - Glob
   - Bash
-  - WebSearch
-  - WebFetch
 ---
 
 # Ricerca web su portali protetti

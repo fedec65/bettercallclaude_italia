@@ -6,8 +6,6 @@ tools:
   - Glob
   - Bash
   - Task
-  - WebSearch
-  - WebFetch
 ---
 
 # /bettercallclaude-italia:ricerca-web

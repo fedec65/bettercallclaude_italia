@@ -344,7 +344,7 @@ t('rifiuta l\'agent con tool browser hardcoded', () => {
   const dir = fixture(fullFixture({ agent: bad }));
   const r = run(dir);
   assert.strictEqual(r.code, 1);
-  assert.ok(r.output.includes('browser'), 'got:\n' + r.output);
+  assert.ok(r.output.includes('mcp__chrome-devtools__navigate_page'), 'got:\n' + r.output);
 });
 
 t('rifiuta l\'agent che non dichiara la raccolta in sessione principale', () => {
@@ -353,6 +353,16 @@ t('rifiuta l\'agent che non dichiara la raccolta in sessione principale', () => 
   const r = run(dir);
   assert.strictEqual(r.code, 1);
   assert.ok(r.output.includes('sessione principale'), 'got:\n' + r.output);
+});
+
+console.log('check-ricerca-web: tool esatti');
+
+t('rifiuta WebSearch nella skill (out of scope per il canale browser)', () => {
+  const bad = skill().replace('  - Bash\n---', '  - Bash\n  - WebSearch\n---');
+  const dir = fixture(fullFixture({ skill: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1, 'il validatore deve uscire con codice 1');
+  assert.ok(r.output.includes('WebSearch'), 'got:\n' + r.output);
 });
 
 console.log('check-ricerca-web: fixture valida');

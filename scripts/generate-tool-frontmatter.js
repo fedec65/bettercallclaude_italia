@@ -74,6 +74,14 @@ const COMMAND_SKILL_MAP = {
 
 const GENERIC_TOOLS = ['Read', 'Grep', 'Glob', 'Bash', 'WebSearch', 'WebFetch'];
 
+// Eccezioni per-artifact: la skill di ricerca su portali protetti usa esclusivamente
+// il browser dell'utente; WebSearch/WebFetch (ricerca web pubblica) sono esplicitamente
+// out of scope. L'eccezione sovrascrive la lista generica per questi file soli.
+const TOOL_EXCEPTIONS = {
+  'bettercallclaude_italia/skills/legal-web-research/SKILL.md': ['Read', 'Grep', 'Glob', 'Bash'],
+  'bettercallclaude_italia/commands/ricerca-web.md': ['Read', 'Grep', 'Glob', 'Bash', 'Task'],
+};
+
 function readFile(p) {
   return fs.readFileSync(p, 'utf8');
 }
@@ -188,14 +196,16 @@ function commandTools(cmdFile) {
   return [...tools];
 }
 
-function insertToolsIntoFrontmatter(content, tools) {
+function insertToolsIntoFrontmatter(content, tools, replace = false) {
   const fmMatch = content.match(/^---\n([\s\S]*?)\n---\n/);
   if (!fmMatch) return null;
 
   const rest = content.slice(fmMatch[0].length);
 
-  // Drop the existing tools: block but keep its entries: regeneration is a
-  // union (computed ∪ existing) and never removes previously granted tools.
+  // Drop the existing tools: block. By default regeneration is a union
+  // (computed ∪ existing) and never removes previously granted tools.
+  // When `replace` is true, existing entries are discarded so the exception
+  // can enforce an exact allow-list.
   const oldLines = fmMatch[1].split('\n');
   const existing = [];
   const lines = [];
@@ -206,7 +216,7 @@ function insertToolsIntoFrontmatter(content, tools) {
       continue;
     }
     if (skippingTools && /^  - /.test(line)) {
-      existing.push(line.replace(/^  - /, ''));
+      if (!replace) existing.push(line.replace(/^  - /, ''));
       continue;
     }
     skippingTools = false;
@@ -234,9 +244,9 @@ function insertToolsIntoFrontmatter(content, tools) {
   return `---\n${lines.join('\n')}\n---\n${rest}`;
 }
 
-function processFile(filePath, tools) {
+function processFile(filePath, tools, replace = false) {
   const content = readFile(filePath);
-  const updated = insertToolsIntoFrontmatter(content, tools);
+  const updated = insertToolsIntoFrontmatter(content, tools, replace);
   if (!updated) {
     console.error(`Could not parse frontmatter: ${filePath}`);
     return false;
@@ -268,17 +278,33 @@ for (const agentFile of fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'))
 for (const skillDir of fs.readdirSync(skillsDir)) {
   const skillPath = path.join(skillsDir, skillDir, 'SKILL.md');
   if (!fs.existsSync(skillPath)) continue;
-  const { resolved } = analyzeFile(skillPath);
-  const tools = new Set(GENERIC_TOOLS);
-  for (const fq of fqForServers(serversFromResolved(resolved))) tools.add(fq);
-  if (processFile(skillPath, [...tools])) ok++;
+  const rel = path.relative(root, skillPath);
+  let tools;
+  let replace = false;
+  if (TOOL_EXCEPTIONS[rel]) {
+    // Eccezione: lista esatta, senza aggiunte generiche.
+    tools = TOOL_EXCEPTIONS[rel];
+    replace = true;
+  } else {
+    const { resolved } = analyzeFile(skillPath);
+    tools = new Set(GENERIC_TOOLS);
+    for (const fq of fqForServers(serversFromResolved(resolved))) tools.add(fq);
+    tools = [...tools];
+  }
+  if (processFile(skillPath, tools, replace)) ok++;
   else fail++;
 }
 
 for (const cmdFile of fs.readdirSync(commandsDir).filter(f => f.endsWith('.md'))) {
   const cmdPath = path.join(commandsDir, cmdFile);
-  if (processFile(cmdPath, commandTools(cmdPath))) ok++;
-  else fail++;
+  const rel = path.relative(root, cmdPath);
+  if (TOOL_EXCEPTIONS[rel]) {
+    if (processFile(cmdPath, TOOL_EXCEPTIONS[rel], true)) ok++;
+    else fail++;
+  } else {
+    if (processFile(cmdPath, commandTools(cmdPath))) ok++;
+    else fail++;
+  }
 }
 
 console.log(`\nDone: ${ok} ok, ${fail} failed`);
