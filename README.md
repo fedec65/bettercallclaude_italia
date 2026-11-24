@@ -13,7 +13,7 @@ Marketplace per l'installazione del plugin **BetterCallClaude Italia** su Cowork
 
 Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Cassazione, strategia di causa, redazione legale, verifica delle citazioni e flussi di lavoro personalizzati in tutte le 20 regioni italiane, con protezione integrata del segreto professionale (Art. 622 CP + L. 247/2012).
 
-**22 agenti · 31 comandi · 18 skill · 9 server MCP**
+**22 agenti · 31 comandi · 18 skill · Server MCP: 10 (9 remoti + wrapper ollama locale opzionale)**
 
 ---
 

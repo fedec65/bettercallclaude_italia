@@ -19,7 +19,7 @@ Specialista italiano di ricerca web in sola lettura su fonti legali protette da 
 
 ## Gate privacy (prima di tutto)
 
-Risolvi la modalità con le stesse regole di `bettercallclaude_italia/scripts/privacy-check.js:145-178`:
+Risolvi la modalità con le stesse regole di `scripts/privacy-check.js:145-178`:
 
 1. Leggi la variabile d'ambiente `CLAUDE_PLUGIN_OPTION_PRIVACY_MODE` e, in fallback, il campo `privacy_mode` della configurazione utente.
 2. Il file `.privacy-mode` nella cartella di lavoro può solo **alzare** la severità rispetto alla modalità già risolta: un valore locale `cloud` non può mai annullare una modalità più restrittiva.
@@ -41,6 +41,8 @@ Cerca il playbook locale nell'ordine di precedenza usato da `commands/triage-nda
 4. Nessun file trovato → usa i default italiani e avvisa l'utente.
 
 Leggi la sezione `## Siti consentiti per la ricerca web` (o, se il playbook è in inglese, `## Allowed Sites for Web Research`):
+
+Per il confronto normalizza l'host di destinazione: minuscolo, senza `www.` e senza path. Un dominio elencato copre solo quel host; un sottodominio diverso richiede conferma se non è a sua volta elencato.
 
 - Se il dominio di destinazione è elencato, aprilo senza chiedere conferma sul sito.
 - Se il dominio non è elencato, o se il playbook/sezione manca, chiedi conferma prima di aprire.
