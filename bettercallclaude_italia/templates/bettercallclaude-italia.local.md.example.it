@@ -46,3 +46,14 @@
 - **Lingua citazioni**: Italiano
 - **Cartella output**: bcc-output
 - **Lunghezza default**: medio
+
+## Siti consentiti per la ricerca web
+
+- **Elenco**:
+  - italgiure.giustizia.it
+  - [dominio del servizio a pagamento dello studio]
+- **Domini non in elenco**: chiedere conferma prima di aprirli
+
+Gli elementi dell'elenco sono nomi host (minuscoli, senza `www.` e senza path).
+
+Questo playbook non contiene mai credenziali.

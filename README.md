@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.5.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -13,9 +13,14 @@ Marketplace per l'installazione del plugin **BetterCallClaude Italia** su Cowork
 
 Il plugin offre intelligenza legale italiana — ricerca sui precedenti della Cassazione, strategia di causa, redazione legale, verifica delle citazioni e flussi di lavoro personalizzati in tutte le 20 regioni italiane, con protezione integrata del segreto professionale (Art. 622 CP + L. 247/2012).
 
-**21 agenti · 30 comandi · 17 skill · 9 server MCP**
+**22 agenti · 31 comandi · 18 skill · Server MCP: 10 (9 remoti + wrapper ollama locale opzionale)**
 
 ---
+
+## Novità della v2.6.0
+
+- **Ricerca web su portali protetti da login** — nuova skill `legal-web-research`, agente `web-research-specialist` e comando `/bettercallclaude-italia:ricerca-web <sito> <domanda>`. La ricerca avviene nel browser dell'utente, con login **manuale**: il plugin non legge, digita o conserva credenziali. Gate di privacy (strict/balanced/cloud) e allow-list dei siti nel playbook locale.
+- **`italgiure-browser` resta il riferimento per l'area riservata ItalGiure** (limiti più stretti: 3-5 interrogazioni per sessione, risultati non salvati); la nuova skill vi rimanda e copre gli altri portali.
 
 ## Novità della v2.4.0
 

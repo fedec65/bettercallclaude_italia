@@ -23,12 +23,18 @@ BetterCallClaude Italia vX.Y.Z
 
 ```
 Componenti:
-- Agenti: 21
-- Comandi: 30
-- Skill: 16 (+1 risorsa condivisa)
+- Agenti: 22
+- Comandi: 31
+- Skill: 19 (+1 risorsa condivisa)
 - Server MCP: 10 (9 remoti + wrapper ollama locale opzionale)
 
-Intelligenza Legale Italiana per il mercato italiano.
+Funzionalita principali:
+- Ricerca legale su Cassazione e normativa italiana
+- Ricerca web su portali protetti da login (browser dell'utente, login manuale)
+- Strategia processuale e analisi avversariale
+- Redazione documenti legali e verifica citazioni
+- Mappe decisionali per pratiche grandi e workflow personalizzati
+- Assistenza al rilevamento del segreto professionale (Art. 622 CP)
 ```
 
 $ARGUMENTS

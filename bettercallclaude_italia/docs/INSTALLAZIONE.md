@@ -119,6 +119,37 @@ I 5 tool (`ollama_check_status`, `ollama_generate`, `ollama_chat`, `ollama_class
 
 ---
 
+## Ricerca web su portali protetti
+
+Il comando `/bettercallclaude-italia:ricerca-web` permette di cercare in sola lettura su portali legali che richiedono login (banche dati dottrinali, commentari a pagamento, servizi in abbonamento dello studio).
+
+### Come autorizzare i siti
+
+I siti apribili dal comando sono controllati dall'allow-list nel playbook locale (`bettercallclaude-italia.local.md`):
+
+```markdown
+## Siti consentiti per la ricerca web
+
+- **Elenco**:
+  - www.italgiure.giustizia.it
+  - [dominio del servizio a pagamento dello studio]
+- **Domini non in elenco**: chiedere conferma prima di aprirli
+```
+
+- I domini in elenco vengono aperti senza ulteriore conferma.
+- I domini non in elenco richiedono una conferma esplicita dell'utente.
+- Dopo una conferma positiva, il plugin propone di aggiungere il dominio alla lista, modificando **solo** quella sezione del playbook.
+
+### Login sempre manuale
+
+Il plugin **non legge, digita o conserva credenziali**. Quando il browser atterra su una pagina di login, il plugin si ferma e chiede all'utente di accedere manualmente; dopo il login, l'utente comunica al plugin di procedere. PIN, codici 2FA e cookie di sessione restano nel browser dell'utente.
+
+### Connettore browser
+
+La ricerca web richiede un connettore browser fornito dall'host (Claude Code, Cowork Desktop o altro). I tool del connettore sono strumenti di host e possono risultare non visibili nelle sessioni in cui l'host filtra per l'allow-list del plugin. Se il browser non è disponibile, il comando proporrà di incollare il testo rilevante o caricare un documento, oppure di abilitare il connettore per la sessione e riprovare.
+
+---
+
 ## Problemi Comuni
 
 | Problema | Soluzione |
@@ -142,7 +173,7 @@ Se `/doctor` segnala **tutti** i server come non connessi, il problema quasi mai
 
 ## Comandi Disponibili
 
-Dopo l'installazione, puoi usare tutti i 30 comandi italiani. Digita `/bettercallclaude-italia:aiuto` per la lista completa.
+Dopo l'installazione, puoi usare tutti i 31 comandi italiani. Digita `/bettercallclaude-italia:aiuto` per la lista completa.
 
 ---
 

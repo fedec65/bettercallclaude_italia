@@ -30,16 +30,19 @@ Output brevi (citazione, verifica, raffina, versione, aiuto, privacy, riassumi -
   YYYY-MM-DD-<slug>/
     01-intake.md
     02-ricerca.md
+    02-ricerca-web.md
     03-strategia.md
     04-contraddittorio.md
     05-bozza-<documento>.md   (o .docx per redline)
     fonti.md
+    fonti-web.md
 ```
 
 - **`bcc-output`** e il nome cartella predefinito. L'utente puo cambiarlo nel playbook locale (`bettercallclaude-italia.local.md`) sotto "Stile e formato" -> preferenza cartella output.
 - La **sottocartella con data-slug** usa il formato `YYYY-MM-DD-<breve-descrizione>` (es. `2026-06-01-triage-nda-rossi`).
 - La **numerazione** segue le fasi di `/legale-5step`. I comandi eseguiti singolarmente scrivono solo i file pertinenti nella stessa struttura.
-- **`fonti.md`** e sempre presente quando sono stati usati server MCP: elenca ogni fonte consultata con data di verifica -- questa e la traccia documentale per la due diligence.
+- **`02-ricerca.md`** e la ricerca via server MCP; **`02-ricerca-web.md`** e la ricerca su portali protetti con login umano.
+- **`fonti.md`** e la traccia delle fonti consultate via server MCP; **`fonti-web.md`** e la traccia delle fonti raccolte dal browser su portali protetti. Entrambi sono la documentazione per la due diligence.
 
 ## Formati File
 
