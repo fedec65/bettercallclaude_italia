@@ -76,12 +76,14 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | advocate | Costruisce caso pro-posizione |
 | adversary | Sfida posizioni giuridiche |
 
-## Skill (17)
+## Skill (19)
 
 | Skill | Scopo |
 |-------|---------|
 | italian-legal-research | Ricerca precedenti Cassazione + routing giurisdizionale |
 | legal-web-research | Ricerca in sola lettura su portali legali protetti da login |
+| italgiure-search | Ricerca nell'indice pubblico ItalGiure (massime Cassazione) |
+| italgiure-browser | Interrogazione area riservata ItalGiure dal browser autenticato |
 | italian-legal-translation | Traduzione giuridica IT/EN |
 | italian-legal-drafting | Redazione documenti + integrazione playbook |
 | compliance-frameworks | Valutazione conformita regolamentare |

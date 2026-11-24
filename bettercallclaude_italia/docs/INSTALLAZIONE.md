@@ -144,6 +144,10 @@ I siti apribili dal comando sono controllati dall'allow-list nel playbook locale
 
 Il plugin **non legge, digita o conserva credenziali**. Quando il browser atterra su una pagina di login, il plugin si ferma e chiede all'utente di accedere manualmente; dopo il login, l'utente comunica al plugin di procedere. PIN, codici 2FA e cookie di sessione restano nel browser dell'utente.
 
+### Connettore browser
+
+La ricerca web richiede un connettore browser fornito dall'host (Claude Code, Cowork Desktop o altro). I tool del connettore sono strumenti di host e possono risultare non visibili nelle sessioni in cui l'host filtra per l'allow-list del plugin. Se il browser non è disponibile, il comando proporrà di incollare il testo rilevante o caricare un documento, oppure di abilitare il connettore per la sessione e riprovare.
+
 ---
 
 ## Problemi Comuni

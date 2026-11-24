@@ -9,7 +9,7 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 22 agenti, 31 comandi, 18 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, ricerca web su portali protetti da login, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane. Per chi preferisce elaborare contenuti soggetti al segreto professionale on-premise, il plugin include opzionalmente un wrapper locale Ollama (5 tool); la sua attivazione è una scelta dell’avvocato (è sufficiente installare Ollama e avviare `ollama serve`).
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 22 agenti, 31 comandi, 19 skill e 10 server MCP che coprono ricerca sui precedenti della Cassazione, ricerca web su portali protetti da login, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane. Per chi preferisce elaborare contenuti soggetti al segreto professionale on-premise, il plugin include opzionalmente un wrapper locale Ollama (5 tool); la sua attivazione è una scelta dell’avvocato (è sufficiente installare Ollama e avviare `ollama serve`).
 
 ---
 
@@ -227,11 +227,13 @@ Per istruzioni dettagliate: [docs/cassazione-cookie.md](docs/cassazione-cookie.m
 
 Il comando `/bettercallclaude-italia:ricerca-web` può aprire nel browser dell'utente solo i siti elencati nel playbook locale (`bettercallclaude-italia.local.md`), sezione `## Siti consentiti per la ricerca web`:
 
-- `www.italgiure.giustizia.it` è consentita di default solo per navigazione generica; per l'area riservata ItalGiure vale la skill `italgiure-browser`.
+- `www.italgiure.giustizia.it` è pre-compilata nel template del playbook come consentita per navigazione generica; per l'area riservata ItalGiure vale la skill `italgiure-browser`.
 - I domini dei servizi a pagamento dello studio vanno aggiunti esplicitamente all'elenco.
 - I domini non in elenco richiedono conferma prima di ogni apertura.
 
 **Il login è sempre manuale**. Il plugin non legge, digita o conserva credenziali, cookie di sessione, PIN o codici 2FA. L'utente effettua l'accesso nella propria finestra del browser e comunica al plugin quando ha finito.
+
+**Connettore browser**: la ricerca web richiede un connettore browser fornito dall'host (Claude Code, Cowork Desktop o altro). I tool del connettore sono strumenti di host e possono risultare non visibili nelle sessioni in cui l'host filtra per l'allow-list del plugin. Se il browser non è disponibile, il comando proporrà di incollare il testo rilevante o caricare un documento, oppure di abilitare il connettore per la sessione e riprovare.
 
 Per aggiungere un dominio: chiedi a `/bettercallclaude-italia:ricerca-web` di cercare sul sito desiderato; dopo la conferma esplicita, il plugin propone di aggiornare la sezione allow-list del playbook.
 

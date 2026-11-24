@@ -25,7 +25,7 @@ BetterCallClaude Italia vX.Y.Z
 Componenti:
 - Agenti: 22
 - Comandi: 31
-- Skill: 17 (+1 risorsa condivisa)
+- Skill: 19 (+1 risorsa condivisa)
 - Server MCP: 10 (9 remoti + wrapper ollama locale opzionale)
 
 Funzionalita principali:

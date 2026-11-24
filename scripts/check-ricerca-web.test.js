@@ -46,13 +46,15 @@ function cleanupTempDirs() {
   }
 }
 
-function fixture(files) {
+function fixture(files, opts = {}) {
   const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'bcc-ricercaweb-'));
   tempDirs.push(dir);
   for (const rel of Object.keys(files)) {
     const p = path.join(dir, rel);
     fs.mkdirSync(path.dirname(p), { recursive: true });
-    fs.writeFileSync(p, files[rel], 'utf8');
+    let content = files[rel];
+    if (opts.crlf) content = content.replace(/\n/g, '\r\n');
+    fs.writeFileSync(p, content, 'utf8');
   }
   return dir;
 }
@@ -84,6 +86,11 @@ function skill(extra = '') {
     '',
     '# Ricerca web su portali protetti',
     '',
+    '## Ambito',
+    '',
+    '- **Nel campo**: siti nominati dall\'utente, portali di dottrina, servizi legali a sottoscrizione.',
+    '- **Fuori campo**: dati pubblici disponibili tramite i server MCP.',
+    '',
     '## Gate privacy',
     '',
     'Risolvi la modalita con `CLAUDE_PLUGIN_OPTION_PRIVACY_MODE`, `privacy_mode`',
@@ -95,11 +102,26 @@ function skill(extra = '') {
     'Leggi la sezione `## Siti consentiti per la ricerca web` dal playbook',
     '`bettercallclaude-italia.local.md`.',
     '',
+    '## Apertura del sito',
+    '',
+    'Usa i tool di browser disponibili nella sessione. Il connettore è fornito',
+    'dall\'host: i suoi tool non compaiono nel blocco `tools:` di questa skill.',
+    'Se nessun browser è visibile in questa sessione, fermati e suggerisci:',
+    'l\'avvocato incolla il testo rilevante o carica un documento.',
+    '',
+    'Dopo ogni redirect, se il browser atterra su un dominio non approvato,',
+    'fermati e chiedi consenso prima di leggere o usare quella pagina.',
+    '',
+    '## Area riservata ItalGiure',
+    '',
+    'Per l\'area riservata ItalGiure delega alla skill `italgiure-browser`.',
+    'Non scrivere i file di memoria/fonti e non delegare a `web-research-specialist`;',
+    'non salvare i risultati su disco.',
+    '',
     '## Login e condotta',
     '',
     'Non leggere i campi password, non digitare credenziali o codici 2FA, non',
-    'bypassare CAPTCHA, anti-bot o paywall. Per l\'area riservata ItalGiure usa',
-    'la skill `italgiure-browser`.',
+    'bypassare CAPTCHA, anti-bot o paywall.',
     '',
     '## Consegna',
     '',
@@ -124,13 +146,15 @@ function agent(extra = '') {
     '  - Bash',
     '---',
     '',
-    '# Web Research Specialist',
+    '# Specialista di sintesi per la ricerca web',
     '',
     'Navigazione, login e raccolta avvengono nella sessione principale.',
     'Ricevo `sito`, `domanda` e `materiale` con provenienza. Senza materiale non',
     'navigo e chiedo che la raccolta venga fatta in sessione. Scrivo',
     '`02-ricerca-web.md` e `fonti-web.md` notando che raccolta e login sono',
     'avvenuti in sessione principale.',
+    '',
+    'Se il materiale proviene dall\'area riservata ItalGiure, non scrivere su disco: restituiscilo in chat.',
     '',
     extra,
     '',
@@ -154,6 +178,15 @@ function command(extra = '') {
     'Invocazione: `/bettercallclaude-italia:ricerca-web <sito> <domanda>`.',
     'Navigazione e login restano nella sessione principale. Output:',
     '`02-ricerca-web.md` e `fonti-web.md`.',
+    '',
+    'Il connettore browser è fornito dall\'host e il suo tool può risultare',
+    'non visibile in questa sessione. Se non è disponibile, fermati e suggerisci:',
+    'l\'avvocato incolla il testo rilevante o carica un documento.',
+    '',
+    'Per l\'area riservata ItalGiure usa `italgiure-browser`: non scrivere i file di memoria/fonti e non delegare la sintesi a `web-research-specialist`.',
+    '',
+    'Dopo ogni redirect, se si atterra su un dominio non approvato, fermati e',
+    'chiedi consenso prima di leggere o usare quella pagina.',
     '',
     extra,
     '',
@@ -363,6 +396,88 @@ t('rifiuta WebSearch nella skill (out of scope per il canale browser)', () => {
   const r = run(dir);
   assert.strictEqual(r.code, 1, 'il validatore deve uscire con codice 1');
   assert.ok(r.output.includes('WebSearch'), 'got:\n' + r.output);
+});
+
+console.log('check-ricerca-web: review Devin PR #69');
+
+t('rifiuta la skill senza avviso sul connettore nascosto', () => {
+  const bad = skill().replace(/connettore/g, '').replace(/non sono elencati/g, '');
+  const dir = fixture(fullFixture({ skill: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('connettore'), 'got:\n' + r.output);
+});
+
+t('rifiuta la skill senza fallback incolla/carica', () => {
+  const bad = skill().replace(/incolla il testo/g, '').replace(/carica un documento/g, '');
+  const dir = fixture(fullFixture({ skill: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('fallback incolla testo') || r.output.includes('carica documento'), 'got:\n' + r.output);
+});
+
+t('rifiuta la skill che non tratta l\'area riservata ItalGiure come handoff terminale', () => {
+  const bad = skill().replace(/Non scrivere i file di memoria\/fonti e non delegare a `web-research-specialist`;/g, '').replace(/non salvare i risultati su disco\./g, '');
+  const dir = fixture(fullFixture({ skill: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('area riservata ItalGiure'), 'got:\n' + r.output);
+});
+
+t('rifiuta la skill con etichette di ambito in inglese', () => {
+  const bad = skill().replace(/## Ambito/, '## Ambito\n\n- **In scope**: foo\n- **Out of scope**: bar');
+  const dir = fixture(fullFixture({ skill: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('In scope') || r.output.includes('Out of scope'), 'got:\n' + r.output);
+});
+
+t('rifiuta la skill senza regola sui redirect non approvati', () => {
+  const bad = skill().replace(/Dopo ogni redirect[\s\S]*?fermati e chiedi consenso/g, '');
+  const dir = fixture(fullFixture({ skill: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('redirect'), 'got:\n' + r.output);
+});
+
+t('rifiuta il comando senza regola sui redirect non approvati', () => {
+  const bad = command().replace(/Dopo ogni redirect[\s\S]*?chiedi consenso/g, '');
+  const dir = fixture(fullFixture({ command: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('redirect'), 'got:\n' + r.output);
+});
+
+t('rifiuta il comando che non tratta l\'area riservata ItalGiure come handoff terminale', () => {
+  const bad = command().replace(/non scrivere i file di memoria\/fonti e non delegare la sintesi a `web-research-specialist`\./g, '');
+  const dir = fixture(fullFixture({ command: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('area riservata ItalGiure'), 'got:\n' + r.output);
+});
+
+t('rifiuta l\'agent con titolo in inglese', () => {
+  const bad = agent().replace('# Specialista di sintesi per la ricerca web', '# Web Research Specialist');
+  const dir = fixture(fullFixture({ agent: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('titolo principale dell\'agent deve essere in italiano'), 'got:\n' + r.output);
+});
+
+t('rifiuta l\'agent che non vieta la scrittura su disco per l\'area riservata ItalGiure', () => {
+  const bad = agent().replace(/non scrivere su disco/g, '');
+  const dir = fixture(fullFixture({ agent: bad }));
+  const r = run(dir);
+  assert.strictEqual(r.code, 1);
+  assert.ok(r.output.includes('area riservata ItalGiure'), 'got:\n' + r.output);
+});
+
+console.log('check-ricerca-web: CRLF');
+
+t('accetta una fixture con terminazioni CRLF', () => {
+  const dir = fixture(fullFixture(), { crlf: true });
+  const r = run(dir);
+  assert.strictEqual(r.code, 0, 'output:\n' + r.output);
 });
 
 console.log('check-ricerca-web: fixture valida');

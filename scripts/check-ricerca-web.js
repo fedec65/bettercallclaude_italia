@@ -40,7 +40,7 @@ function displayPath(file) {
 function lineOf(content, needle) {
   const idx = content.toLowerCase().indexOf(needle.toLowerCase());
   if (idx === -1) return 0;
-  return content.slice(0, idx).split('\n').length;
+  return content.slice(0, idx).split(/\r?\n/).length;
 }
 
 function contains(content, needle) {
@@ -48,9 +48,9 @@ function contains(content, needle) {
 }
 
 function parseFrontmatter(content) {
-  const match = content.match(/^---\n([\s\S]*?)\n---\n/);
+  const match = content.match(/^---\r?\n([\s\S]*?)\r?\n---\r?\n/);
   if (!match) return null;
-  const lines = match[1].split('\n');
+  const lines = match[1].split(/\r?\n/);
   const fm = { tools: [], _line: {} };
   let inTools = false;
   for (let i = 0; i < lines.length; i++) {
@@ -127,6 +127,15 @@ function requireIn(fileKey, needle, reason) {
   }
 }
 
+function requireNotIn(fileKey, needle, reason) {
+  const content = contents[fileKey];
+  const file = files[fileKey];
+  if (!content) return;
+  if (content.toLowerCase().includes(needle.toLowerCase())) {
+    err(file, lineOf(content, needle) || 1, reason);
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Skill checks
 // ---------------------------------------------------------------------------
@@ -193,6 +202,41 @@ if (contents.skill) {
       );
     }
   }
+
+  // ---------------------------------------------------------------------------
+  // Review Devin PR #69
+  // ---------------------------------------------------------------------------
+
+  // 1. Connettore browser nascosto: la skill deve spiegare che i tool del
+  //    connettore sono di host, non elencabili in tools:, e cosa fare se non
+  //    sono visibili.
+  if (!contains(skill, 'connettore') || !contains(skill, 'host')) {
+    err(skillFile, 1, 'deve spiegare che il connettore browser è fornito dall\'host');
+  }
+  if (!contains(skill, 'non elencat') && !contains(skill, 'non compaiono')) {
+    err(skillFile, 1, 'deve spiegare che i tool del connettore non sono elencati nel blocco tools:');
+  }
+  if (!contains(skill, 'incolla il testo') || !contains(skill, 'carica un documento')) {
+    err(skillFile, 1, 'deve proporre il fallback incolla testo / carica documento quando il browser non è disponibile');
+  }
+
+  // 2. Area riservata ItalGiure: handoff terminale, nessun salvataggio su disco
+  //    e nessuna delega a web-research-specialist.
+  if (!contains(skill, 'area riservata ItalGiure')) {
+    err(skillFile, 1, 'deve nominare esplicitamente l\'area riservata ItalGiure');
+  }
+  if (!contains(skill, 'non salvare') && !contains(skill, 'non scrivere') && !contains(skill, 'non delegare')) {
+    err(skillFile, 1, 'per l\'area riservata ItalGiure deve vietare salvataggio su disco e delega alla sintesi');
+  }
+
+  // 6/7. Prosa italiana: nessun titolo/etichetta inglese.
+  requireNotIn('skill', 'In scope', 'le etichette di ambito devono essere in italiano ("In scope" è inglese)');
+  requireNotIn('skill', 'Out of scope', 'le etichette di ambito devono essere in italiano ("Out of scope" è inglese)');
+
+  // 9. Redirect su dominio non approvato: fermarsi e chiedere consenso.
+  if (!contains(skill, 'redirect') || !contains(skill, 'dominio non approvato') || !contains(skill, 'consenso')) {
+    err(skillFile, 1, 'deve regolare i redirect su domini non approvati (fermarsi e chiedere consenso)');
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -226,6 +270,28 @@ if (contents.command) {
       );
     }
   }
+
+  // 1. Connettore browser nascosto: il comando deve avere un exit chiaro.
+  if (!contains(command, 'connettore') || !contains(command, 'non visibile') || !contains(command, 'sessione')) {
+    err(commandFile, 1, 'deve dichiarare che il connettore può non essere visibile in questa sessione');
+  }
+  if (!contains(command, 'incolla il testo') || !contains(command, 'carica un documento')) {
+    err(commandFile, 1, 'deve proporre il fallback incolla testo / carica documento quando il browser non è visibile');
+  }
+
+  // 2. Area riservata ItalGiure: handoff terminale, nessun file e nessuna
+  //    delega a web-research-specialist.
+  if (!contains(command, 'area riservata ItalGiure')) {
+    err(commandFile, 1, 'deve nominare esplicitamente l\'area riservata ItalGiure');
+  }
+  if (!contains(command, 'non scrivere') && !contains(command, 'non delegare')) {
+    err(commandFile, 1, 'per l\'area riservata ItalGiure deve vietare scrittura file e delega alla sintesi');
+  }
+
+  // 9. Redirect su dominio non approvato.
+  if (!contains(command, 'redirect') || !contains(command, 'dominio non approvato') || !contains(command, 'consenso')) {
+    err(commandFile, 1, 'deve regolare i redirect su domini non approvati (fermarsi e chiedere consenso)');
+  }
 }
 
 // ---------------------------------------------------------------------------
@@ -253,6 +319,17 @@ if (contents.agent) {
   if (!contains(agent, 'sessione principale')) {
     err(agentFile, 1, 'l\'agent deve dichiarare che la raccolta avviene nella sessione principale');
   }
+
+  // 2. Se riceve materiale dall'area riservata ItalGiure, non scriverlo su disco.
+  if (!contains(agent, 'area riservata ItalGiure')) {
+    err(agentFile, 1, 'deve nominare esplicitamente l\'area riservata ItalGiure');
+  }
+  if (!contains(agent, 'non scrivere') && !contains(agent, 'non salvare')) {
+    err(agentFile, 1, 'se riceve materiale dall\'area riservata ItalGiure deve vietare la scrittura su disco');
+  }
+
+  // 6. Titolo in italiano.
+  requireNotIn('agent', 'Web Research Specialist', 'il titolo principale dell\'agent deve essere in italiano');
 }
 
 if (errors.length > 0) {

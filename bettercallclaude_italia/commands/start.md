@@ -66,7 +66,11 @@ Stato dei servizi:
 
 Se un server non e disponibile, spiega in linguaggio semplice cosa manca (es. "Senza questo servizio, la ricerca di precedenti della Cassazione deve essere fatta manualmente su ItalGiure").
 
-## Passo 4: Cerca Playbook
+## Passo 4: Connettore browser (per `/ricerca-web`)
+
+Se presenti esempi d'uso che coinvolgono `/bettercallclaude-italia:ricerca-web`, ricorda che il comando usa il browser della sessione principale. Il connettore browser è fornito dall'host (Claude Code, Cowork Desktop o altro): i suoi tool non compaiono nel blocco `tools:` del plugin e possono risultare non visibili nelle sessioni in cui l'host filtra per l'allow-list. Se il browser non è disponibile, `/ricerca-web` proporrà di incollare il testo rilevante o caricare un documento, oppure di abilitare il connettore per la sessione e riprovare.
+
+## Passo 5: Cerca Playbook
 
 Cerca il playbook locale nell'ordine di precedenza:
 
@@ -100,7 +104,7 @@ Se l'utente accetta, poni queste domande una alla volta:
 
 Dopo aver raccolto le risposte, genera un file `bettercallclaude-italia.local.md` nella cartella condivisa (Cowork) o `.claude/` (Claude Code) basato sul template appropriato (vedi `docs/PLAYBOOK.md`).
 
-## Passo 5: Esempi d'Uso
+## Passo 6: Esempi d'Uso
 
 Mostra 3-4 esempi personalizzati per il profilo dell'utente (dal playbook se disponibile, altrimenti generici):
 

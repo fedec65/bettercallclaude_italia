@@ -16,7 +16,9 @@
 const fs = require('fs');
 const path = require('path');
 
-const root = path.resolve(__dirname, '..');
+const root = process.env.BCC_GENERATOR_PLUGIN_DIR
+  ? path.resolve(process.env.BCC_GENERATOR_PLUGIN_DIR)
+  : path.resolve(__dirname, '..');
 const agentsDir = path.join(root, 'bettercallclaude_italia', 'agents');
 const skillsDir = path.join(root, 'bettercallclaude_italia', 'skills');
 const commandsDir = path.join(root, 'bettercallclaude_italia', 'commands');
@@ -278,7 +280,7 @@ for (const agentFile of fs.readdirSync(agentsDir).filter(f => f.endsWith('.md'))
 for (const skillDir of fs.readdirSync(skillsDir)) {
   const skillPath = path.join(skillsDir, skillDir, 'SKILL.md');
   if (!fs.existsSync(skillPath)) continue;
-  const rel = path.relative(root, skillPath);
+  const rel = path.relative(root, skillPath).split(path.sep).join('/');
   let tools;
   let replace = false;
   if (TOOL_EXCEPTIONS[rel]) {
@@ -297,7 +299,7 @@ for (const skillDir of fs.readdirSync(skillsDir)) {
 
 for (const cmdFile of fs.readdirSync(commandsDir).filter(f => f.endsWith('.md'))) {
   const cmdPath = path.join(commandsDir, cmdFile);
-  const rel = path.relative(root, cmdPath);
+  const rel = path.relative(root, cmdPath).split(path.sep).join('/');
   if (TOOL_EXCEPTIONS[rel]) {
     if (processFile(cmdPath, TOOL_EXCEPTIONS[rel], true)) ok++;
     else fail++;

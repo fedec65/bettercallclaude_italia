@@ -14,8 +14,8 @@ Specialista italiano di ricerca web in sola lettura su fonti legali protette da 
 
 ## Ambito
 
-- **In scope**: siti nominati dall'utente, portali di dottrina, servizi legali a sottoscrizione, area riservata ItalGiure solo per delega.
-- **Out of scope**: dati pubblici disponibili tramite i server MCP funzionanti di BetterCallClaude Italia; fallback automatico su ricerca web pubblica quando fallisce un server MCP; aggiramento di CAPTCHA o anti-bot.
+- **Nel campo**: siti nominati dall'utente, portali di dottrina, servizi legali a sottoscrizione.
+- **Fuori campo**: dati pubblici disponibili tramite i server MCP funzionanti di BetterCallClaude Italia; fallback automatico su ricerca web pubblica quando fallisce un server MCP; aggiramento di CAPTCHA o anti-bot.
 
 ## Gate privacy (prima di tutto)
 
@@ -52,7 +52,14 @@ Il playbook non contiene mai credenziali.
 
 ## Apertura del sito
 
-Usa i tool di browser disponibili nella sessione, senza hardcodare i loro nomi: il connettore è fornito dall'host (Claude Code, Cowork Desktop o altro). Dopo ogni navigazione o redirect, ricontrolla il dominio di destinazione contro l'allow-list. Se il browser atterra su un dominio non approvato, fermati e chiedi conferma prima di leggere o elaborare quella pagina.
+Usa i tool di browser disponibili nella sessione, senza hardcodare i loro nomi: il connettore è fornito dall'host (Claude Code, Cowork Desktop o altro). **I tool del connettore non compaiono nel blocco `tools:` di questa skill**: sono strumenti di host e possono risultare non visibili nelle sessioni in cui l'host filtra per l'allow-list del plugin. Se non vedi tool di browser, fermati e spiega che il connettore non è presente o non è visibile in questa sessione; suggerisci all'avvocato di incollare il testo rilevante o di caricare un documento, oppure di abilitare il connettore browser per la sessione e riprovare (vedi `commands/start.md` per la stessa nota in fase di onboarding).
+
+Dopo ogni navigazione o redirect, ricontrolla il dominio di destinazione contro l'allow-list. Se il browser atterra su un dominio non approvato:
+
+- non leggere e non usare il contenuto di quella pagina;
+- non riportarla come fonte;
+- dì all'avvocato quale dominio è stato raggiunto e chiedi consenso esplicito;
+- solo dopo il consenso procedi dall'URL finale, altrimenti fermati.
 
 Se nessun browser è disponibile:
 
@@ -76,6 +83,8 @@ Se la sessione scade durante la ricerca, torna a questo passaggio.
 ## Area riservata ItalGiure
 
 Per le massime complete, i Rv., i conformi/difformi e la ricerca per estremi nell'area riservata di ItalGiure, **delega alla skill `italgiure-browser`**. Quella skill già impone limiti più stretti (3-5 interrogazioni per sessione, nessun parallelismo, nessuno scaricamento di massa, risultati non salvati): non duplicarli qui.
+
+Per l'area riservata ItalGiure l'handoff è **terminale**: non scrivere `02-ricerca-web.md` o `fonti-web.md` e non delegare la sintesi a `web-research-specialist`. I risultati restano nella conversazione, come richiede `italgiure-browser`.
 
 ## Regole di ricerca in sola lettura
 
