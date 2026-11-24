@@ -46,3 +46,12 @@
 - **Lingua citazioni**: Italiano
 - **Cartella output**: bcc-output
 - **Lunghezza default**: medio
+
+## Siti consentiti per la ricerca web
+
+- **Elenco**:
+  - www.italgiure.giustizia.it
+  - [dominio del servizio a pagamento dello studio]
+- **Domini non in elenco**: chiedere conferma prima di aprirli
+
+Questo playbook non contiene mai credenziali.

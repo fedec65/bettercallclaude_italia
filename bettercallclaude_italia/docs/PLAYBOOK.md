@@ -87,6 +87,28 @@ Se nessun file viene trovato, il plugin usa i defaults del diritto italiano e su
 - **Lunghezza default**: medio (3-5 pagine)
 ```
 
+### Siti consentiti per la ricerca web
+
+```markdown
+## Siti consentiti per la ricerca web
+
+- **Elenco**:
+  - www.italgiure.giustizia.it
+  - [dominio del servizio a pagamento dello studio]
+- **Domini non in elenco**: chiedere conferma prima di aprirli
+```
+
+Questa sezione serve al comando `/bettercallclaude-italia:ricerca-web` per decidere quali portali protetti da login può aprire nel browser dell’utente. L’elenco è l’allow-list dello studio: i domini elencati vengono aperti senza ulteriore conferma; i domini non elencati richiedono una conferma esplicita prima di ogni apertura.
+
+**Come aggiungere un dominio**
+
+1. L’utente chiede di cercare su un sito non in elenco.
+2. Il plugin chiede conferma prima di aprirlo.
+3. Dopo un sì esplicito, il plugin propone di aggiungere il dominio alla sezione `## Siti consentiti per la ricerca web`.
+4. Se l’utente conferma, il plugin modifica **solo quella sezione** del playbook locale, aggiungendo il dominio all’elenco.
+
+**Il playbook non contiene mai credenziali**. La password, il PIN, i codici 2FA e i cookie di sessione restano nel browser dell’utente: il plugin non legge, non digita e non conserva credenziali.
+
 ## Regola Fondamentale
 
 Il playbook **non puo mai** derogare al diritto imperativo (norme inderogabili). Se una posizione contrattuale nel playbook contrasta con una norma imperativa, il plugin segnala il conflitto e applica la norma di legge.

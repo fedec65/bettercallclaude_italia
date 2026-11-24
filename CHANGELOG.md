@@ -4,6 +4,16 @@ All notable changes to BetterCallClaude Italia will be documented in this file.
 
 ---
 
+## [2.6.0] - 2026-11-24
+
+### Added
+- **Ricerca web su portali protetti da login** — nuova skill `legal-web-research`, agent `web-research-specialist` e comando `/bettercallclaude-italia:ricerca-web <sito> <domanda>`. La ricerca avviene nel browser dell'utente, con login **manuale**: il plugin non legge, digita o conserva credenziali. Gate di privacy (strict/balanced/cloud) e allow-list dei siti nel playbook locale.
+
+### Changed
+- **`italgiure-browser` resta il riferimento per l'area riservata ItalGiure** (limiti più stretti: 3-5 interrogazioni per sessione, risultati non salvati); la nuova skill vi rimanda e copre gli altri portali.
+
+---
+
 ## [2.5.0] - 2026-11-08
 
 ### Fixed

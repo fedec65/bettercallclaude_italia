@@ -13,7 +13,7 @@ tools:
 
 Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento completo dei comandi.
 
-## Comandi (30)
+## Comandi (31)
 
 | Comando | Descrizione |
 |---------|-------------|
@@ -25,6 +25,7 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:percorso-legale` | Lavora un ticket decisionale di una mappa wayfinder |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
+| `/bettercallclaude-italia:ricerca-web <sito> <domanda>` | Ricerca in sola lettura su portali legali protetti da login tramite browser |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
 | `/bettercallclaude-italia:redazione` | Redige documenti legali italiani con corretta formattazione delle citazioni |
 | `/bettercallclaude-italia:citazione` | Verifica e formatta citazioni giuridiche italiane |
@@ -48,12 +49,13 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | `/bettercallclaude-italia:versione` | Visualizza versione plugin e stato sistema |
 | `/bettercallclaude-italia:aiuto` | Mostra questo aiuto |
 
-## Agenti (21)
+## Agenti (22)
 
 | Agente | Ruolo |
 |-------|------|
 | orchestrator | Coordina workflow multi-agente |
 | researcher | Ricerca Cassazione, interpretazione normativa |
+| web-research-specialist | Sintesi della ricerca web su portali protetti da login |
 | strategist | Strategia processuale, valutazione causa |
 | drafter | Redazione atti legali |
 | citation | Verifica e formattazione citazioni |
@@ -74,11 +76,12 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 | advocate | Costruisce caso pro-posizione |
 | adversary | Sfida posizioni giuridiche |
 
-## Skill (16)
+## Skill (17)
 
 | Skill | Scopo |
 |-------|---------|
 | italian-legal-research | Ricerca precedenti Cassazione + routing giurisdizionale |
+| legal-web-research | Ricerca in sola lettura su portali legali protetti da login |
 | italian-legal-translation | Traduzione giuridica IT/EN |
 | italian-legal-drafting | Redazione documenti + integrazione playbook |
 | compliance-frameworks | Valutazione conformita regolamentare |
@@ -109,6 +112,8 @@ Sei invocato tramite `/bettercallclaude-italia:aiuto`. Mostra il riferimento com
 /bettercallclaude-italia:raffina Ho problemi con il mio locatore
 
 /bettercallclaude-italia:ricerca Art. 1218 CC responsabilita contrattuale per ritardata consegna
+
+/bettercallclaude-italia:ricerca-web legalis.it giurisprudenza su art. 1218 CC
 
 /bettercallclaude-italia:strategia Contenzioso locativo a Milano, locatore chiede EUR 200k danni
 

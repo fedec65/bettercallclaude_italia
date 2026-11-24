@@ -46,3 +46,12 @@
 - **Citation language**: Italian
 - **Output folder**: bcc-output
 - **Default length**: medium
+
+## Allowed Sites for Web Research
+
+- **List**:
+  - www.italgiure.giustizia.it
+  - [domain of the firm's paid service]
+- **Unlisted domains**: ask for confirmation before opening them
+
+This playbook never contains credentials.

@@ -29,6 +29,9 @@ regola in entrambe le direzioni: questa skill non sostituisce
 `italgiure-search` per la ricerca di massa, e `italgiure-search` non sostituisce
 questa skill per le massime complete e gli estremi.
 
+Per **altri** portali protetti da login (non l'area riservata ItalGiure) usa la
+skill `legal-web-research`.
+
 ## Tre precondizioni, tutte necessarie
 
 1. **Un connettore browser e' disponibile in sessione.** Rilevato per

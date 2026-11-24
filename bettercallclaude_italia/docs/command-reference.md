@@ -42,6 +42,19 @@ Questi flag possono essere aggiunti alla maggior parte dei comandi:
 /bettercallclaude-italia:ricerca Cassazione su mora del conduttore locazione
 ```
 
+### `/bettercallclaude-italia:ricerca-web`
+**Scopo**: Ricerca in sola lettura su portali legali protetti da login tramite il browser dell'utente.
+**Argomenti**: `<sito>` (dominio o nome del portale) e `<domanda>` (cosa cercare).
+**Note**:
+- Il plugin applica il gate privacy (`strict`/`balanced`/`cloud`) e l'allow-list dei siti definita nel playbook locale (`bettercallclaude-italia.local.md`).
+- Il login è **manuale**: il plugin non legge, digita o conserva credenziali.
+- Per l'area riservata ItalGiure (massime complete, Rv., conformi/difformi, estremi) usa invece `/bettercallclaude-italia:legale` con attivazione di `italgiure-browser`.
+**Esempi**:
+```
+/bettercallclaude-italia:ricerca-web legalis.it giurisprudenza su art. 1218 CC
+/bettercallclaude-italia:ricerca-web simpliciter.it conformi e difformi sulla surroga
+```
+
 ### `/bettercallclaude-italia:strategia`
 **Scopo**: Strategia di causa con valutazione del rischio e analisi costi-benefici.
 **Argomenti**: Descrizione della causa.

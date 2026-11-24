@@ -1,4 +1,4 @@
-[![Version](https://img.shields.io/badge/version-2.5.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
+[![Version](https://img.shields.io/badge/version-2.6.0-blue)](https://github.com/fedec65/bettercallclaude_italia/releases)
 [![License: AGPL-3.0](https://img.shields.io/badge/license-AGPL--3.0-green)](LICENSE)
 [![Platform](https://img.shields.io/badge/platform-Cowork%20Desktop-orange)](https://claude.ai)
 [![Buy Me a Coffee](https://img.shields.io/badge/support-Buy%20Me%20a%20Coffee-yellow)](https://buymeacoffee.com/federicocesconi)
@@ -9,9 +9,14 @@
 
 <p align="center"><strong>Plugin di Intelligenza Legale Italiana per Cowork Desktop</strong></p>
 
-BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 21 agenti, 30 comandi, 17 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane. Per chi preferisce elaborare contenuti soggetti al segreto professionale on-premise, il plugin include opzionalmente un wrapper locale Ollama (5 tool); la sua attivazione è una scelta dell’avvocato (è sufficiente installare Ollama e avviare `ollama serve`).
+BetterCallClaude Italia trasforma la ricerca legale, la strategia di causa e la redazione documentale per gli avvocati italiani. Offre integrazione profonda con banche dati giuridiche italiane, analisi bilingue (IT/EN) e assistenza al rilevamento del segreto professionale — 22 agenti, 31 comandi, 18 skill e 9 server MCP che coprono ricerca sui precedenti della Cassazione, ricerca web su portali protetti da login, strategia processuale, analisi avversariale, redazione legale, calcolo dei termini processuali, verifica delle citazioni (`legal-persona-ita_compute_deadlines`, `citation-verify-ita_check_existence`), flussi di lavoro personalizzati, mappe decisionali per pratiche grandi e intelligenza documentale in tutte le 20 regioni italiane. Per chi preferisce elaborare contenuti soggetti al segreto professionale on-premise, il plugin include opzionalmente un wrapper locale Ollama (5 tool); la sua attivazione è una scelta dell’avvocato (è sufficiente installare Ollama e avviare `ollama serve`).
 
 ---
+
+## Novità della v2.6.0
+
+- **Ricerca web su portali protetti da login** — nuova skill `legal-web-research`, agente `web-research-specialist` e comando `/bettercallclaude-italia:ricerca-web <sito> <domanda>`. La ricerca avviene nel browser dell'utente, con login **manuale**: il plugin non legge, digita o conserva credenziali. Gate di privacy (strict/balanced/cloud) e allow-list dei siti nel playbook locale.
+- **`italgiure-browser` resta il riferimento per l'area riservata ItalGiure** (limiti più stretti: 3-5 interrogazioni per sessione, risultati non salvati); la nuova skill vi rimanda e copre gli altri portali.
 
 ## Novità della v2.4.0
 
@@ -104,6 +109,7 @@ I server MCP si connettono automaticamente via HTTP. Nessun Node.js, nessuna con
 | `/bettercallclaude-italia:percorso-legale` | Lavora un ticket decisionale di una mappa wayfinder |
 | `/bettercallclaude-italia:raffina` | Trasforma query legali vaghe in prompt strutturati |
 | `/bettercallclaude-italia:ricerca` | Cerca precedenti giuridici italiani e compila memorie di ricerca |
+| `/bettercallclaude-italia:ricerca-web <sito> <domanda>` | Ricerca in sola lettura su portali legali protetti da login |
 | `/bettercallclaude-italia:strategia` | Sviluppa strategia processuale con valutazione del rischio |
 | `/bettercallclaude-italia:redazione` | Redige documenti legali italiani con corretta formattazione delle citazioni |
 | `/bettercallclaude-italia:citazione` | Verifica e formatta citazioni giuridiche italiane |
@@ -214,6 +220,20 @@ Le **massime complete** (e Rv., conformi e difformi) richiedono l'area riservata
 La voce **"Cookie sessione ItalGiure"** nelle impostazioni è riservata alle installazioni che interrogano l'area riservata via server; non è il canale consigliato.
 
 Per istruzioni dettagliate: [docs/cassazione-cookie.md](docs/cassazione-cookie.md)
+
+---
+
+## Siti approvati per la ricerca web
+
+Il comando `/bettercallclaude-italia:ricerca-web` può aprire nel browser dell'utente solo i siti elencati nel playbook locale (`bettercallclaude-italia.local.md`), sezione `## Siti consentiti per la ricerca web`:
+
+- `www.italgiure.giustizia.it` è consentita di default solo per navigazione generica; per l'area riservata ItalGiure vale la skill `italgiure-browser`.
+- I domini dei servizi a pagamento dello studio vanno aggiunti esplicitamente all'elenco.
+- I domini non in elenco richiedono conferma prima di ogni apertura.
+
+**Il login è sempre manuale**. Il plugin non legge, digita o conserva credenziali, cookie di sessione, PIN o codici 2FA. L'utente effettua l'accesso nella propria finestra del browser e comunica al plugin quando ha finito.
+
+Per aggiungere un dominio: chiedi a `/bettercallclaude-italia:ricerca-web` di cercare sul sito desiderato; dopo la conferma esplicita, il plugin propone di aggiornare la sezione allow-list del playbook.
 
 ---
 
